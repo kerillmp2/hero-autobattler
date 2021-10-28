@@ -1,0 +1,66 @@
+package core.action;
+
+public enum ResolveTime {
+
+    UNDEFINED("UNDEFINED", 0),
+    ON_START_TURN("ON_START_TURN", 1),
+    BEFORE_MAIN_PHASE("BEFORE_MAIN_PHASE", 2),
+    ON_MAIN_PHASE("ON_MAIN_PHASE", 3),
+    AFTER_MAIN_PHASE("AFTER_MAIN_PHASE", 4),
+    ON_END_TURN("ON_END_TURN", 5),
+    BEFORE_TAKING_DAMAGE("BEFORE_TAKING_DAMAGE", 6),
+    BEFORE_TAKING_PHYSICAL_DAMAGE("BEFORE_TAKING_PHYSICAL_DAMAGE", 7),
+    BEFORE_TAKING_MAGIC_DAMAGE("BEFORE_TAKING_MAGIC_DAMAGE", 8),
+    BEFORE_TAKING_TRUE_DAMAGE("BEFORE_TAKING_TRUE_DAMAGE", 9),
+    ON_TAKING_DAMAGE("ON_TAKING_DAMAGE", 10),
+    ON_TAKING_PHYSICAL_DAMAGE("ON_TAKING_PHYSICAL_DAMAGE", 11),
+    ON_TAKING_MAGIC_DAMAGE("ON_TAKING_MAGIC_DAMAGE", 12),
+    ON_TAKING_TRUE_DAMAGE("ON_TAKING_TRUE_DAMAGE", 13),
+    AFTER_TAKING_DAMAGE("AFTER_TAKING_DAMAGE", 14),
+    AFTER_TAKING_PHYSICAL_DAMAGE("AFTER_TAKING_PHYSICAL_DAMAGE", 15),
+    AFTER_TAKING_MAGIC_DAMAGE("AFTER_TAKING_MAGIC_DAMAGE", 16),
+    AFTER_TAKING_TRUE_DAMAGE("AFTER_TAKING_TRUE_DAMAGE", 17),
+    BEFORE_DEALING_DAMAGE("BEFORE_DEALING_DAMAGE", 18),
+    BEFORE_DEALING_PHYSICAL_DAMAGE("BEFORE_DEALING_PHYSICAL_DAMAGE", 19),
+    BEFORE_DEALING_MAGIC_DAMAGE("BEFORE_DEALING_MAGIC_DAMAGE", 20),
+    BEFORE_DEALING_TRUE_DAMAGE("BEFORE_DEALING_TRUE_DAMAGE", 21),
+    ON_DEALING_DAMAGE("ON_DEALING_DAMAGE", 22),
+    ON_DEALING_PHYSICAL_DAMAGE("ON_DEALING_PHYSICAL_DAMAGE", 23),
+    ON_DEALING_MAGIC_DAMAGE("ON_DEALING_MAGIC_DAMAGE", 24),
+    ON_DEALING_TRUE_DAMAGE("ON_DEALING_TRUE_DAMAGE", 25),
+    AFTER_DEALING_DAMAGE("AFTER_DEALING_DAMAGE", 26),
+    AFTER_DEALING_PHYSICAL_DAMAGE("AFTER_DEALING_PHYSICAL_DAMAGE", 27),
+    AFTER_DEALING_MAGIC_DAMAGE("AFTER_DEALING_MAGIC_DAMAGE", 28),
+    AFTER_DEALING_TRUE_DAMAGE("AFTER_DEALING_TRUE_DAMAGE", 29);
+
+    public String name;
+    public int id;
+
+    ResolveTime(String name, int id) {
+        this.name = name;
+        this.id = id;
+    }
+
+    public static ResolveTime byName(String name) {
+        for (ResolveTime time : ResolveTime.values()) {
+            if (time.name.equals(name)) {
+                return time;
+            }
+        }
+        return UNDEFINED;
+    }
+
+    public static ResolveTime byId(int id) {
+        for (ResolveTime time : ResolveTime.values()) {
+            if (time.id == id) {
+                return time;
+            }
+        }
+        return UNDEFINED;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
+}
