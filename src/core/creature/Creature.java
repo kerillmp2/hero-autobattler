@@ -1,6 +1,8 @@
 package core.creature;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import core.shop.HasShopView;
@@ -38,6 +40,10 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView {
         this.spellPower = spellPower;
         this.speed = speed;
         this.cost = cost;
+    }
+
+    public static Creature shopDummy() {
+        return new Creature("Продано", 0, 0, 0, 0, 0,0, 0);
     }
 
     public static Creature withStats(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int cost) {
@@ -79,7 +85,26 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView {
 
     @Override
     public String getShopView() {
-        return name + " [" + cost + "]";
+        StringBuilder view = new StringBuilder(name
+                + " (" + cost + ") "
+                + "[AD: " + attack + ", "
+                + "HP: " + hp + "] "
+                + "<PArm: " + physicalArmor + ", "
+                + "MArm: " + magicArmor + ", "
+                + "Speed: " + speed + ">");
+        List<String> tagsView = new ArrayList<>();
+        if (this.hasTag(CreatureTag.POISONOUS)) {
+            tagsView.add("Яд " + this.getTagValue(CreatureTag.POISONOUS));
+        }
+        if (tagsView.size() > 0) {
+            view.append(" {");
+            view.append(tagsView.get(0));
+            for (int i = 1; i < tagsView.size(); i++) {
+                view.append(", ").append(tagsView.get(i));
+            }
+            view.append("}");
+        }
+        return view.toString();
     }
 
     @Override

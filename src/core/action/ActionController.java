@@ -7,6 +7,7 @@ import core.battlefield.BattlefieldCreature;
 import core.battlefield.BattlefieldObjectTag;
 import core.battlefield.ObjectStatus;
 import core.battlefield.Position;
+import core.utils.Calculator;
 import core.utils.Constants;
 
 public class ActionController {
@@ -46,7 +47,7 @@ public class ActionController {
         if (action.getActionInfo().hasTag(ActionTag.APPLY_POISON_DAMAGE)) {
             int targetHp = target.getCurrentHp();
             int poisonDamage = action.getActionInfo().getTagValue(ActionTag.APPLY_POISON_DAMAGE);
-            int dealedDamage = Math.max(poisonDamage - target.getCurrentMagicArmor(), 0);
+            int dealedDamage = Calculator.calculateMagicDamage(poisonDamage, target);
             target.setCurrentHp(targetHp - dealedDamage);
             message += target.getBattleName() + " получает " + dealedDamage + " урона от яда\n";
         }
@@ -66,8 +67,7 @@ public class ActionController {
             BattlefieldCreature attackTarget = performer.getBattlefieldSide().getRandomOppositeSideAliveCreature(
                     Position.FIRST_LINE,
                     Position.SECOND_LINE,
-                    Position.THIRD_LINE,
-                    Position.FOURTH_LINE
+                    Position.THIRD_LINE
             );
             performer.addAction(ActionFactory.attackAction(performer, attackTarget));
         }
@@ -101,7 +101,7 @@ public class ActionController {
         message += resolve(target, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.ON_TAKING_DAMAGE);
         if (performer.hasTag(BattlefieldObjectTag.POISONOUS)) {
             int poisonDamage = performer.getTagValue(BattlefieldObjectTag.POISONOUS);
-            int turnsLeft = 3;
+            int turnsLeft = 2;
             if (!target.hasActionWithTags(ActionTag.APPLY_POISON_DAMAGE)) {
                 target.addAction(ActionFactory.applyPoisonDamageAction(performer, target, poisonDamage, turnsLeft));
             } else {

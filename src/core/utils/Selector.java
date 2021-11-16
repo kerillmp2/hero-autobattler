@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import core.shop.HasShopView;
+import core.shop.ShopView;
 
 public class Selector {
 
@@ -27,11 +28,7 @@ public class Selector {
         return selectedNumber;
     }
 
-    public static int shopSelect(List<? extends HasShopView> items) {
-        return shopSelect(items, true, 1);
-    }
-
-    public static int shopSelect(List<? extends HasShopView> items, boolean canRefresh, int refreshCost) {
+    public static int shopSelect(List<? extends HasShopView> items, Pair<String, Integer>... additionalOptions) {
         int selectedNumber = -1;
 
         while (selectedNumber == -1) {
@@ -41,10 +38,14 @@ public class Selector {
                 counter += 1;
                 MessageController.print(String.format("%d. %s\n", counter, item.getShopView()));
             }
-            if (canRefresh) {
+
+            for (Pair<String, Integer> option : additionalOptions) {
                 counter += 1;
-                MessageController.print(counter + ". Обновить магазин [1]");
+                MessageController.print(String.format("%d. %s (%d)\n", counter, option.first, option.second));
             }
+
+            MessageController.print(ShopView.getFooter());
+
             if (counter >= 1) {
                 selectedNumber = readCommandNumber(0, counter);
                 if (selectedNumber == -1) {

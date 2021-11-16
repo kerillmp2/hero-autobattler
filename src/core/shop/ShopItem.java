@@ -1,5 +1,7 @@
 package core.shop;
 
+import core.creature.Creature;
+
 public class ShopItem<T extends HasShopView> {
     private T item;
     private int cost;
@@ -13,15 +15,12 @@ public class ShopItem<T extends HasShopView> {
         return cost;
     }
 
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
-
     public T getItem() {
         return item;
     }
 
-    public void setItem(T item) {
-        this.item = item;
+    public static ShopItem<Creature> creatureDummy() {
+        Creature dummy = Creature.shopDummy();
+        return new ShopItem<>(dummy, dummy.getCost());
     }
 }

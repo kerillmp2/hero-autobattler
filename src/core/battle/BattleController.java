@@ -13,7 +13,7 @@ public class BattleController {
         this.turnController = turnController;
     }
 
-    public static BattleController forBattlefield(Battlefield battlefield) {
+    private static BattleController forBattlefield(Battlefield battlefield) {
         return new BattleController(battlefield, TurnController.forBattlefield(battlefield));
     }
 
@@ -25,6 +25,7 @@ public class BattleController {
 
     public BattleStatus battle() {
         while (turnController.getTurnCounter() < 1000) {
+            MessageController.print(BattleMap.getBattleFieldView(battlefield));
             boolean firstSideHasAlive = this.battlefield.getFirstSide().hasAliveCreature();
             boolean secondSideHasAlive = this.battlefield.getSecondSide().hasAliveCreature();
             if (firstSideHasAlive && !secondSideHasAlive) {

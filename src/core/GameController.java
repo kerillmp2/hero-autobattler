@@ -2,17 +2,13 @@ package core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import core.battle.BattleController;
 import core.battle.BattleStatus;
-import core.battlefield.Battlefield;
-import core.creature.Creature;
 import core.creature.CreaturePool;
-import core.creature.CreatureTag;
 import core.player.Player;
 import core.player.PlayerController;
 import core.player.PlayerState;
@@ -29,7 +25,7 @@ public class GameController {
     }
 
     public static GameController forPlayers(Player... players) {
-        initCreaturePool();
+        CreaturePool.init();
         return new GameController(Arrays.stream(players).map(PlayerController::defaultController).collect(Collectors.toList()), 1);
     }
 
@@ -87,9 +83,7 @@ public class GameController {
 
     private BattleStatus processBattleForPlayers(Player firstPlayer, Player secondPlayer) {
         MessageController.print("Начинается битва между " + firstPlayer.getName() + " и " + secondPlayer.getName());
-        Battlefield battlefield = Battlefield.fromTwoBoards(firstPlayer.getBoard(), secondPlayer.getBoard());
-        BattleController battleController = BattleController.forBattlefield(battlefield);
-        BattleStatus battleStatus = battleController.battle();
+        BattleStatus battleStatus = BattleController.processBattleForPlayers(firstPlayer, secondPlayer);
         firstPlayer.setState(PlayerState.NOT_READY_FOR_BATTLE);
         secondPlayer.setState(PlayerState.NOT_READY_FOR_BATTLE);
         return battleStatus;
@@ -130,25 +124,5 @@ public class GameController {
     private void addMoneyToPlayer(Player player, int amount) {
         player.addMoney(amount);
         MessageController.print(player.getName() + " получает " + amount + " монет!");
-    }
-
-    private static void initCreaturePool() {
-        for (int i = 0; i < 5; i++) {
-            CreaturePool.addCreature(
-                    Creature.withStats("Воин", 20, 5, 2, 2, 1, 10, 1)
-            );
-        }
-        for (int i = 0; i < 2; i++) {
-            CreaturePool.addCreature(
-                    Creature.withStats("Щитоносец", 30, 5, 4, 2, 1, 12, 2)
-            );
-        }
-        Creature rogue = new Creature ("Разбойник", 14, 4, 1, 2, 1, 5, 2, CreatureTag.HAVE_BASIC_ATTACK);
-        rogue.addTagValue(CreatureTag.POISONOUS, 3);
-        for (int i = 0; i < 2; i++) {
-            CreaturePool.addCreature(
-                    rogue
-            );
-        }
     }
 }
