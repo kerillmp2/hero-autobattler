@@ -104,6 +104,19 @@ public class ShopController<T extends HasShopView> {
         shop.changeItemToDummy(index);
     }
 
+    public void sellItem(T item) {
+        if (item instanceof Creature) {
+            sellCreature((Creature) item);
+        }
+    }
+
+    public void sellCreature(Creature creature) {
+        Position position = player.getBoard().getCreaturePosition(creature);
+        player.getBoard().removeCreature(creature, position);
+        CreaturePool.addCreature(creature);
+        player.addMoney(creature.getCost());
+    }
+
     private void levelUp() {
         shop.incrementShopLevel();
         player.incrementShopLevel();

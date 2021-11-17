@@ -1,12 +1,14 @@
 package core.player;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import core.battle.BattleMap;
-import core.battlefield.Position;
 import core.creature.Creature;
 import core.shop.CreatureShop;
 import core.shop.ShopController;
+import core.utils.Constants;
+import core.utils.HasNameImpl;
 import core.utils.MessageController;
 import core.utils.Option;
 import core.utils.Selector;
@@ -29,11 +31,12 @@ public class PlayerController {
         TurnOption currentOption = TurnOption.DEFAULT;
         creatureShopController.regenerateShop();
         creatureShopController.refreshShop();
-        System.out.println("3");
         while (currentOption != TurnOption.END_TURN) {
-            List<Option> turnOptions = player.getTurnOptions();
+            List<Option<TurnOption>> turnOptions = player.getTurnOptions();
+            MessageController.print("-".repeat(Constants.SHOP_VIEW_SIZE.value));
             currentOptionNum = Selector.select(turnOptions);
-            currentOption = turnOptions.get(currentOptionNum).getTag();
+            MessageController.print("-".repeat(Constants.SHOP_VIEW_SIZE.value));
+            currentOption = TurnOption.byName(turnOptions.get(currentOptionNum).getTag().getName());
             resolveTurnOption(currentOption);
         }
     }
@@ -68,7 +71,29 @@ public class PlayerController {
         int selectedNumber = -1;
         while (selectedNumber != 0) {
             BoardViewer.showBoardView(player.getBoard());
-            selectedNumber = Selector.select(new Option(TurnOption.DEFAULT, "Назад"));
+            selectedNumber = Selector.select(new Option<>(TurnOption.DEFAULT, "Назад"), new Option<>(TurnOption.DEFAULT, "Продать существо"));
+            if (selectedNumber == 1) {
+                processSelling();
+            }
+        }
+    }
+
+    private void processSelling() {
+        int selectedNumber = -1;
+        while (selectedNumber != 0) {
+            BoardViewer.showBoardView(player.getBoard());
+            HasNameImpl backOption = new HasNameImpl("Назад");
+            List<HasNameImpl> options = new ArrayList<>();
+            List<Creature> allCreatures = player.getBoard().getAllCreatures();
+            options.add(backOption);
+            options.addAll(
+                    allCreatures.stream().map(creature -> new HasNameImpl(creature.getShopView())).collect(Collectors.toList())
+            );
+            selectedNumber = Selector.select(options);
+            if (selectedNumber != 0) {
+                creatureShopController.sellItem(allCreatures.get(selectedNumber - 1));
+                return;
+            }
         }
     }
 

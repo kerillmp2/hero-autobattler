@@ -1,12 +1,10 @@
 package core.utils;
 
-import core.player.TurnOption;
-
-public class Option implements HasName {
+public class Option<T extends HasName> implements HasName {
     private String name;
-    private TurnOption tag;
+    private T tag;
 
-    public Option(TurnOption tag, String name) {
+    public Option(T tag, String name) {
         this.tag = tag;
         this.name = name;
     }
@@ -16,7 +14,7 @@ public class Option implements HasName {
         return name;
     }
 
-    public TurnOption getTag() {
+    public T getTag() {
         return tag;
     }
 }
