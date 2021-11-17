@@ -157,11 +157,12 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
     public List<String> getBattleView() {
         int rowSize = Constants.BATTLE_VIEW_LENGTH.value;
         int height = Constants.BATTLE_VIEW_HEIGHT.value;
+        int offset = 1;
         int curHeight = 0;
         int curLength = 0;
         StringBuilder view = new StringBuilder();
-        String curHp = String.valueOf(getHp());
-        String curAttack = String.valueOf(getAttack());
+        String curHp = getHp() + " ".repeat(offset);
+        String curAttack = " ".repeat(offset) + getAttack();
         String[] nameParts = getName().split(" ");
 
         view.append("-").append("-".repeat(rowSize)).append("-\n");
@@ -180,20 +181,20 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
                     curLength += namePart.length() + 1;
                 } else {
                     view.append(" ".repeat(rowSize - curLength)).append("|\n");
-                    view.append("|").append(namePart);
-                    curLength = namePart.length();
+                    view.append("|").append(" ".repeat(offset)).append(namePart);
+                    curLength = namePart.length() + offset;
                     curHeight += 1;
                     continue;
                 }
             } else {
                 view.append("|");
                 if (namePart.length() + curLength <= rowSize) {
-                    view.append(namePart);
-                    curLength += namePart.length();
+                    view.append(" ".repeat(offset)).append(namePart);
+                    curLength += namePart.length() + offset;
                 } else {
                     view.append(" ".repeat(rowSize - curLength)).append("|\n");
-                    view.append("|").append(namePart);
-                    curLength = namePart.length();
+                    view.append("|").append(" ".repeat(offset)).append(namePart);
+                    curLength = namePart.length() + offset;
                     curHeight += 1;
                     continue;
                 }
@@ -201,7 +202,7 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         }
         view.append(" ".repeat(rowSize - curLength)).append("|\n");
 
-        view.append(("|" + " ".repeat(rowSize) + "|\n").repeat(height - 2 - curHeight));
+        view.append(("|" + " ".repeat(rowSize) + "|\n").repeat(height - 3 - curHeight));
 
 
         view.append("|").append(curAttack).append(" ".repeat(rowSize - curHp.length() - curAttack.length())).append(curHp).append("|\n");

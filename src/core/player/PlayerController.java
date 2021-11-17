@@ -67,11 +67,7 @@ public class PlayerController {
     private void processViewBoard() {
         int selectedNumber = -1;
         while (selectedNumber != 0) {
-            StringBuilder boardView = new StringBuilder();
-            for (Position position : Position.values()) {
-                boardView.append(BattleMap.getCreaturesRowOnPosition(player.getBoard().getCreaturesOnPosition(position), position));
-            }
-            MessageController.print(boardView.toString());
+            BoardViewer.showBoardView(player.getBoard());
             selectedNumber = Selector.select(new Option(TurnOption.DEFAULT, "Назад"));
         }
     }

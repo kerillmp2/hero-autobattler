@@ -1,6 +1,5 @@
 package core.battle;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +14,7 @@ public class BattleMap {
     private static final int ROW_SIZE = Constants.BATTLEFIELD_VIEW_SIZE.value;
     private static final int CREATURE_VIEW_LENGTH = Constants.BATTLE_VIEW_LENGTH.value + 2;
     private static final int CREATURE_VIEW_HEIGHT = Constants.BATTLE_VIEW_HEIGHT.value;
-    private static final int CREATURE_OFFSET = 3;
+    private static final int CREATURE_OFFSET = 4;
 
     public static String getBattleFieldView(Battlefield battlefield) {
         StringBuilder view = new StringBuilder();
