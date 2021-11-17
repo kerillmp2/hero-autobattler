@@ -6,6 +6,7 @@ public enum TurnOption implements HasName {
     UNDEFINED("UNDEFINED"),
     END_TURN("END_TURN"),
     OPEN_SHOP("OPEN_SHOP"),
+    VIEW_BOARD("VIEW_BOARD"),
     DEFAULT("DEFAULT");
 
     private final String name;

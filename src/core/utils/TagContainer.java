@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class TagContainer<T extends Tag> {
+public abstract class TagContainer<T extends Tag> {
     protected Map<T, Integer> tagValues = new TreeMap<>(Comparator.comparing(HasId::getId));
 
     public TagContainer() {

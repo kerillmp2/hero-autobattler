@@ -6,5 +6,6 @@ public enum PlayerState {
     IN_SHOP,
     NOT_READY_FOR_BATTLE,
     READY_FOR_BATTLE,
+    VIEW_BOARD,
     DEAD
 }

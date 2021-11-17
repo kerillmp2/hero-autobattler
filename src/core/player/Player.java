@@ -30,6 +30,7 @@ public class Player implements HasName {
     public List<Option> getTurnOptions() {
         List<Option> options = new ArrayList<>();
         options.add(new Option(TurnOption.END_TURN, "Закончить ход"));
+        options.add(new Option(TurnOption.VIEW_BOARD, "Посмотреть поле"));
         options.add(new Option(TurnOption.OPEN_SHOP, "Открыть магазин [Ур. " + creatureShopLevel + "]"));
         return options;
     }

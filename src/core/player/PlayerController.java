@@ -2,9 +2,12 @@ package core.player;
 
 import java.util.List;
 
+import core.battle.BattleMap;
+import core.battlefield.Position;
 import core.creature.Creature;
 import core.shop.CreatureShop;
 import core.shop.ShopController;
+import core.utils.MessageController;
 import core.utils.Option;
 import core.utils.Selector;
 
@@ -26,6 +29,7 @@ public class PlayerController {
         TurnOption currentOption = TurnOption.DEFAULT;
         creatureShopController.regenerateShop();
         creatureShopController.refreshShop();
+        System.out.println("3");
         while (currentOption != TurnOption.END_TURN) {
             List<Option> turnOptions = player.getTurnOptions();
             currentOptionNum = Selector.select(turnOptions);
@@ -41,6 +45,11 @@ public class PlayerController {
                 processShoppingPhase();
                 player.setState(PlayerState.NOT_READY_FOR_BATTLE);
                 break;
+            case VIEW_BOARD:
+                player.setState(PlayerState.VIEW_BOARD);
+                processViewBoard();
+                player.setState(PlayerState.NOT_READY_FOR_BATTLE);
+                break;
             case END_TURN:
                 endTurn();
                 break;
@@ -53,6 +62,18 @@ public class PlayerController {
 
     private void processShoppingPhase() {
         creatureShopController.shopProcessing();
+    }
+
+    private void processViewBoard() {
+        int selectedNumber = -1;
+        while (selectedNumber != 0) {
+            StringBuilder boardView = new StringBuilder();
+            for (Position position : Position.values()) {
+                boardView.append(BattleMap.getCreaturesRowOnPosition(player.getBoard().getCreaturesOnPosition(position), position));
+            }
+            MessageController.print(boardView.toString());
+            selectedNumber = Selector.select(new Option(TurnOption.DEFAULT, "Назад"));
+        }
     }
 
     public Player getPlayer() {

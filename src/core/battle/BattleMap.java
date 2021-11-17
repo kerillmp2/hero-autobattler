@@ -34,7 +34,7 @@ public class BattleMap {
         view.append(getCreaturesRowOnPosition(creatures, Position.FIRST_LINE));
 
         view.append("=".repeat(ROW_SIZE)).append("\n");
-        view.append("|").append("=".repeat(ROW_SIZE - 2)).append("|\n");
+        view.append("|").append(" ".repeat(ROW_SIZE - 2)).append("|\n");
         view.append("=".repeat(ROW_SIZE)).append("\n");
 
         creatures = battlefield.getFirstSide().getCreaturesOnPosition(Position.FIRST_LINE).stream().filter(c -> c.hasStatus(ObjectStatus.ALIVE)).collect(Collectors.toList());
@@ -50,7 +50,7 @@ public class BattleMap {
         return view.toString();
     }
 
-    private static StringBuilder getViewForCreatures(List<BattlefieldCreature> creaturesOnPosition) {
+    private static StringBuilder getViewForCreatures(List<? extends HasBattleView> creaturesOnPosition) {
         int creaturesInOneRow = (ROW_SIZE - CREATURE_OFFSET) / (CREATURE_VIEW_LENGTH + CREATURE_OFFSET);
         int printedCreaturesInPosition = 0;
         StringBuilder view = new StringBuilder();
@@ -75,17 +75,17 @@ public class BattleMap {
                 view.append(row);
             }
             printedCreaturesInPosition += creaturesCounter / CREATURE_VIEW_HEIGHT;
-            view.append("|").append(" ".repeat(ROW_SIZE)).append("|\n");
+            view.append("|").append(" ".repeat(ROW_SIZE - 2)).append("|\n");
         }
 
         return view;
     }
 
-    private static StringBuilder getCreaturesRowOnPosition(List<BattlefieldCreature> creatures, Position position) {
+    public static StringBuilder getCreaturesRowOnPosition(List<? extends HasBattleView> creatures, Position position) {
         StringBuilder view = new StringBuilder();
         if (creatures.size() > 0) {
             view.append("|").append(" ".repeat(CREATURE_OFFSET)).append(position.name)
-                    .append(" ".repeat(ROW_SIZE - CREATURE_OFFSET - 1 - position.name.length())).append("|\n");
+                    .append(" ".repeat(ROW_SIZE - CREATURE_OFFSET - 2 - position.name.length())).append("|\n");
         }
         view.append(getViewForCreatures(creatures));
         return view;

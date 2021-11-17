@@ -28,6 +28,10 @@ public class Selector {
         return selectedNumber;
     }
 
+    public static int select(HasName... options) {
+        return select(List.of(options));
+    }
+
     public static int shopSelect(List<? extends HasShopView> items, Pair<String, Integer>... additionalOptions) {
         int selectedNumber = -1;
 

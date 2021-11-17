@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import core.shop.ShopItem;
+import core.traits.Trait;
 
 public class CreaturePool {
     private static final List<Creature> creaturePool = new ArrayList<>();
@@ -26,20 +27,22 @@ public class CreaturePool {
     }
 
     public static void init() {
-        CreaturePool.addCreature(
-                Creature.withStats("Воин из степей", 6, 4, 2, 1, 1, 10, 1)
-        );
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             CreaturePool.addCreature(
-                    Creature.withStats("Воин", 5, 3, 2, 2, 1, 10, 1)
+                    Creature.withStats("Воин из степей", 6, 4, 2, 1, 1, 10, 1).wrapTrait(Trait.HUMAN)
+            );
+        }
+        for (int i = 0; i < 10; i++) {
+            CreaturePool.addCreature(
+                    Creature.withStats("Воин", 5, 3, 2, 2, 1, 10, 1).wrapTrait(Trait.HUMAN)
             );
         }
         for (int i = 0; i < 2; i++) {
             CreaturePool.addCreature(
-                    Creature.withStats("Щитоносец", 7, 2, 3, 1, 1, 12, 2)
+                    Creature.withStats("Щитоносец", 7, 2, 3, 1, 1, 12, 2).wrapTrait(Trait.HUMAN)
             );
         }
-        Creature rogue = new Creature ("Разбойник", 4, 1, 1, 2, 1, 5, 2, CreatureTag.HAVE_BASIC_ATTACK);
+        Creature rogue = new Creature ("Разбойник", 4, 1, 1, 2, 1, 5, 2, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.HUMAN);
         rogue.addTagValue(CreatureTag.POISONOUS, 1);
         for (int i = 0; i < 2; i++) {
             CreaturePool.addCreature(

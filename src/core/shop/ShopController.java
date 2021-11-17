@@ -51,7 +51,7 @@ public class ShopController<T extends HasShopView> {
                     }
                     continue;
                 }
-                boolean isOperationSuccess = TryToBuyItemFromLine(selectedNumber - 1);
+                boolean isOperationSuccess = tryToBuyItemFromLine(selectedNumber - 1);
                 if (isOperationSuccess) {
                     items = shop.getCurrentLine().items.stream().map(ShopItem::getItem).collect(Collectors.toList());
                 }
@@ -67,7 +67,7 @@ public class ShopController<T extends HasShopView> {
         shop.refreshLine();
     }
 
-    private boolean TryToBuyItemFromLine(int position) {
+    private boolean tryToBuyItemFromLine(int position) {
         int lineLength = shop.getCurrentLine().items.size();
         if (position >= lineLength) {
             return false;
