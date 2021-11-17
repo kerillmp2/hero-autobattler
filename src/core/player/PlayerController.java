@@ -69,7 +69,7 @@ public class PlayerController {
     private void processViewBoard() {
         int selectedNumber = -1;
         while (selectedNumber != 0) {
-            BoardViewer.showBoardView(player.getBoard());
+            BoardViewer.showBoardView(player.getBoard(), player.getCreatureShopLevel());
             selectedNumber = Selector.select(new Option<>(TurnOption.DEFAULT, "Назад"), new Option<>(TurnOption.DEFAULT, "Продать существо"));
             if (selectedNumber == 1) {
                 processSelling();
@@ -80,7 +80,7 @@ public class PlayerController {
     private void processSelling() {
         int selectedNumber = -1;
         while (selectedNumber != 0) {
-            BoardViewer.showBoardView(player.getBoard());
+            BoardViewer.showBoardView(player.getBoard(), player.getCreatureShopLevel());
             HasNameImpl backOption = new HasNameImpl("Назад");
             List<HasNameImpl> options = new ArrayList<>();
             List<Creature> allCreatures = player.getBoard().getAllCreatures();

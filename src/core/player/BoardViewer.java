@@ -13,9 +13,9 @@ public class BoardViewer {
     private static final int ROW_SIZE = Constants.BATTLEFIELD_VIEW_SIZE.value;
     private static final int OFFSET = Constants.MAP_OFFSET.value;
 
-    public static void showBoardView(Board board) {
+    public static void showBoardView(Board board, int limit) {
         StringBuilder boardView = new StringBuilder();
-        boardView.append(getBoardViewHeader(board));
+        boardView.append(getBoardViewHeader(board, limit));
         for (Position position : Position.values()) {
             boardView.append(BattleMap.getCreaturesRowOnPosition(board.getCreaturesOnPosition(position), position));
         }
@@ -23,11 +23,12 @@ public class BoardViewer {
         MessageController.print(boardView.toString());
     }
 
-    private static StringBuilder getBoardViewHeader(Board board) {
+    private static StringBuilder getBoardViewHeader(Board board, int limit) {
         StringBuilder header = new StringBuilder();
         header.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
         StringBuilder row = new StringBuilder();
-        row.append("|").append(" ".repeat(OFFSET)).append("Ваше поле");
+        row.append("|").append(" ".repeat(OFFSET)).append("Ваше поле")
+                .append(" ".repeat(OFFSET)).append("[").append(board.getAllCreatures().size()).append(" / ").append(limit).append("]");
         row.append(" ".repeat(ROW_SIZE - row.length() - 1)).append("|\n");
         header.append(row);
 

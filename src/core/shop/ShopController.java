@@ -81,9 +81,13 @@ public class ShopController<T extends HasShopView> {
         if (player.hasMoney(cost)) {
             if (!shopItem.getItem().getName().equals("Продано")) {
                 player.reduceMoney(cost);
-                buyItem(shopItem);
-                MessageController.print(player.getName() + " купил " + shopItem.getItem().getName());
-                return true;
+                boolean isOperationSuccess = buyItem(shopItem);
+                if (isOperationSuccess) {
+                    MessageController.print(player.getName() + " купил " + shopItem.getItem().getName());
+                    return true;
+                } else {
+                    return false;
+                }
             }
         } else {
             MessageController.print("Недостаточно золота для покупки " + shopItem.getItem().getName() + "\n");
@@ -91,17 +95,23 @@ public class ShopController<T extends HasShopView> {
         return false;
     }
 
-    private void buyItem(ShopItem<T> shopItem) {
+    private boolean buyItem(ShopItem<T> shopItem) {
         if (shopItem.getItem() instanceof Creature) {
-            buyCreature((ShopItem<Creature>) shopItem);
+            return buyCreature((ShopItem<Creature>) shopItem);
         }
+        return false;
     }
 
-    private void buyCreature(ShopItem<Creature> shopItem) {
+    private boolean buyCreature(ShopItem<Creature> shopItem) {
+        if (player.getBoard().getAllCreatures().size() >= player.getCreatureShopLevel()) {
+            MessageController.print("Ваше поле переполнено!\n");
+            return false;
+        }
         player.getBoard().addCreature(shopItem.getItem(), Position.FIRST_LINE);
         CreaturePool.removeCreature(shopItem.getItem());
         int index = shop.currentLine.items.indexOf(shopItem);
         shop.changeItemToDummy(index);
+        return true;
     }
 
     public void sellItem(T item) {
