@@ -1,4 +1,4 @@
-package core.battle;
+package core.controllers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import core.action.ActionController;
 import core.action.ResolveTime;
 import core.battlefield.Battlefield;
 import core.battlefield.BattlefieldCreature;
 import core.battlefield.ObjectStatus;
-import core.utils.MessageController;
+import core.controllers.utils.MessageController;
 
 public class TurnController {
     private int turnCounter;
@@ -57,7 +56,17 @@ public class TurnController {
             this.turnOrderCounter = 0;
             this.turnCounter += 1;
         }
-        String message = !this.turnOrder.isEmpty() ? makeTurn(this.turnOrder.get(this.turnOrderCounter)) : null;
+        String message = null;
+        if (!this.turnOrder.isEmpty()) {
+            BattlefieldCreature nextCreature = this.turnOrder.get(this.turnOrderCounter);
+            if (nextCreature.hasStatus(ObjectStatus.ALIVE) && !nextCreature.hasStatus(ObjectStatus.DEAD)) {
+                message = makeTurn(nextCreature);
+                if (!nextCreature.hasStatus(ObjectStatus.ALIVE) || nextCreature.hasStatus(ObjectStatus.DEAD)) {
+                    message += nextCreature.getCreature().getName() + " умирает!\n";
+                }
+            }
+        }
+
         this.turnOrderCounter += 1;
         return message;
     }

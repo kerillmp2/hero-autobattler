@@ -9,9 +9,11 @@ import java.util.stream.Collectors;
 import core.battle.HasBattleView;
 import core.creature.Creature;
 import core.creature.CreatureTag;
+import core.creature.Stat;
+import core.creature.StatChangeSource;
 import core.creature.WithStats;
 import core.action.ActionFactory;
-import core.player.CreatureViewer;
+import core.creature.CreatureViewer;
 
 public class BattlefieldCreature extends BattlefieldObject implements WithStats, HasBattleView {
     private Creature creature;
@@ -28,6 +30,9 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
     public BattlefieldCreature(Creature creature, Position position, String battleName, Set<ObjectStatus> statusSet) {
         super(statusSet, position);
         addStatus(ObjectStatus.CREATURE);
+        if (creature.getTagValue(CreatureTag.EATER) > 0) {
+            creature.applyBuff(Stat.HP, StatChangeSource.PERMANENT, creature.getTagValue(CreatureTag.EATER));
+        }
         this.creature = creature;
         this.currentHp = creature.getHp();
         this.currentAttack = creature.getAttack();
@@ -37,8 +42,8 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         this.currentSpeed = creature.getSpeed();
         this.battleName = battleName;
         this.battlefield = null;
-        for (Map.Entry<CreatureTag, Integer> creatureTag : creature.getTagValues().entrySet()) {
-            this.addTagValue(BattlefieldObjectTag.byName(creatureTag.getKey().getName()), creatureTag.getValue());
+        for (CreatureTag creatureTag : creature.getTags()) {
+            this.addTagValue(BattlefieldObjectTag.byName(creatureTag.getName()), creature.getTagValue(creatureTag));
         }
         if (hasTag(BattlefieldObjectTag.HAVE_BASIC_ATTACK)) {
             addAction(ActionFactory.generateAttackAction(this));
@@ -108,7 +113,7 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
     }
 
     public String getBattleName() {
-        return battleName + "[" + currentHp + "]";
+        return battleName + " [HP: " + currentHp + "]";
     }
 
     @Override
@@ -152,6 +157,6 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     @Override
     public List<String> getBattleView() {
-        return CreatureViewer.getCreatureView(creature.getName(), getCurrentAttack(), getCurrentHp(), creature.getTraitContainer().getTags());
+        return CreatureViewer.getCreatureView(creature.getName(), getCurrentAttack(), getCurrentHp(), creature.getTraitContainer().getTags(), creature);
     }
 }

@@ -5,7 +5,8 @@ import core.utils.Tag;
 public enum CreatureTag implements Tag {
     UNDEFINED("UNDEFINED", 0),
     HAVE_BASIC_ATTACK("HAVE_BASIC_ATTACK", 1),
-    POISONOUS("POISONOUS", 2);
+    POISONOUS("POISONOUS", 2),
+    EATER("EATER", 3);
 
     private String name;
     private int id;

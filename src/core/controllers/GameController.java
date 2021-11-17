@@ -1,4 +1,4 @@
-package core;
+package core.controllers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,13 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import core.battle.BattleController;
 import core.battle.BattleStatus;
+import core.controllers.utils.MessageController;
 import core.creature.CreaturePool;
 import core.player.Player;
-import core.player.PlayerController;
 import core.player.PlayerState;
-import core.utils.MessageController;
 import core.utils.Pair;
 
 public class GameController {
@@ -79,6 +77,7 @@ public class GameController {
         }
 
         MessageController.print("Ход " + currentTurn + " окончен!\n");
+        currentTurn++;
     }
 
     private BattleStatus processBattleForPlayers(Player firstPlayer, Player secondPlayer) {

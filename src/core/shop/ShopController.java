@@ -7,7 +7,7 @@ import core.battlefield.Position;
 import core.creature.Creature;
 import core.creature.CreaturePool;
 import core.player.Player;
-import core.utils.MessageController;
+import core.controllers.utils.MessageController;
 import core.utils.Pair;
 import core.utils.Selector;
 

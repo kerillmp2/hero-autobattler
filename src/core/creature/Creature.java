@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import core.battle.HasBattleView;
-import core.player.CreatureViewer;
 import core.shop.HasShopView;
 import core.traits.Trait;
-import core.traits.TraitContainer;
-import core.utils.Constants;
+import core.controllers.TraitContainer;
 import core.utils.TagContainer;
 
 public class Creature extends TagContainer<CreatureTag> implements HasShopView, HasBattleView {
@@ -51,6 +47,13 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     public static Creature withStats(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int cost) {
         return new Creature(name, hp, attack, physicalArmor, magicArmor, spellPower, speed, cost, CreatureTag.HAVE_BASIC_ATTACK);
+    }
+
+    @Override
+    public int getTagValue(CreatureTag tag) {
+        int defaultValue = super.getTagValue(tag);
+        int change = statsContainer.getTagValue(tag);
+        return Math.max(defaultValue + change, 0);
     }
 
     public String getName() {
@@ -101,20 +104,12 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         statsContainer.addDebuff(stat, source, amount);
     }
 
-    public void clearBuffsFromSource(Stat stat, StatChangeSource source) {
-        statsContainer.clearBuffsFromSource(stat, source);
+    public void applyCreatureTagChange(CreatureTag creatureTag, StatChangeSource source, int amount) {
+        statsContainer.addTagChange(creatureTag, source, amount);
     }
 
-    public void clearBuffsFromSource(StatChangeSource source) {
-        statsContainer.clearBuffsFromSource(source);
-    }
-
-    public void clearDebuffsFromSource(Stat stat, StatChangeSource source) {
-        statsContainer.clearDebuffsFromSource(stat, source);
-    }
-
-    public void clearDebuffsFromSource(StatChangeSource source) {
-        statsContainer.clearDebuffsFromSource(source);
+    public void clearAllChangesFromSource(StatChangeSource source) {
+        statsContainer.clearAllChangesFromSource(source);
     }
 
     public TraitContainer getTraitContainer() {
@@ -157,6 +152,6 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     @Override
     public List<String> getBattleView() {
-        return CreatureViewer.getCreatureView(name, getAttack(), getHp(), traitContainer.getTags());
+        return CreatureViewer.getCreatureView(name, getAttack(), getHp(), traitContainer.getTags(), this);
     }
 }

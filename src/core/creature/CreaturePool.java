@@ -27,27 +27,37 @@ public class CreaturePool {
     }
 
     public static void init() {
-        for (int i = 0; i < 10; i++) {
+        final int firstLevelAmount = 10;
+
+        Creature dummy = new Creature ("DUMMY", 100, 0, 1, 1, 1, 20, 1);
+        for (int i = 0; i < firstLevelAmount; i++) {
+            CreaturePool.addCreature(dummy);
+        }
+
+        //Дункан [Королевский страж, Воин]
+        for (int i = 0; i < firstLevelAmount; i++) {
             CreaturePool.addCreature(
-                    Creature.withStats("Кекес", 10, 4, 2, 1, 1, 10, 1).wrapTrait(Trait.KING_GUARD)
+                    Creature.withStats("Дункан", 10, 4, 2, 2, 1, 10, 1).wrapTrait(Trait.KING_GUARD).wrapTrait(Trait.WARRIOR)
             );
         }
-        for (int i = 0; i < 10; i++) {
-            CreaturePool.addCreature(
-                    Creature.withStats("Дункан", 5, 3, 2, 2, 1, 10, 1).wrapTrait(Trait.KING_GUARD).wrapTrait(Trait.WARRIOR)
-            );
+
+        //Сальвира [Ядовитый, Ассасин]
+        Creature salvira = new Creature ("Сальвира", 7, 2, 1, 1, 1, 6, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.ASSASSIN).wrapTrait(Trait.POISONOUS);
+        salvira.addTagValue(CreatureTag.POISONOUS, 1);
+        for (int i = 0; i < firstLevelAmount; i++) {
+            CreaturePool.addCreature(salvira);
         }
-        for (int i = 0; i < 2; i++) {
-            CreaturePool.addCreature(
-                    Creature.withStats("Щит", 7, 2, 3, 1, 1, 12, 2).wrapTrait(Trait.KING_GUARD)
-            );
+
+        //Игнар [Демон, Обжора]
+        Creature ignar = new Creature ("Игнар", 12, 1, 2, 2, 1, 15, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.DEMON).wrapTrait(Trait.EATER);
+        for (int i = 0; i < firstLevelAmount; i++) {
+            CreaturePool.addCreature(ignar);
         }
-        Creature rogue = new Creature ("Сальвира", 4, 1, 1, 2, 1, 5, 2, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.ASSASSIN);
-        rogue.addTagValue(CreatureTag.POISONOUS, 1);
-        for (int i = 0; i < 2; i++) {
-            CreaturePool.addCreature(
-                    rogue
-            );
+
+        //Игнар [Демон, Обжора]
+        Creature bolwar = new Creature ("Болвар", 5, 1, 2, 2, 1, 15, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.DEMON).wrapTrait(Trait.EATER);
+        for (int i = 0; i < firstLevelAmount; i++) {
+            CreaturePool.addCreature(bolwar);
         }
     }
 }

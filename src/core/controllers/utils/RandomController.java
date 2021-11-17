@@ -1,4 +1,4 @@
-package core.utils;
+package core.controllers.utils;
 
 import java.util.concurrent.ThreadLocalRandom;
 

@@ -1,4 +1,6 @@
-package core.utils;
+package core.controllers.utils;
+
+import core.utils.Constants;
 
 public class MessageController {
     public static void print(String message) {

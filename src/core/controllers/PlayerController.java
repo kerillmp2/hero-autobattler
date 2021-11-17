@@ -1,15 +1,19 @@
-package core.player;
+package core.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import core.controllers.utils.MessageController;
 import core.creature.Creature;
+import core.player.BoardViewer;
+import core.player.Player;
+import core.player.PlayerState;
+import core.player.TurnOption;
 import core.shop.CreatureShop;
 import core.shop.ShopController;
 import core.utils.Constants;
 import core.utils.HasNameImpl;
-import core.utils.MessageController;
 import core.utils.Option;
 import core.utils.Selector;
 

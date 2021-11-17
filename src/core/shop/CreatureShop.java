@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import core.creature.Creature;
 import core.creature.CreaturePool;
 import core.player.Player;
-import core.utils.RandomController;
+import core.controllers.utils.RandomController;
 
 public class CreatureShop extends Shop<Creature> {
     private CreatureShop(List<ShopItem<Creature>> itemPool, int shopLineLength, int shopLevel) {

@@ -9,10 +9,11 @@ import java.util.stream.Collectors;
 
 import core.battlefield.Position;
 import core.creature.Creature;
+import core.creature.CreatureTag;
 import core.creature.Stat;
 import core.creature.StatChangeSource;
 import core.traits.Trait;
-import core.traits.TraitContainer;
+import core.controllers.TraitContainer;
 
 public class Board {
 
@@ -90,16 +91,45 @@ public class Board {
     public void updateTraitBuffs() {
         List<Creature> allCreatures = getAllCreatures();
 
-        //KING_GUARD: <+1 Attack, +2 Attack, +4 Attack> to all Creatures.
+        //KING_GUARD: <+2 Attack, +3 Attack, +5 Attack> to all Creatures.
         int kingGuardNum = traitsController.getTraitValue(Trait.KING_GUARD);
+        allCreatures.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.KING_GUARD_TRAIT));
         if (kingGuardNum == Trait.KING_GUARD.getLevels().get(0)) {
-            allCreatures.forEach(human -> human.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 1));
+            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 2));
         }
         if (kingGuardNum == Trait.KING_GUARD.getLevels().get(1)) {
-            allCreatures.forEach(human -> human.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 2));
+            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 3));
         }
         if (kingGuardNum >= Trait.KING_GUARD.getLevels().get(2)) {
-            allCreatures.forEach(human -> human.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 4));
+            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 5));
+        }
+
+        //POISONOUS: Ядовитые получают [+1 / +2 / +3] яда при атаке
+        int poisonousNum = traitsController.getTraitValue(Trait.POISONOUS);
+        List<Creature> poisonousCreatures = getCreaturesByTrait(Trait.POISONOUS);
+        poisonousCreatures.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.POISONOUS_TRAIT));
+        if (poisonousNum == Trait.POISONOUS.getLevels().get(0)) {
+            poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 1));
+        }
+        if (poisonousNum == Trait.POISONOUS.getLevels().get(1)) {
+            poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 2));
+        }
+        if (poisonousNum == Trait.POISONOUS.getLevels().get(2)) {
+            poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 3));
+        }
+
+        //EATER: Обжоры навсегда получают [+1 / +2 / +3] здоровья перед боем
+        int eatersNum = traitsController.getTraitValue(Trait.EATER);
+        List<Creature> eaters = getCreaturesByTrait(Trait.EATER);
+        eaters.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.EATERS_TRAIT));
+        if (eatersNum == Trait.EATER.getLevels().get(0)) {
+            eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.EATER, StatChangeSource.EATERS_TRAIT, 1));
+        }
+        if (eatersNum == Trait.EATER.getLevels().get(1)) {
+            eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.EATER, StatChangeSource.EATERS_TRAIT, 2));
+        }
+        if (eatersNum == Trait.EATER.getLevels().get(2)) {
+            eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.EATER, StatChangeSource.EATERS_TRAIT, 3));
         }
     }
 

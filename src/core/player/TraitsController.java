@@ -1,7 +1,7 @@
 package core.player;
 
 import core.traits.Trait;
-import core.traits.TraitContainer;
+import core.controllers.TraitContainer;
 
 public class TraitsController {
     private final TraitContainer traitContainer;

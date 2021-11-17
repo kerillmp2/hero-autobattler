@@ -1,17 +1,17 @@
-package core.player;
+package core.creature;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import core.traits.Trait;
 import core.utils.Constants;
+import core.utils.TagContainer;
 
 public class CreatureViewer {
 
-    public static List<String> getCreatureView(String name, int attack, int hp, Collection<Trait> traits) {
+    public static List<String> getCreatureView(String name, int attack, int hp, Collection<Trait> traits, TagContainer<CreatureTag> creatureTags) {
         int rowSize = Constants.BATTLE_VIEW_LENGTH.value;
         int height = Constants.BATTLE_VIEW_HEIGHT.value;
         int offset = 1;
@@ -69,6 +69,15 @@ public class CreatureViewer {
         }
 
         view.append("+").append("-".repeat(rowSize)).append("+\n");
+
+        if (creatureTags.getTagValue(CreatureTag.POISONOUS) > 0) {
+            StringBuilder poisonRow = new StringBuilder();
+            poisonRow.append("|").append(" ".repeat(offset)).append("Яд: ").append(creatureTags.getTagValue(CreatureTag.POISONOUS));
+            poisonRow.append(" ".repeat(rowSize - poisonRow.length() + 1)).append("|\n");
+            view.append(poisonRow);
+            curHeight++;
+        }
+
         view.append(("|" + " ".repeat(rowSize) + "|\n").repeat(height - 5 - curHeight));
 
         view.append("|").append(curAttack).append(" ".repeat(rowSize - curHp.length() - curAttack.length())).append(curHp).append("|\n");

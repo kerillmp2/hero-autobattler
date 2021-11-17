@@ -1,7 +1,9 @@
-package core.battle;
+package core.controllers;
 
+import core.battle.BattleMap;
+import core.battle.BattleStatus;
+import core.controllers.utils.MessageController;
 import core.player.Player;
-import core.utils.MessageController;
 import core.battlefield.Battlefield;
 
 public class BattleController {

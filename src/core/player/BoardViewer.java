@@ -6,7 +6,7 @@ import core.battle.BattleMap;
 import core.battlefield.Position;
 import core.traits.Trait;
 import core.utils.Constants;
-import core.utils.MessageController;
+import core.controllers.utils.MessageController;
 
 public class BoardViewer {
 

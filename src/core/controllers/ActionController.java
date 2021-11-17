@@ -1,8 +1,12 @@
-package core.action;
+package core.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import core.action.Action;
+import core.action.ActionFactory;
+import core.action.ActionTag;
+import core.action.ResolveTime;
 import core.battlefield.BattlefieldCreature;
 import core.battlefield.BattlefieldObjectTag;
 import core.battlefield.ObjectStatus;
@@ -109,7 +113,7 @@ public class ActionController {
                         .wrapTag(ActionTag.APPLY_POISON_DAMAGE, poisonDamage)
                         .overrideTagMax(ActionTag.TURNS_LEFT, turnsLeft);
             }
-            message += performer.getBattleName() + " отравляет " + target.getBattleName() + "\n";
+            message += performer.getBattleName() + " отравляет " + target.getBattleName() + " на " + poisonDamage + "\n";
             message += target.getBattleName() + " имеет "
                     + target.getActionByTags(ActionTag.APPLY_POISON_DAMAGE).getActionInfo().getTagValue(ActionTag.APPLY_POISON_DAMAGE)
                     + " отравления на "
