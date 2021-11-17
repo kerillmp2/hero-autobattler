@@ -11,7 +11,7 @@ import core.creature.Creature;
 import core.creature.CreatureTag;
 import core.creature.WithStats;
 import core.action.ActionFactory;
-import core.utils.Constants;
+import core.player.CreatureViewer;
 
 public class BattlefieldCreature extends BattlefieldObject implements WithStats, HasBattleView {
     private Creature creature;
@@ -152,59 +152,6 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     @Override
     public List<String> getBattleView() {
-        int rowSize = Constants.BATTLE_VIEW_LENGTH.value;
-        int height = Constants.BATTLE_VIEW_HEIGHT.value;
-        int offset = 1;
-        int curHeight = 0;
-        int curLength = 0;
-        StringBuilder view = new StringBuilder();
-        String curHp = getCurrentHp() + " ".repeat(offset);
-        String curAttack = " ".repeat(offset) + getCurrentAttack();
-        String[] nameParts = creature.getName().split(" ");
-
-        view.append("-").append("-".repeat(rowSize)).append("-\n");
-        curHeight += 1;
-
-        for (String namePart : nameParts) {
-            if (curHeight >= height - 3) {
-                break;
-            }
-            if (namePart.length() > rowSize) {
-                continue;
-            }
-            if (curLength > 0) {
-                if (namePart.length() + curLength < rowSize) {
-                    view.append(" ").append(namePart);
-                    curLength += namePart.length() + 1;
-                } else {
-                    view.append(" ".repeat(rowSize - curLength)).append("|\n");
-                    view.append("|").append(" ".repeat(offset)).append(namePart);
-                    curLength = namePart.length() + offset;
-                    curHeight += 1;
-                    continue;
-                }
-            } else {
-                view.append("|");
-                if (namePart.length() + curLength <= rowSize) {
-                    view.append(" ".repeat(offset)).append(namePart);
-                    curLength += namePart.length() + offset;
-                } else {
-                    view.append(" ".repeat(rowSize - curLength)).append("|\n");
-                    view.append("|").append(" ".repeat(offset)).append(namePart);
-                    curLength = namePart.length() + offset;
-                    curHeight += 1;
-                    continue;
-                }
-            }
-        }
-        view.append(" ".repeat(rowSize - curLength)).append("|\n");
-
-        view.append(("|" + " ".repeat(rowSize) + "|\n").repeat(height - 3 - curHeight));
-
-
-        view.append("|").append(curAttack).append(" ".repeat(rowSize - curHp.length() - curAttack.length())).append(curHp).append("|\n");
-        view.append("-").append("-".repeat(rowSize)).append("-\n");
-
-        return Arrays.stream(view.toString().split("\n")).collect(Collectors.toList());
+        return CreatureViewer.getCreatureView(creature.getName(), getCurrentAttack(), getCurrentHp(), creature.getTraitContainer().getTags());
     }
 }

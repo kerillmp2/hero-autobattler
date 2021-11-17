@@ -14,12 +14,12 @@ public class BattleMap {
     private static final int ROW_SIZE = Constants.BATTLEFIELD_VIEW_SIZE.value;
     private static final int CREATURE_VIEW_LENGTH = Constants.BATTLE_VIEW_LENGTH.value + 2;
     private static final int CREATURE_VIEW_HEIGHT = Constants.BATTLE_VIEW_HEIGHT.value;
-    private static final int CREATURE_OFFSET = 4;
+    private static final int CREATURE_OFFSET = Constants.MAP_OFFSET.value;
 
     public static String getBattleFieldView(Battlefield battlefield) {
         StringBuilder view = new StringBuilder();
 
-        view.append("-".repeat(ROW_SIZE)).append("\n");
+        view.append("+").append("-".repeat(ROW_SIZE - 2)).append("+\n");
 
         List<BattlefieldCreature> creatures;
 
@@ -32,9 +32,7 @@ public class BattleMap {
         creatures = battlefield.getSecondSide().getCreaturesOnPosition(Position.FIRST_LINE).stream().filter(c -> c.hasStatus(ObjectStatus.ALIVE)).collect(Collectors.toList());
         view.append(getCreaturesRowOnPosition(creatures, Position.FIRST_LINE));
 
-        view.append("=".repeat(ROW_SIZE)).append("\n");
-        view.append("|").append(" ".repeat(ROW_SIZE - 2)).append("|\n");
-        view.append("=".repeat(ROW_SIZE)).append("\n");
+        view.append("|").append("=".repeat(ROW_SIZE - 2)).append("|\n");
 
         creatures = battlefield.getFirstSide().getCreaturesOnPosition(Position.FIRST_LINE).stream().filter(c -> c.hasStatus(ObjectStatus.ALIVE)).collect(Collectors.toList());
         view.append(getCreaturesRowOnPosition(creatures, Position.FIRST_LINE));
@@ -45,7 +43,7 @@ public class BattleMap {
         creatures = battlefield.getFirstSide().getCreaturesOnPosition(Position.THIRD_LINE).stream().filter(c -> c.hasStatus(ObjectStatus.ALIVE)).collect(Collectors.toList());
         view.append(getCreaturesRowOnPosition(creatures, Position.THIRD_LINE));
 
-        view.append("-".repeat(ROW_SIZE)).append("\n");
+        view.append("+").append("-".repeat(ROW_SIZE - 2)).append("+\n");
         return view.toString();
     }
 

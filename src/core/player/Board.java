@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import core.battlefield.Position;
@@ -26,20 +27,24 @@ public class Board {
     }
 
     public void addCreature(Creature creature, Position position) {
-        this.creatures.get(position).add(creature);
-        TraitContainer creatureTraits = creature.getTraitContainer();
-        for(Trait trait : creatureTraits.getTags()) {
-            traitsController.addTrait(trait);
+        if (isCreatureUnique(creature)) {
+            TraitContainer creatureTraits = creature.getTraitContainer();
+            for(Trait trait : creatureTraits.getTags()) {
+                traitsController.addTrait(trait);
+            }
         }
+        this.creatures.get(position).add(creature);
         updateTraitBuffs();
     }
 
     public void removeCreature(Creature creature, Position position) {
-        this.creatures.get(position).remove(creature);
-        TraitContainer creatureTraits = creature.getTraitContainer();
-        for(Trait trait : creatureTraits.getTags()) {
-            traitsController.removeTrait(trait);
+        if (isCreatureUnique(creature)) {
+            TraitContainer creatureTraits = creature.getTraitContainer();
+            for(Trait trait : creatureTraits.getTags()) {
+                traitsController.removeTrait(trait);
+            }
         }
+        this.creatures.get(position).remove(creature);
         updateTraitBuffs();
     }
 
@@ -66,6 +71,10 @@ public class Board {
         return allCreatures;
     }
 
+    public boolean isCreatureUnique(Creature creature) {
+        return getAllCreatures().stream().noneMatch(c -> c.getName().equals(creature.getName()));
+    }
+
     public Map<Position, List<Creature>> getCreatures() {
         return creatures;
     }
@@ -79,18 +88,29 @@ public class Board {
     }
 
     public void updateTraitBuffs() {
-        //Humans: (2, 3, 4). <+2 Attack, +3 Attack, +5 Attack> to all Humans.
-        int humansNum = traitsController.getTraitValue(Trait.HUMAN);
-        List<Creature> humans = getCreaturesByTrait(Trait.HUMAN);
-        humans.forEach(human -> human.clearBuffsFromSource(StatChangeSource.HUMAN_TRAIT));
-        if (humansNum == 2) {
-            humans.forEach(human -> human.applyBuff(Stat.ATTACK, StatChangeSource.HUMAN_TRAIT, 2));
+        List<Creature> allCreatures = getAllCreatures();
+
+        //KING_GUARD: <+1 Attack, +2 Attack, +4 Attack> to all Creatures.
+        int kingGuardNum = traitsController.getTraitValue(Trait.KING_GUARD);
+        if (kingGuardNum == Trait.KING_GUARD.getLevels().get(0)) {
+            allCreatures.forEach(human -> human.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 1));
         }
-        if (humansNum == 3) {
-            humans.forEach(human -> human.applyBuff(Stat.ATTACK, StatChangeSource.HUMAN_TRAIT, 3));
+        if (kingGuardNum == Trait.KING_GUARD.getLevels().get(1)) {
+            allCreatures.forEach(human -> human.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 2));
         }
-        if (humansNum >= 4) {
-            humans.forEach(human -> human.applyBuff(Stat.ATTACK, StatChangeSource.HUMAN_TRAIT, 5));
+        if (kingGuardNum >= Trait.KING_GUARD.getLevels().get(2)) {
+            allCreatures.forEach(human -> human.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 4));
         }
+    }
+
+    public Map<Trait, Integer> getTraits() {
+        Map<Trait, Integer> traits = new TreeMap<>();
+        for(Trait trait : Trait.values()) {
+            int traitNum = traitsController.getTraitValue(trait);
+            if (traitNum > 0) {
+                traits.put(trait, traitNum);
+            }
+        }
+        return traits;
     }
 }

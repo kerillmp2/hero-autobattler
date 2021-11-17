@@ -35,7 +35,6 @@ public class PlayerController {
             List<Option<TurnOption>> turnOptions = player.getTurnOptions();
             MessageController.print("-".repeat(Constants.SHOP_VIEW_SIZE.value));
             currentOptionNum = Selector.select(turnOptions);
-            MessageController.print("-".repeat(Constants.SHOP_VIEW_SIZE.value));
             currentOption = TurnOption.byName(turnOptions.get(currentOptionNum).getTag().getName());
             resolveTurnOption(currentOption);
         }

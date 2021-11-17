@@ -19,7 +19,7 @@ public class TraitsController {
     }
 
     public void removeTrait(Trait trait) {
-        traitContainer.setTagValue(trait, Math.max(traitContainer.getTagValue(trait), 0));
+        traitContainer.setTagValue(trait, Math.max(traitContainer.getTagValue(trait) - 1, 0));
     }
 
     public int getTraitValue(Trait trait) {

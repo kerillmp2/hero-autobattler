@@ -1,20 +1,28 @@
 package core.traits;
 
+import java.util.Arrays;
+import java.util.List;
+
 import core.utils.Tag;
 
 public enum Trait implements Tag {
-    UNDEFINED("UNDEFINED", 0),
-    HUMAN("Человек", 1),
-    WARRIOR("Воин", 12),
-    ASSASSIN("Ассасин", 13),
-    DEFENDER("Защитник", 14);
+    UNDEFINED("UNDEFINED", 0, "UNDEFINED"),
+    KING_GUARD("Королевский страж", 1, "Все существа получают [+1 / +2 / +3] атаки", 2, 4, 6),
+
+    WARRIOR("Воин", 12, ""),
+    ASSASSIN("Ассасин", 13, ""),
+    DEFENDER("Защитник", 14, "");
 
     private String name;
     private int id;
+    private String info;
+    private List<Integer> levels;
 
-    Trait(String name, int id) {
+    Trait(String name, int id, String info, Integer... levels) {
         this.name = name;
         this.id = id;
+        this.info = info;
+        this.levels = Arrays.asList(levels);
     }
 
     public static Trait byName(String name) {
@@ -33,6 +41,14 @@ public enum Trait implements Tag {
             }
         }
         return UNDEFINED;
+    }
+
+    public List<Integer> getLevels() {
+        return this.levels;
+    }
+
+    public String getInfo() {
+        return info;
     }
 
     @Override

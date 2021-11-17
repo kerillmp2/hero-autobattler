@@ -29,20 +29,20 @@ public class CreaturePool {
     public static void init() {
         for (int i = 0; i < 10; i++) {
             CreaturePool.addCreature(
-                    Creature.withStats("Воин из степей", 6, 4, 2, 1, 1, 10, 1).wrapTrait(Trait.HUMAN)
+                    Creature.withStats("Кекес", 10, 4, 2, 1, 1, 10, 1).wrapTrait(Trait.KING_GUARD)
             );
         }
         for (int i = 0; i < 10; i++) {
             CreaturePool.addCreature(
-                    Creature.withStats("Воин", 5, 3, 2, 2, 1, 10, 1).wrapTrait(Trait.HUMAN)
+                    Creature.withStats("Дункан", 5, 3, 2, 2, 1, 10, 1).wrapTrait(Trait.KING_GUARD).wrapTrait(Trait.WARRIOR)
             );
         }
         for (int i = 0; i < 2; i++) {
             CreaturePool.addCreature(
-                    Creature.withStats("Щитоносец", 7, 2, 3, 1, 1, 12, 2).wrapTrait(Trait.HUMAN)
+                    Creature.withStats("Щит", 7, 2, 3, 1, 1, 12, 2).wrapTrait(Trait.KING_GUARD)
             );
         }
-        Creature rogue = new Creature ("Разбойник", 4, 1, 1, 2, 1, 5, 2, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.HUMAN);
+        Creature rogue = new Creature ("Сальвира", 4, 1, 1, 2, 1, 5, 2, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.ASSASSIN);
         rogue.addTagValue(CreatureTag.POISONOUS, 1);
         for (int i = 0; i < 2; i++) {
             CreaturePool.addCreature(
