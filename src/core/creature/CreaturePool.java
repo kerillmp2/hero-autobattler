@@ -29,35 +29,35 @@ public class CreaturePool {
     public static void init() {
         final int firstLevelAmount = 10;
 
-        Creature dummy = new Creature ("DUMMY", 100, 0, 1, 1, 1, 20, 1);
         for (int i = 0; i < firstLevelAmount; i++) {
+            Creature dummy = new Creature ("DUMMY", 100, 0, 1, 1, 1, 20, 1);
             CreaturePool.addCreature(dummy);
         }
 
         //Дункан [Королевский страж, Воин]
         for (int i = 0; i < firstLevelAmount; i++) {
             CreaturePool.addCreature(
-                    Creature.withStats("Дункан", 10, 4, 2, 2, 1, 10, 1).wrapTrait(Trait.KING_GUARD).wrapTrait(Trait.WARRIOR)
+                    Creature.withStats("Дункан", 10, 4, 1, 0, 1, 10, 1).wrapTrait(Trait.KING_GUARD).wrapTrait(Trait.WARRIOR)
             );
         }
 
         //Сальвира [Ядовитый, Ассасин]
-        Creature salvira = new Creature ("Сальвира", 7, 2, 1, 1, 1, 6, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.ASSASSIN).wrapTrait(Trait.POISONOUS);
-        salvira.addTagValue(CreatureTag.POISONOUS, 1);
         for (int i = 0; i < firstLevelAmount; i++) {
+            Creature salvira = new Creature ("Сальвира", 7, 2, 0, 0, 1, 6, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.ASSASSIN).wrapTrait(Trait.POISONOUS);
+            salvira.addTagValue(CreatureTag.POISONOUS, 1);
             CreaturePool.addCreature(salvira);
         }
 
         //Игнар [Демон, Обжора]
-        Creature ignar = new Creature ("Игнар", 12, 1, 2, 2, 1, 15, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.DEMON).wrapTrait(Trait.EATER);
         for (int i = 0; i < firstLevelAmount; i++) {
+            Creature ignar = new Creature ("Игнар", 12, 1, 1, 1, 1, 15, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.DEMON).wrapTrait(Trait.EATER);
             CreaturePool.addCreature(ignar);
         }
 
-        //Игнар [Демон, Обжора]
-        Creature bolwar = new Creature ("Болвар", 5, 1, 2, 2, 1, 15, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.DEMON).wrapTrait(Trait.EATER);
+        //Баобот [Робот, Воин]
         for (int i = 0; i < firstLevelAmount; i++) {
-            CreaturePool.addCreature(bolwar);
+            Creature baobot = new Creature ("Баобот", 10, 3, 2, 0, 1, 12, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.ROBOT).wrapTrait(Trait.WARRIOR);
+            CreaturePool.addCreature(baobot);
         }
     }
 }

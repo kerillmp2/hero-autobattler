@@ -6,10 +6,10 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public abstract class TagContainer<T extends Tag> {
-    protected Map<T, Integer> tagValues = new TreeMap<>(Comparator.comparing(HasId::getId));
+    protected Map<T, Integer> tagValues;
 
     public TagContainer() {
-
+        tagValues = new TreeMap<>(Comparator.comparing(HasId::getId));
     }
 
     public TagContainer(Map<T, Integer> tagValues) {
@@ -17,6 +17,7 @@ public abstract class TagContainer<T extends Tag> {
     }
 
     public TagContainer(Iterable<T> tags) {
+        tagValues = new TreeMap<>(Comparator.comparing(HasId::getId));
         for (T tag : tags) {
             tagValues.put(tag, 0);
         }

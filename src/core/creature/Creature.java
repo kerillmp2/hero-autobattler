@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import core.battle.HasBattleView;
+import core.controllers.utils.MessageController;
 import core.shop.HasShopView;
 import core.traits.Trait;
 import core.controllers.TraitContainer;
@@ -14,24 +15,14 @@ import core.utils.TagContainer;
 public class Creature extends TagContainer<CreatureTag> implements HasShopView, HasBattleView {
     private String name;
     private int cost;
-    private TraitContainer traitContainer = new TraitContainer();
-    private StatsContainer statsContainer = new StatsContainer();
-
-    public Creature(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int cost, Map<CreatureTag, Integer> tagValues) {
-        super(tagValues);
-        this.name = name;
-        statsContainer.addTagValue(Stat.HP, hp);
-        statsContainer.addTagValue(Stat.ATTACK, attack);
-        statsContainer.addTagValue(Stat.PHYSICAL_ARMOR, physicalArmor);
-        statsContainer.addTagValue(Stat.MAGIC_ARMOR, magicArmor);
-        statsContainer.addTagValue(Stat.SPELL_POWER, spellPower);
-        statsContainer.addTagValue(Stat.SPEED, speed);
-        this.cost = cost;
-    }
+    private TraitContainer traitContainer;
+    private StatsContainer statsContainer;
 
     public Creature(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int cost, CreatureTag... tags) {
         super(Arrays.asList(tags));
         this.name = name;
+        traitContainer = new TraitContainer();
+        statsContainer = new StatsContainer();
         statsContainer.addTagValue(Stat.HP, hp);
         statsContainer.addTagValue(Stat.ATTACK, attack);
         statsContainer.addTagValue(Stat.PHYSICAL_ARMOR, physicalArmor);
@@ -110,6 +101,12 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     public void clearAllChangesFromSource(StatChangeSource source) {
         statsContainer.clearAllChangesFromSource(source);
+    }
+
+    public void clearAllChangesFromAllSources() {
+        for (StatChangeSource source : StatChangeSource.values()) {
+            clearAllChangesFromSource(source);
+        }
     }
 
     public TraitContainer getTraitContainer() {

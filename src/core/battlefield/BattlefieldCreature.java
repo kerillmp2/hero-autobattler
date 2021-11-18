@@ -2,11 +2,11 @@ package core.battlefield;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import core.battle.HasBattleView;
+import core.controllers.utils.MessageController;
 import core.creature.Creature;
 import core.creature.CreatureTag;
 import core.creature.Stat;
@@ -29,11 +29,8 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     public BattlefieldCreature(Creature creature, Position position, String battleName, Set<ObjectStatus> statusSet) {
         super(statusSet, position);
-        addStatus(ObjectStatus.CREATURE);
-        if (creature.getTagValue(CreatureTag.EATER) > 0) {
-            creature.applyBuff(Stat.HP, StatChangeSource.PERMANENT, creature.getTagValue(CreatureTag.EATER));
-        }
         this.creature = creature;
+        beforeBattleStart();
         this.currentHp = creature.getHp();
         this.currentAttack = creature.getAttack();
         this.currentPhysicalArmor = creature.getPhysicalArmor();
@@ -42,12 +39,6 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         this.currentSpeed = creature.getSpeed();
         this.battleName = battleName;
         this.battlefield = null;
-        for (CreatureTag creatureTag : creature.getTags()) {
-            this.addTagValue(BattlefieldObjectTag.byName(creatureTag.getName()), creature.getTagValue(creatureTag));
-        }
-        if (hasTag(BattlefieldObjectTag.HAVE_BASIC_ATTACK)) {
-            addAction(ActionFactory.generateAttackAction(this));
-        }
     }
 
     public BattlefieldCreature(Creature creature, Position position, ObjectStatus... statuses) {
@@ -56,6 +47,39 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     public BattlefieldCreature(Creature creature, Position position, Set<ObjectStatus> statusSet) {
         this(creature, position, creature.getName(), statusSet);
+    }
+
+    private void beforeBattleStart() {
+        addStatus(ObjectStatus.CREATURE);
+        for (CreatureTag creatureTag : creature.getTags()) {
+            this.addTagValue(BattlefieldObjectTag.byName(creatureTag.getName()), creature.getTagValue(creatureTag));
+        }
+        if (hasTag(BattlefieldObjectTag.HAVE_BASIC_ATTACK)) {
+            addAction(ActionFactory.generateAttackAction(this));
+        }
+        //EATER TRAIT
+        int additionalHP = creature.getTagValue(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE);
+        if (additionalHP > 0) {
+            creature.applyBuff(Stat.HP, StatChangeSource.PERMANENT, additionalHP);
+            MessageController.print(creature.getName() + " навсегда получает " + additionalHP + " HP");
+        }
+
+        //ROBOT TRAIT
+        if (creature.getTagValue(CreatureTag.ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE) > 0) {
+            int statsRemains = creature.getTagValue(CreatureTag.ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE);
+            while (statsRemains > 0) {
+                Stat stat = Stat.getRandomStatExclusive(Stat.SPEED, Stat.SPELL_POWER, Stat.MAGIC_ARMOR);
+                if (stat != Stat.UNDEFINED) {
+                    creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, 1);
+                    MessageController.print(String.format("%s получает %d %s до конца боя", creature.getName(), 1, stat.getName()));
+                }
+                statsRemains--;
+            }
+        }
+    }
+
+    public void onBattleEnd() {
+        creature.clearAllChangesFromSource(StatChangeSource.UNTIL_BATTLE_END);
     }
 
     @Override

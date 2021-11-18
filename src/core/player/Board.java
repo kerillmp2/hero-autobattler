@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import core.battlefield.Position;
+import core.controllers.utils.MessageController;
 import core.creature.Creature;
 import core.creature.CreatureTag;
 import core.creature.Stat;
@@ -123,13 +124,27 @@ public class Board {
         List<Creature> eaters = getCreaturesByTrait(Trait.EATER);
         eaters.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.EATERS_TRAIT));
         if (eatersNum == Trait.EATER.getLevels().get(0)) {
-            eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.EATER, StatChangeSource.EATERS_TRAIT, 1));
+            eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE, StatChangeSource.EATERS_TRAIT, 1));
         }
         if (eatersNum == Trait.EATER.getLevels().get(1)) {
-            eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.EATER, StatChangeSource.EATERS_TRAIT, 2));
+            eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE, StatChangeSource.EATERS_TRAIT, 2));
         }
         if (eatersNum == Trait.EATER.getLevels().get(2)) {
-            eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.EATER, StatChangeSource.EATERS_TRAIT, 3));
+            eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE, StatChangeSource.EATERS_TRAIT, 3));
+        }
+
+        //ROBOT: В начале боя роботы получают [+1 / +3 / +5] к случайным характеристикам
+        int robotsNum = traitsController.getTraitValue(Trait.ROBOT);
+        List<Creature> robots = getCreaturesByTrait(Trait.ROBOT);
+        robots.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.ROBOT_TRAIT));
+        if (robotsNum == Trait.ROBOT.getLevels().get(0)) {
+            robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 1));
+        }
+        if (robotsNum == Trait.ROBOT.getLevels().get(1)) {
+            robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 3));
+        }
+        if (robotsNum == Trait.ROBOT.getLevels().get(2)) {
+            robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 5));
         }
     }
 

@@ -7,9 +7,16 @@ import java.util.stream.Collectors;
 import core.utils.TagContainer;
 
 public class StatsContainer extends TagContainer<Stat> {
-    private List<StatChange> buffs = new ArrayList<>();
-    private List<StatChange> debuffs = new ArrayList<>();
-    private List<CreatureTagChange> tagChanges = new ArrayList<>();
+    private List<StatChange> buffs;
+    private List<StatChange> debuffs;
+    private List<CreatureTagChange> tagChanges;
+
+    public StatsContainer() {
+        super();
+        buffs = new ArrayList<>();
+        debuffs = new ArrayList<>();
+        tagChanges = new ArrayList<>();
+    }
 
     @Override
     public int getTagValue(Stat stat) {

@@ -2,6 +2,7 @@ package core.controllers;
 
 import core.battle.BattleMap;
 import core.battle.BattleStatus;
+import core.battlefield.BattlefieldCreature;
 import core.controllers.utils.MessageController;
 import core.player.Player;
 import core.battlefield.Battlefield;
@@ -22,7 +23,9 @@ public class BattleController {
     public static BattleStatus processBattleForPlayers(Player firstPlayer, Player secondPLayer) {
         Battlefield battlefield = Battlefield.fromTwoBoards(firstPlayer.getBoard(), secondPLayer.getBoard());
         BattleController battleController = BattleController.forBattlefield(battlefield);
-        return battleController.battle();
+        BattleStatus battleStatus = battleController.battle();
+        battleController.onBattleEnd();
+        return battleStatus;
     }
 
     public BattleStatus battle() {
@@ -43,6 +46,10 @@ public class BattleController {
             MessageController.print(message);
         }
         return BattleStatus.TURN_LIMIT_REACHED;
+    }
+
+    private void onBattleEnd() {
+        battlefield.getAllCreatures().forEach(BattlefieldCreature::onBattleEnd);
     }
 
     public Battlefield getBattlefield() {

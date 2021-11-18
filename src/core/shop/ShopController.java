@@ -123,6 +123,7 @@ public class ShopController<T extends HasShopView> {
     public void sellCreature(Creature creature) {
         Position position = player.getBoard().getCreaturePosition(creature);
         player.getBoard().removeCreature(creature, position);
+        creature.clearAllChangesFromAllSources();
         CreaturePool.addCreature(creature);
         player.addMoney(creature.getCost());
     }
