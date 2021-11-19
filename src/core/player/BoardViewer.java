@@ -1,5 +1,7 @@
 package core.player;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import core.battle.BattleMap;
@@ -46,21 +48,57 @@ public class BoardViewer {
 
     private static StringBuilder getTraitsView(Map<Trait, Integer> traits) {
         StringBuilder traitsView = new StringBuilder();
+        int maxLen = 20;
         for (Map.Entry<Trait, Integer> entry : traits.entrySet()) {
             Trait trait = entry.getKey();
+            int traitNum = entry.getValue();
             int levels = trait.getLevels().size();
             StringBuilder traitRow = new StringBuilder();
-            traitRow.append("|").append(" ".repeat(OFFSET)).append(trait.getName()).append(": ").append(entry.getValue());
-            traitRow.append(" ".repeat(OFFSET)).append("[");
+            traitRow.append("|").append(" ".repeat(OFFSET)).append(trait.getName()).append(": ").append(traitNum);
+            traitRow.append(" ".repeat(maxLen - traitRow.length())).append("[");
             for(int i = 0; i < levels; i++) {
+                int nextLvl = i < levels - 1 ? trait.getLevels().get(i + 1) : 100;
+                if (traitNum >= trait.getLevels().get(i) && traitNum <= nextLvl) {
+                    traitRow.append("(");
+                }
                 traitRow.append(trait.getLevels().get(i));
+                if (traitNum >= trait.getLevels().get(i) && traitNum <= nextLvl) {
+                    traitRow.append(")");
+                }
                 if (i < levels - 1) {
                     traitRow.append(" / ");
                 }
             }
-            traitRow.append("]");
-            traitRow.append(" ").append(trait.getInfo());
-            traitRow.append(" ".repeat(ROW_SIZE - traitRow.length() - 1)).append("|\n");
+            traitRow.append("] ");
+
+            //AUTO SPLIT TRAIT INFO
+            /*int lengthBeforeInfo = traitRow.length();
+            StringBuilder infoRow = new StringBuilder();
+            List<String> splittedInfo = Arrays.asList(trait.getInfo().split(" "));
+            for (int i = 0; i < splittedInfo.size(); i++) {
+                String nextWord = splittedInfo.get(i);
+                if (lengthBeforeInfo + infoRow.length() + nextWord.length() + OFFSET <= ROW_SIZE - 1) {
+                    infoRow.append(nextWord).append(" ");
+                } else {
+                    traitRow.append(infoRow);
+                    traitRow.append(" ".repeat(ROW_SIZE - infoRow.length() - lengthBeforeInfo - 1)).append("|\n");
+                    traitRow.append("|").append(" ".repeat(lengthBeforeInfo - 1));
+                    infoRow = new StringBuilder();
+                    infoRow.append(nextWord).append(" ");
+                }
+            }
+            traitRow.append(infoRow);
+            traitRow.append(" ".repeat(ROW_SIZE - infoRow.length() - lengthBeforeInfo - 1)).append("|\n");*/
+
+            int lengthBeforeInfo = traitRow.length();
+            List<String> splittedInfo = Arrays.asList(trait.getInfo().split("\n"));
+            for (int i = 0; i < splittedInfo.size(); i++) {
+                String nextRow = splittedInfo.get(i);
+                traitRow.append(nextRow).append(" ".repeat(ROW_SIZE - lengthBeforeInfo - nextRow.length() - 1)).append("|\n");
+                if (i != splittedInfo.size() - 1) {
+                    traitRow.append("|").append(" ".repeat(lengthBeforeInfo - 1));
+                }
+            }
             traitsView.append(traitRow);
         }
         return traitsView;

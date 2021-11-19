@@ -133,18 +133,32 @@ public class Board {
             eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE, StatChangeSource.EATERS_TRAIT, 3));
         }
 
-        //ROBOT: В начале боя роботы получают [+1 / +3 / +5] к случайным характеристикам
+        //ROBOT: На время боя роботы получают случайные усиления [1 / 3 / 7] раз из следующих:
+        //+3 здоровья, +1 атаки, +1 физической зашиты
         int robotsNum = traitsController.getTraitValue(Trait.ROBOT);
         List<Creature> robots = getCreaturesByTrait(Trait.ROBOT);
         robots.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.ROBOT_TRAIT));
+        int numberOfRobotBuffs = 0;
         if (robotsNum == Trait.ROBOT.getLevels().get(0)) {
-            robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 1));
+            numberOfRobotBuffs = 1;
         }
         if (robotsNum == Trait.ROBOT.getLevels().get(1)) {
-            robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 3));
+            numberOfRobotBuffs = 3;
         }
         if (robotsNum == Trait.ROBOT.getLevels().get(2)) {
-            robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 5));
+            numberOfRobotBuffs = 7;
+        }
+        for (int i = 0; i < numberOfRobotBuffs; i++) {
+            Stat stat = Stat.getRandomStatFrom(Stat.HP, Stat.ATTACK, Stat.PHYSICAL_ARMOR);
+            if (stat == Stat.HP) {
+                robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_HP_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 3));
+            }
+            if (stat == Stat.ATTACK) {
+                robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_ATTACK_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 1));
+            }
+            if (stat == Stat.PHYSICAL_ARMOR) {
+                robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 1));
+            }
         }
     }
 

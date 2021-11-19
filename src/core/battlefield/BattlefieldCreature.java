@@ -65,16 +65,23 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         }
 
         //ROBOT TRAIT
-        if (creature.getTagValue(CreatureTag.ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE) > 0) {
-            int statsRemains = creature.getTagValue(CreatureTag.ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE);
-            while (statsRemains > 0) {
-                Stat stat = Stat.getRandomStatExclusive(Stat.SPEED, Stat.SPELL_POWER, Stat.MAGIC_ARMOR);
-                if (stat != Stat.UNDEFINED) {
-                    creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, 1);
-                    MessageController.print(String.format("%s получает %d %s до конца боя", creature.getName(), 1, stat.getName()));
-                }
-                statsRemains--;
-            }
+        if (creature.getTagValue(CreatureTag.ADD_TEMP_HP_BEFORE_BATTLE) > 0) {
+            Stat stat = Stat.HP;
+            int amount = creature.getTagValue(CreatureTag.ADD_TEMP_HP_BEFORE_BATTLE);
+            creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
+            MessageController.print(String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()));
+        }
+        if (creature.getTagValue(CreatureTag.ADD_TEMP_ATTACK_BEFORE_BATTLE) > 0) {
+            Stat stat = Stat.ATTACK;
+            int amount = creature.getTagValue(CreatureTag.ADD_TEMP_ATTACK_BEFORE_BATTLE);
+            creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
+            MessageController.print(String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()));
+        }
+        if (creature.getTagValue(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE) > 0) {
+            Stat stat = Stat.PHYSICAL_ARMOR;
+            int amount = creature.getTagValue(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE);
+            creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
+            MessageController.print(String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()));
         }
     }
 

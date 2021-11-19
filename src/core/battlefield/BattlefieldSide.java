@@ -35,6 +35,7 @@ public class BattlefieldSide {
 
     public static BattlefieldSide fromBoard(Board board) {
         Map<Position, List<BattlefieldCreature>> creatures = new HashMap<>();
+        board.updateTraitBuffs();
         for (Position position : Position.values()) {
             List<Creature> creaturesOnPosition = board.getCreaturesOnPosition(position);
             List<BattlefieldCreature> line = new ArrayList<>();

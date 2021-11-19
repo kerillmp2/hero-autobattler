@@ -54,17 +54,29 @@ public enum Stat implements Tag {
     }
 
     public static Stat getRandomStatExclusive(Stat... stats) {
-        Stat stat = UNDEFINED;
         int counter = 0;
-        while (stat == UNDEFINED && counter < 100) {
+        while (counter < 100) {
             int statId = RandomController.randomInt(1, maxId, true);
             if (Arrays.stream(stats).noneMatch(s -> s.id == statId)) {
-                stat = byId(statId);
+                return byId(statId);
             } else {
                 counter++;
             }
         }
-        return stat;
+        return UNDEFINED;
+    }
+
+    public static Stat getRandomStatFrom(Stat... stats) {
+        int counter = 0;
+        while (counter < 100) {
+            int statId = RandomController.randomInt(1, maxId, true);
+            if (Arrays.stream(stats).anyMatch(s -> s.id == statId)) {
+                return byId(statId);
+            } else {
+                counter++;
+            }
+        }
+        return UNDEFINED;
     }
 
     @Override

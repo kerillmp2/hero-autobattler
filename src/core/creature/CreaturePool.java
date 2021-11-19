@@ -29,8 +29,9 @@ public class CreaturePool {
     public static void init() {
         final int firstLevelAmount = 10;
 
+        //Тестовое существо
         for (int i = 0; i < firstLevelAmount; i++) {
-            Creature dummy = new Creature ("DUMMY", 100, 0, 1, 1, 1, 20, 1);
+            Creature dummy = new Creature ("DUMMY", 100, 0, 1, 1, 1, 20, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.ROBOT);
             CreaturePool.addCreature(dummy);
         }
 
@@ -54,10 +55,10 @@ public class CreaturePool {
             CreaturePool.addCreature(ignar);
         }
 
-        //Баобот [Робот, Воин]
+        //Варбот [Робот, Воин]
         for (int i = 0; i < firstLevelAmount; i++) {
-            Creature baobot = new Creature ("Баобот", 10, 3, 2, 0, 1, 12, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.ROBOT).wrapTrait(Trait.WARRIOR);
-            CreaturePool.addCreature(baobot);
+            Creature warbot = new Creature ("Варбот", 9, 3, 2, 0, 1, 12, 1, CreatureTag.HAVE_BASIC_ATTACK).wrapTrait(Trait.ROBOT).wrapTrait(Trait.WARRIOR);
+            CreaturePool.addCreature(warbot);
         }
     }
 }

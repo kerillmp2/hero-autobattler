@@ -3,13 +3,12 @@ package core.creature;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import core.battle.HasBattleView;
-import core.controllers.utils.MessageController;
 import core.shop.HasShopView;
 import core.traits.Trait;
 import core.controllers.TraitContainer;
+import core.utils.Constants;
 import core.utils.TagContainer;
 
 public class Creature extends TagContainer<CreatureTag> implements HasShopView, HasBattleView {
@@ -120,13 +119,32 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     @Override
     public String getShopView() {
-        StringBuilder view = new StringBuilder(name
-                + " (" + cost + ") "
-                + "[AD: " + getAttack() + ", "
-                + "HP: " + getHp() + "] "
-                + "<PArm: " + getPhysicalArmor() + ", "
-                + "MArm: " + getMagicArmor() + ", "
-                + "Speed: " + getSpeed() + ">");
+        if (name.equals("Продано")) {
+            return name;
+        }
+        StringBuilder view = new StringBuilder();
+        view.append(name).append(" ".repeat(Constants.MAX_NAME_LEN.value - name.length() + 1));
+        int traitsLen = 0;
+        view.append("[");
+        List<Trait> traits = new ArrayList<>(traitContainer.getTags());
+        for (int i = 0; i < traits.size(); i++) {
+            view.append(traits.get(i));
+            traitsLen += traits.get(i).getName().length();
+            if (i < traits.size() - 1) {
+                view.append(", ");
+                traitsLen += 2;
+            }
+        }
+        view.append("]");
+        view.append(" ".repeat(Constants.MAX_TRAIT_NAME_LEN.value * 3 - traitsLen + 1));
+
+        StringBuilder statsView = new StringBuilder();
+
+        statsView.append("(").append(cost).append(") ")
+                .append("[AD: ").append(getAttack()).append(", ").append("HP: ").append(getHp()).append("]");
+        statsView.append(" ".repeat(Constants.AD_HP_LEN.value - statsView.length()));
+        statsView.append("<PArm: ").append(getPhysicalArmor()).append(", ").append("MArm: ").append(getMagicArmor()).append(", ").append("Speed: ").append(getSpeed()).append(">");
+        view.append(statsView);
         List<String> tagsView = new ArrayList<>();
         if (this.hasTag(CreatureTag.POISONOUS)) {
             tagsView.add("Яд " + this.getTagValue(CreatureTag.POISONOUS));
