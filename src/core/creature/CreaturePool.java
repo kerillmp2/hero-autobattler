@@ -49,7 +49,7 @@ public class CreaturePool {
 
         //Сальвира [Ядовитый, Ассасин]
         for (int i = 0; i < firstLevelAmount; i++) {
-            Creature salvira = new Creature ("Сальвира", 26, 4, 0, 0, 2, 90, 100, 1, CreatureTag.HAVE_BASIC_ATTACK)
+            Creature salvira = new Creature ("Сальвира", 26, 4, 0, 0, 2, 115, 100, 1, CreatureTag.HAVE_BASIC_ATTACK)
                     .wrapTrait(Trait.ASSASSIN)
                     .wrapTrait(Trait.POISONOUS)
                     .wrapSkill(CreatureSkillFactory.salviraSkill());
@@ -59,7 +59,7 @@ public class CreaturePool {
 
         //Игнар [Демон, Обжора]
         for (int i = 0; i < firstLevelAmount; i++) {
-            Creature ignar = new Creature ("Игнар", 45, 5, 0, 1, 5, 120, 100, 1, CreatureTag.HAVE_BASIC_ATTACK)
+            Creature ignar = new Creature ("Игнар", 45, 5, 0, 1, 5, 80, 100, 1, CreatureTag.HAVE_BASIC_ATTACK)
                     .wrapTrait(Trait.DEMON)
                     .wrapTrait(Trait.EATER)
                     .wrapSkill(CreatureSkillFactory.ignarSkill());
@@ -68,7 +68,7 @@ public class CreaturePool {
 
         //Варбот [Робот, Воин]
         for (int i = 0; i < firstLevelAmount; i++) {
-            Creature warbot = new Creature ("Варбот", 31, 5, 2, 0, 2, 110, 100, 1, CreatureTag.HAVE_BASIC_ATTACK)
+            Creature warbot = new Creature ("Варбот", 31, 5, 2, 0, 2, 90, 100, 1, CreatureTag.HAVE_BASIC_ATTACK)
                     .wrapTrait(Trait.ROBOT)
                     .wrapTrait(Trait.WARRIOR)
                     .wrapSkill(CreatureSkillFactory.warbotSkill());
@@ -77,7 +77,7 @@ public class CreaturePool {
 
         //Коджи [Хладорождённый, Маг]
         for (int i = 0; i < firstLevelAmount; i++) {
-            Creature kodji = new Creature ("Коджи", 20, 3, 1, 3, 5, 95, 30, 1, CreatureTag.HAVE_BASIC_ATTACK)
+            Creature kodji = new Creature ("Коджи", 20, 3, 1, 3, 5, 105, 30, 1, CreatureTag.HAVE_BASIC_ATTACK)
                     .wrapTrait(Trait.FROSTBORN)
                     .wrapTrait(Trait.MAGE)
                     .wrapSkill(CreatureSkillFactory.kodjiSkill());

@@ -31,7 +31,7 @@ public class TurnController {
     private static List<BattlefieldCreature> generateTurnOrder(List<BattlefieldCreature> creatures) {
         List<BattlefieldCreature> turnOrder = new ArrayList<>(creatures);
         Collections.shuffle(turnOrder);
-        turnOrder.sort(Comparator.comparingInt(BattlefieldCreature::getCurrentSpeed));
+        turnOrder.sort((o1, o2) -> (-1) * (o1.getCurrentSpeed() - o2.getCurrentSpeed()));
         return turnOrder;
     }
 
