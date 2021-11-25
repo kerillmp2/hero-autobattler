@@ -8,9 +8,9 @@ import core.action.ActionFactory;
 import core.action.ActionTag;
 import core.action.ResolveTime;
 import core.battlefield.BattlefieldCreature;
-import core.battlefield.BattlefieldObjectTag;
 import core.battlefield.ObjectStatus;
 import core.battlefield.Position;
+import core.creature.CreatureTag;
 import core.utils.Calculator;
 import core.utils.Constants;
 
@@ -41,46 +41,49 @@ public class ActionController {
 
     public static String resolve(Action action) {
         BattlefieldCreature performer = action.getActionInfo().performer;
-        BattlefieldCreature target = action.getActionInfo().target;
         String message = "";
 
         if (!performer.hasStatus(ObjectStatus.ALIVE) || performer.hasStatus(ObjectStatus.DEAD)) {
+            performer.getBattlefield().getBattleController().getTurnController().removeCreatureFromTurnOrder(performer);
             return message;
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.APPLY_POISON_DAMAGE)) {
-            int targetHp = target.getCurrentHp();
-            int poisonDamage = action.getActionInfo().getTagValue(ActionTag.APPLY_POISON_DAMAGE);
-            int dealedDamage = Calculator.calculateMagicDamage(poisonDamage, target);
-            target.setCurrentHp(targetHp - dealedDamage);
-            message += target.getBattleName() + " получает " + dealedDamage + " урона от яда\n";
+        if (action.getActionInfo().hasTag(ActionTag.CHOOSE_MAIN_ACTION)) {
+            if (performer.hasEnoughManaForSkill()) {
+                resolveGenerateUseSkillAction(action);
+            } else {
+                if (performer.hasTag(CreatureTag.HAVE_BASIC_ATTACK)) {
+                    resolveGenerateBasicAttackAction(action);
+                }
+            }
+        }
+
+        if (action.getActionInfo().hasTag(ActionTag.USE_SKILL)) {
+            message += resolveUseSkillAction(action);
         }
 
         if (action.getActionInfo().hasTag(ActionTag.BASIC_ATTACK)) {
             message += resolveBasicAttackAction(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.TAKE_BASIC_DAMAGE)) {
-            int targetHp = performer.getCurrentHp();
-            int damage = action.getActionInfo().getTagValue(ActionTag.TAKE_BASIC_DAMAGE);
-            performer.setCurrentHp(targetHp - damage);
-            message += performer.getBattleName() + " получает " + damage + " урона" + "\n";
+        if (action.getActionInfo().hasTag(ActionTag.ADD_MANA)) {
+            message += resolveGetManaAction(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.GENERATE_BASIC_ATTACK)) {
-            BattlefieldCreature attackTarget = performer.getBattlefieldSide().getRandomOppositeSideAliveCreature(
-                    Position.FIRST_LINE,
-                    Position.SECOND_LINE,
-                    Position.THIRD_LINE
-            );
-            performer.addAction(ActionFactory.attackAction(performer, attackTarget));
+        if (action.getActionInfo().hasTag(ActionTag.HEAL)) {
+            message += resolveHealingAction(action);
+        }
+
+        if (action.getActionInfo().hasTag(ActionTag.APPLY_POISON_DAMAGE)) {
+            message += resolveApplyPoissonDamageAction(action);
+        }
+
+        if (action.getActionInfo().hasTag(ActionTag.TAKE_BASIC_DAMAGE)) {
+            message += resolveTakeBasicDamageAction(action);
         }
 
         if (action.getActionInfo().hasTag(ActionTag.TURNS_LEFT)) {
-            action.getActionInfo().wrapTag(ActionTag.TURNS_LEFT, -1);
-            if (action.getActionInfo().getTagValue(ActionTag.TURNS_LEFT) <= 0) {
-                action.addTag(ActionTag.DELETE_AFTER_RESOLVE);
-            }
+            resolveTurnsCountdown(action);
         }
 
         if (action.getActionInfo().hasTag(ActionTag.DELETE_AFTER_RESOLVE)) {
@@ -90,21 +93,85 @@ public class ActionController {
         return message;
     }
 
-    public static String resolveBasicAttackAction(Action action) {
+    private static String resolveHealingAction(Action action) {
+        BattlefieldCreature target = action.getActionInfo().performer;
+        int amount = action.getActionInfo().getTagValue(ActionTag.HEAL);
+        int currentHP = target.getCurrentHp();
+        target.setCurrentHp(currentHP + amount);
+        return target.getBattleName() + " восстанавливает " + amount + " здоровья! "
+                + "[" + target.getCurrentHp() + "/" + target.getMaxHp() + "]\n";
+    }
+
+    private static String resolveGetManaAction(Action action) {
+        BattlefieldCreature target = action.getActionInfo().performer;
+        int amount = action.getActionInfo().getTagValue(ActionTag.ADD_MANA);
+        target.addMana(amount);
+        return target.getBattleName() + " получает " + amount + " маны! "
+                + "[" + target.getCurrentMana() + "/" + target.getMaxMana() + "]\n";
+    }
+
+    private static String resolveUseSkillAction(Action action) {
+        BattlefieldCreature performer = action.getActionInfo().performer;
+        return performer.useSkill();
+    }
+
+    private static void resolveTurnsCountdown(Action action) {
+        action.getActionInfo().wrapTag(ActionTag.TURNS_LEFT, -1);
+        if (action.getActionInfo().getTagValue(ActionTag.TURNS_LEFT) <= 0) {
+            action.addTag(ActionTag.DELETE_AFTER_RESOLVE);
+        }
+    }
+
+    private static void resolveGenerateUseSkillAction(Action action) {
+        BattlefieldCreature performer = action.getActionInfo().performer;
+        performer.addAction(ActionFactory.useSkillAction(performer));
+    }
+
+    private static void resolveGenerateBasicAttackAction(Action action) {
+        BattlefieldCreature performer = action.getActionInfo().performer;
+
+        BattlefieldCreature attackTarget = performer.getBattlefieldSide().getRandomOppositeSideAliveCreature(
+                Position.FIRST_LINE,
+                Position.SECOND_LINE,
+                Position.THIRD_LINE
+        );
+        performer.addAction(ActionFactory.attackAction(performer, attackTarget));
+    }
+
+    private static String resolveTakeBasicDamageAction(Action action) {
+        BattlefieldCreature performer = action.getActionInfo().performer;
+
+        int targetHp = performer.getCurrentHp();
+        int damage = action.getActionInfo().getTagValue(ActionTag.TAKE_BASIC_DAMAGE);
+        performer.setCurrentHp(targetHp - damage);
+        return performer.getBattleName() + " получает " + damage + " урона" + "\n";
+    }
+
+    private static String resolveApplyPoissonDamageAction(Action action) {
+        BattlefieldCreature target = action.getActionInfo().target;
+
+        int targetHp = target.getCurrentHp();
+        int poisonDamage = action.getActionInfo().getTagValue(ActionTag.APPLY_POISON_DAMAGE);
+        int dealedDamage = Calculator.calculateMagicDamage(poisonDamage, target);
+        target.setCurrentHp(targetHp - dealedDamage);
+        return target.getBattleName() + " получает " + dealedDamage + " урона от яда\n";
+    }
+
+    private static String resolveBasicAttackAction(Action action) {
         BattlefieldCreature performer = action.getActionInfo().performer;
         BattlefieldCreature target = action.getActionInfo().target;
-        String message = Constants.UNDEFINED.name;
+        String message;
 
         message = resolve(performer, ResolveTime.BEFORE_DEALING_DAMAGE);
 
-        Action takeDamageAction = ActionFactory.takeDamageAction(performer, target);
+        Action takeDamageAction = ActionFactory.takeBasicAtackDamageAction(performer, target);
         target.addAction(takeDamageAction);
         message += performer.getBattleName() + " атакует " + target.getBattleName() + "\n";
 
         message += resolve(performer, ResolveTime.ON_DEALING_DAMAGE);
         message += resolve(target, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.ON_TAKING_DAMAGE);
-        if (performer.hasTag(BattlefieldObjectTag.POISONOUS)) {
-            int poisonDamage = performer.getTagValue(BattlefieldObjectTag.POISONOUS);
+        if (performer.hasTag(CreatureTag.POISONOUS)) {
+            int poisonDamage = performer.getTagValue(CreatureTag.POISONOUS);
             int turnsLeft = 2;
             if (!target.hasActionWithTags(ActionTag.APPLY_POISON_DAMAGE)) {
                 target.addAction(ActionFactory.applyPoisonDamageAction(performer, target, poisonDamage, turnsLeft));

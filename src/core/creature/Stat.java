@@ -12,7 +12,8 @@ public enum Stat implements Tag {
     PHYSICAL_ARMOR("Физическая защита", "PDef", 3),
     MAGIC_ARMOR("Магическая защита", "MDef", 4),
     SPELL_POWER("Сила умений", "AP", 5),
-    SPEED("Скорость", "Speed", 6);
+    SPEED("Скорость", "Speed", 6),
+    MANA("Мана", "Mana", 7);
 
     private String name;
     private String shortName;

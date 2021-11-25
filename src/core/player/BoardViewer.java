@@ -48,7 +48,7 @@ public class BoardViewer {
 
     private static StringBuilder getTraitsView(Map<Trait, Integer> traits) {
         StringBuilder traitsView = new StringBuilder();
-        int maxLen = 20;
+        int maxLen = 24;
         for (Map.Entry<Trait, Integer> entry : traits.entrySet()) {
             Trait trait = entry.getKey();
             int traitNum = entry.getValue();

@@ -49,6 +49,10 @@ public class TurnController {
         this.turnOrder = Stream.concat(head.stream(), tail.stream()).collect(Collectors.toList());
     }
 
+    public void regenerateTurnOrder() {
+        regenerateTurnOrder(turnOrderCounter);
+    }
+
     public String nextTurn() {
         this.regenerateTurnOrder(this.turnOrderCounter);
         if (this.turnOrderCounter >= turnOrder.size()) {
@@ -56,7 +60,7 @@ public class TurnController {
             this.turnOrderCounter = 0;
             this.turnCounter += 1;
         }
-        String message = null;
+        String message = "";
         if (!this.turnOrder.isEmpty()) {
             BattlefieldCreature nextCreature = this.turnOrder.get(this.turnOrderCounter);
             if (nextCreature.hasStatus(ObjectStatus.ALIVE) && !nextCreature.hasStatus(ObjectStatus.DEAD)) {

@@ -2,6 +2,8 @@ package core.utils;
 
 public enum Constants {
     UNDEFINED("UNDEFINED", 0, 0),
+
+    //View константы
     BATTLE_VIEW_LENGTH("BATTLE_VIEW_LENGTH", 1, 20),
     BATTLE_VIEW_HEIGHT("BATTLE_VIEW_HEIGHT", 2, 10),
     BATTLEFIELD_VIEW_SIZE("BATTLEFIELD_VIEW_SIZE", 3, 120),
@@ -10,7 +12,13 @@ public enum Constants {
     MAX_NAME_LEN("MAX_NAME_LEN", 6, 14),
     MAX_TRAIT_NAME_LEN("MAX_TRAIT_NAME_LEN", 7, 10),
     AD_HP_LEN("AD_HP_LEN", 8, 22),
-    MAX_STATS_LEN("MAX_STATS_LEN", 9, 60);
+    MAX_STATS_LEN("MAX_STATS_LEN", 9, 60),
+
+    //Боевые константы
+    MANA_AFTER_TAKING_DAMAGE("MANA_AFTER_TAKING_DAMAGE", 100, 10),
+    MANA_AFTER_DEALING_DAMAGE("MANA_AFTER_DEALING_DAMAGE", 101, 20),
+    BATTLE_TURN_LIMIT("BATTLE_TURN_LIMIT", 102, 50)
+    ;
 
     public String name;
     public int id;

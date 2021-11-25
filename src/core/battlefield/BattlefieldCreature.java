@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import core.action.ActionFactory;
+import core.action.ResolveTime;
 import core.battle.HasBattleView;
 import core.controllers.utils.MessageController;
 import core.creature.Creature;
@@ -12,8 +14,8 @@ import core.creature.CreatureTag;
 import core.creature.Stat;
 import core.creature.StatChangeSource;
 import core.creature.WithStats;
-import core.action.ActionFactory;
 import core.creature.CreatureViewer;
+import core.utils.Constants;
 
 public class BattlefieldCreature extends BattlefieldObject implements WithStats, HasBattleView {
     private Creature creature;
@@ -23,6 +25,7 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
     private int currentMagicArmor;
     private int currentSpellPower;
     private int currentSpeed;
+    private int currentMana;
     private final String battleName;
     private Battlefield battlefield;
     private BattlefieldSide battlefieldSide;
@@ -51,12 +54,11 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     private void beforeBattleStart() {
         addStatus(ObjectStatus.CREATURE);
-        for (CreatureTag creatureTag : creature.getTags()) {
-            this.addTagValue(BattlefieldObjectTag.byName(creatureTag.getName()), creature.getTagValue(creatureTag));
-        }
-        if (hasTag(BattlefieldObjectTag.HAVE_BASIC_ATTACK)) {
-            addAction(ActionFactory.generateAttackAction(this));
-        }
+
+        this.addAction(ActionFactory.chooseMainActionAction(this));
+        this.addAction(ActionFactory.addManaAction(this, Constants.MANA_AFTER_TAKING_DAMAGE.value, ResolveTime.AFTER_TAKING_DAMAGE));
+        this.addAction(ActionFactory.addManaAction(this, Constants.MANA_AFTER_DEALING_DAMAGE.value, ResolveTime.AFTER_DEALING_DAMAGE));
+
         //EATER TRAIT
         int additionalHP = creature.getTagValue(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE);
         if (additionalHP > 0) {
@@ -89,6 +91,19 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         creature.clearAllChangesFromSource(StatChangeSource.UNTIL_BATTLE_END);
     }
 
+    public String useSkill() {
+        this.setCurrentMana(0);
+        return this.creature.getSkill().cast(battlefield.getBattleController(), this);
+    }
+
+    public boolean hasEnoughManaForSkill() {
+        return currentMana >= creature.getMaxMana();
+    }
+
+    public int getMaxHp() {
+        return creature.getHp();
+    }
+
     @Override
     public int getCurrentHp() {
         return currentHp;
@@ -96,7 +111,7 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     @Override
     public void setCurrentHp(int currentHp) {
-        this.currentHp = currentHp;
+        this.currentHp = Math.min(creature.getHp(), currentHp);
         if (this.currentHp <= 0) {
             this.removeStatus(ObjectStatus.ALIVE);
             this.addStatus(ObjectStatus.DEAD);
@@ -157,6 +172,24 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         this.currentSpeed = currentSpeed;
     }
 
+    @Override
+    public int getCurrentMana() {
+        return currentMana;
+    }
+
+    @Override
+    public void setCurrentMana(int currentMana) {
+        this.currentMana = Math.min(creature.getMaxMana(), currentMana);
+    }
+
+    public int getMaxMana() {
+        return creature.getMaxMana();
+    }
+
+    public void addMana(int amount) {
+        this.currentMana = Math.min(creature.getMaxMana(), currentMana + amount);
+    }
+
     public void setBattlefield(Battlefield battlefield) {
         this.battlefield = battlefield;
     }
@@ -179,6 +212,14 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     public void setBattlefieldSide(BattlefieldSide battlefieldSide) {
         this.battlefieldSide = battlefieldSide;
+    }
+
+    public int getTagValue(CreatureTag tag) {
+        return creature.getTagValue(tag);
+    }
+
+    public boolean hasTag(CreatureTag tag) {
+        return creature.hasTag(tag);
     }
 
     @Override

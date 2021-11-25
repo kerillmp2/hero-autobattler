@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
+import core.controllers.utils.RandomController;
 import core.player.Board;
 import core.creature.Creature;
 
@@ -15,7 +15,6 @@ public class BattlefieldSide {
 
     private final Map<Position, List<BattlefieldCreature>> creatures;
     private BattlefieldSide oppositeSide;
-    private Random random;
 
     private BattlefieldSide() {
         this.creatures = new HashMap<>();
@@ -24,12 +23,11 @@ public class BattlefieldSide {
         }
     }
 
-    private BattlefieldSide(Map<Position, List<BattlefieldCreature>> creatures, Random random) {
+    private BattlefieldSide(Map<Position, List<BattlefieldCreature>> creatures) {
         this();
         for (Position position : creatures.keySet()) {
             this.creatures.put(position, creatures.get(position));
         }
-        this.random = random;
         getAllCreatures().forEach(creature -> creature.setBattlefieldSide(this));
     }
 
@@ -45,7 +43,11 @@ public class BattlefieldSide {
             }
             creatures.put(position, line);
         }
-        return new BattlefieldSide(creatures, new Random());
+        BattlefieldSide battlefieldSide = new BattlefieldSide(creatures);
+        for (BattlefieldCreature creature : battlefieldSide.getAllCreatures()) {
+            creature.setBattlefieldSide(battlefieldSide);
+        }
+        return battlefieldSide;
     }
 
     public boolean hasAliveCreature() {
@@ -119,6 +121,10 @@ public class BattlefieldSide {
         return getRandomSideCreature(this.oppositeSide, Arrays.asList(positions));
     }
 
+    public BattlefieldCreature getRandomOppositeSideAliveCreature() {
+        return getRandomOppositeSideAliveCreature(Position.values());
+    }
+
     public BattlefieldCreature getRandomOppositeSideAliveCreature(Position... positions) {
         return getRandomOppositeSideCreature(Arrays.asList(positions), ObjectStatus.ALIVE);
     }
@@ -134,7 +140,10 @@ public class BattlefieldSide {
     private BattlefieldCreature getRandomSideCreature(BattlefieldSide side, List<Position> positions, ObjectStatus... filters) {
         List<BattlefieldCreature> allSideCreatures = side.getCreaturesOnPositions(positions)
                 .stream().filter(creature -> creature.hasStatuses(filters)).collect(Collectors.toList());
-        return allSideCreatures.get(random.nextInt(allSideCreatures.size()));
+        if (allSideCreatures.size() == 0) {
+            return null;
+        }
+        return allSideCreatures.get(RandomController.randomInt(allSideCreatures.size()));
     }
 
     public void setOppositeSide(BattlefieldSide oppositeSide) {

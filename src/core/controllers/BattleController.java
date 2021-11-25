@@ -6,6 +6,7 @@ import core.battlefield.BattlefieldCreature;
 import core.controllers.utils.MessageController;
 import core.player.Player;
 import core.battlefield.Battlefield;
+import core.utils.Constants;
 
 public class BattleController {
     private final Battlefield battlefield;
@@ -23,13 +24,14 @@ public class BattleController {
     public static BattleStatus processBattleForPlayers(Player firstPlayer, Player secondPLayer) {
         Battlefield battlefield = Battlefield.fromTwoBoards(firstPlayer.getBoard(), secondPLayer.getBoard());
         BattleController battleController = BattleController.forBattlefield(battlefield);
+        battlefield.setBattleController(battleController);
         BattleStatus battleStatus = battleController.battle();
         battleController.onBattleEnd();
         return battleStatus;
     }
 
     public BattleStatus battle() {
-        while (turnController.getTurnCounter() < 1000) {
+        while (turnController.getTurnCounter() < Constants.BATTLE_TURN_LIMIT.value) {
             MessageController.print(BattleMap.getBattleFieldView(battlefield));
             boolean firstSideHasAlive = this.battlefield.getFirstSide().hasAliveCreature();
             boolean secondSideHasAlive = this.battlefield.getSecondSide().hasAliveCreature();

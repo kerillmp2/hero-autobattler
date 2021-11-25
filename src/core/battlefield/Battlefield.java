@@ -6,17 +6,18 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import core.controllers.BattleController;
+import core.controllers.utils.RandomController;
 import core.player.Board;
 
 public class Battlefield {
+    private BattleController battleController;
     private final BattlefieldSide firstSide;
     private final BattlefieldSide secondSide;
-    private final Random random;
 
-    private Battlefield(BattlefieldSide firstSide, BattlefieldSide secondSide, Random random) {
+    private Battlefield(BattlefieldSide firstSide, BattlefieldSide secondSide) {
         this.firstSide = firstSide;
         this.secondSide = secondSide;
-        this.random = random;
         getAllCreatures().forEach(creature -> creature.setBattlefield(this));
     }
 
@@ -25,7 +26,8 @@ public class Battlefield {
         BattlefieldSide secondBattlefieldSide = BattlefieldSide.fromBoard(secondBoard);
         firstBattlefieldSide.setOppositeSide(secondBattlefieldSide);
         secondBattlefieldSide.setOppositeSide(firstBattlefieldSide);
-        return new Battlefield(firstBattlefieldSide, secondBattlefieldSide, new Random());
+
+        return new Battlefield(firstBattlefieldSide, secondBattlefieldSide);
     }
 
     public BattlefieldSide getFirstSide() {
@@ -66,12 +68,20 @@ public class Battlefield {
         return getRandomSideCreature(this.secondSide, positions);
     }
 
-    private BattlefieldCreature getRandomSideCreature(BattlefieldSide side) {
+    public BattlefieldCreature getRandomSideCreature(BattlefieldSide side) {
         return getRandomSideCreature(side, Arrays.asList(Position.values()));
     }
 
     private BattlefieldCreature getRandomSideCreature(BattlefieldSide side, List<Position> positions) {
         List<BattlefieldCreature> allSideCreatures = side.getCreaturesOnPositions(positions);
-        return allSideCreatures.get(random.nextInt(allSideCreatures.size()));
+        return allSideCreatures.get(RandomController.randomInt(allSideCreatures.size()));
+    }
+
+    public BattleController getBattleController() {
+        return battleController;
+    }
+
+    public void setBattleController(BattleController battleController) {
+        this.battleController = battleController;
     }
 }

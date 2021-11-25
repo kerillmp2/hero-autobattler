@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import core.action.Action;
 import core.action.ActionFactory;
@@ -12,13 +13,12 @@ import core.action.ActionTag;
 import core.action.ResolveTime;
 import core.utils.TagContainer;
 
-public class BattlefieldObject extends TagContainer<BattlefieldObjectTag> {
+public class BattlefieldObject {
     private final Set<ObjectStatus> statusSet;
     private Position position;
     private final Map<ResolveTime, List<Action>> actions;
 
     public BattlefieldObject(Set<ObjectStatus> statusSet, Position position, Map<ResolveTime, List<Action>> actions) {
-        super();
         this.statusSet = statusSet;
         this.position = position;
         this.actions = actions;
