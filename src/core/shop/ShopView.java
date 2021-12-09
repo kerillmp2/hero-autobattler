@@ -1,6 +1,6 @@
 package core.shop;
 
-import core.utils.Constants;
+import utils.Constants;
 
 public class ShopView {
     private static final int ROW_SIZE = Constants.SHOP_VIEW_SIZE.value;

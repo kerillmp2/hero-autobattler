@@ -7,7 +7,7 @@ import core.battlefield.Battlefield;
 import core.battlefield.BattlefieldCreature;
 import core.battlefield.ObjectStatus;
 import core.battlefield.Position;
-import core.utils.Constants;
+import utils.Constants;
 
 public class BattleMap {
 
@@ -80,7 +80,7 @@ public class BattleMap {
 
     public static StringBuilder getCreaturesRowOnPosition(List<? extends HasBattleView> creatures, Position position) {
         StringBuilder view = new StringBuilder();
-        if (creatures.size() > 0) {
+        if (creatures.size() > 0 && Constants.SHOW_POSITION_NAMES.value == 1) {
             view.append("|").append(" ".repeat(CREATURE_OFFSET)).append(position.name)
                     .append(" ".repeat(ROW_SIZE - CREATURE_OFFSET - 2 - position.name.length())).append("|\n");
         }

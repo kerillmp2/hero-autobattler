@@ -2,12 +2,14 @@ package core.battlefield;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import core.controllers.utils.RandomController;
+import core.creature.Stat;
 import core.player.Board;
 import core.creature.Creature;
 
@@ -144,6 +146,26 @@ public class BattlefieldSide {
             return null;
         }
         return allSideCreatures.get(RandomController.randomInt(allSideCreatures.size()));
+    }
+
+    public List<BattlefieldCreature> getAllCreatures(ObjectStatus... filters) {
+        return getAllCreatures().stream().filter(c -> c.hasStatuses(filters)).collect(Collectors.toList());
+    }
+
+    public BattlefieldCreature getCreatureWithHighest(Stat stat) {
+        List<BattlefieldCreature> allCreatures = getAllCreatures();
+        if (allCreatures.isEmpty()) {
+            return null;
+        }
+        return allCreatures.stream().max(Comparator.comparingInt(o -> o.get(stat))).get();
+    }
+
+    public BattlefieldCreature getCreatureWithLowest(Stat stat) {
+        List<BattlefieldCreature> allCreatures = getAllCreatures();
+        if (allCreatures.isEmpty()) {
+            return null;
+        }
+        return allCreatures.stream().min(Comparator.comparingInt(o -> o.get(stat))).get();
     }
 
     public void setOppositeSide(BattlefieldSide oppositeSide) {

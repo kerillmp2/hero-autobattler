@@ -22,25 +22,46 @@ public class TraitsController {
 
     public void updateTraitBuffs(List<Creature> allCreatures) {
         updateKingGuardBuff(allCreatures);
+        updateWarriorBuff(allCreatures);
         updatePoisonousBuff(allCreatures);
         updateEaterBuff(allCreatures);
         updateRobotBuffs(allCreatures);
         updateMagesBuff(allCreatures);
         updateFrostBornBuff(allCreatures);
+        updateAssassinBuff(allCreatures);
+        updateStudentsBuff(allCreatures);
     }
 
     private void updateKingGuardBuff(List<Creature> allCreatures) {
         //KING_GUARD: <+2 Attack, +3 Attack, +5 Attack> to all Creatures.
-        int kingGuardNum = getTraitValue(Trait.KING_GUARD);
-        allCreatures.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.KING_GUARD_TRAIT));
-        if (kingGuardNum == Trait.KING_GUARD.getLevels().get(0)) {
-            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 2));
+        int kingGuardNum = getTraitValue(Trait.KNIGHT);
+        allCreatures.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.KNIGHT_TRAIT));
+        if (kingGuardNum >= Trait.KNIGHT.getLevels().get(0) && kingGuardNum < Trait.KNIGHT.getLevels().get(1)) {
+            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KNIGHT_TRAIT, 2));
         }
-        if (kingGuardNum == Trait.KING_GUARD.getLevels().get(1)) {
-            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 3));
+        if (kingGuardNum >= Trait.KNIGHT.getLevels().get(1) && kingGuardNum < Trait.KNIGHT.getLevels().get(2)) {
+            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KNIGHT_TRAIT, 3));
         }
-        if (kingGuardNum >= Trait.KING_GUARD.getLevels().get(2)) {
-            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KING_GUARD_TRAIT, 5));
+        if (kingGuardNum >= Trait.KNIGHT.getLevels().get(2)) {
+            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KNIGHT_TRAIT, 5));
+        }
+    }
+
+    private void updateWarriorBuff(List<Creature> allCreatures) {
+        int warriorsNum = getTraitValue(Trait.WARRIOR);
+        List<Creature> warriors = getCreaturesByTrait(allCreatures, Trait.WARRIOR);
+        warriors.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.WARRIOR_TRAIT));
+        if (warriorsNum >= Trait.WARRIOR.getLevels().get(0) && warriorsNum < Trait.WARRIOR.getLevels().get(1)) {
+            warriors.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.WARRIOR_TRAIT, 1));
+            warriors.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.WARRIOR_TRAIT, 1));
+        }
+        if (warriorsNum >= Trait.WARRIOR.getLevels().get(1) && warriorsNum < Trait.WARRIOR.getLevels().get(2)) {
+            warriors.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.WARRIOR_TRAIT, 2));
+            warriors.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.WARRIOR_TRAIT, 2));
+        }
+        if (warriorsNum >= Trait.WARRIOR.getLevels().get(2)) {
+            warriors.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.WARRIOR_TRAIT, 3));
+            warriors.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.WARRIOR_TRAIT, 3));
         }
     }
 
@@ -49,13 +70,13 @@ public class TraitsController {
         int poisonousNum = getTraitValue(Trait.POISONOUS);
         List<Creature> poisonousCreatures = getCreaturesByTrait(allCreatures, Trait.POISONOUS);
         poisonousCreatures.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.POISONOUS_TRAIT));
-        if (poisonousNum == Trait.POISONOUS.getLevels().get(0)) {
+        if (poisonousNum >= Trait.POISONOUS.getLevels().get(0) && poisonousNum < Trait.POISONOUS.getLevels().get(0)) {
             poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 1));
         }
-        if (poisonousNum == Trait.POISONOUS.getLevels().get(1)) {
+        if (poisonousNum >= Trait.POISONOUS.getLevels().get(1) && poisonousNum < Trait.POISONOUS.getLevels().get(2)) {
             poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 2));
         }
-        if (poisonousNum == Trait.POISONOUS.getLevels().get(2)) {
+        if (poisonousNum >= Trait.POISONOUS.getLevels().get(2)) {
             poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 3));
         }
     }
@@ -65,13 +86,13 @@ public class TraitsController {
         int eatersNum = getTraitValue(Trait.EATER);
         List<Creature> eaters = getCreaturesByTrait(allCreatures, Trait.EATER);
         eaters.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.EATERS_TRAIT));
-        if (eatersNum == Trait.EATER.getLevels().get(0)) {
+        if (eatersNum >= Trait.EATER.getLevels().get(0) && eatersNum < Trait.EATER.getLevels().get(1)) {
             eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE, StatChangeSource.EATERS_TRAIT, 4));
         }
-        if (eatersNum == Trait.EATER.getLevels().get(1)) {
+        if (eatersNum >= Trait.EATER.getLevels().get(1) && eatersNum < Trait.EATER.getLevels().get(2)) {
             eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE, StatChangeSource.EATERS_TRAIT, 6));
         }
-        if (eatersNum == Trait.EATER.getLevels().get(2)) {
+        if (eatersNum >= Trait.EATER.getLevels().get(2)) {
             eaters.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE, StatChangeSource.EATERS_TRAIT, 10));
         }
     }
@@ -83,13 +104,13 @@ public class TraitsController {
         List<Creature> robots = getCreaturesByTrait(allCreatures, Trait.ROBOT);
         robots.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.ROBOT_TRAIT));
         int numberOfRobotBuffs = 0;
-        if (robotsNum == Trait.ROBOT.getLevels().get(0)) {
+        if (robotsNum >= Trait.ROBOT.getLevels().get(0) && robotsNum < Trait.ROBOT.getLevels().get(0)) {
             numberOfRobotBuffs = 1;
         }
-        if (robotsNum == Trait.ROBOT.getLevels().get(1)) {
+        if (robotsNum >= Trait.ROBOT.getLevels().get(1) && robotsNum < Trait.ROBOT.getLevels().get(2)) {
             numberOfRobotBuffs = 3;
         }
-        if (robotsNum == Trait.ROBOT.getLevels().get(2)) {
+        if (robotsNum >= Trait.ROBOT.getLevels().get(2)) {
             numberOfRobotBuffs = 7;
         }
         for (int i = 0; i < numberOfRobotBuffs; i++) {
@@ -111,10 +132,10 @@ public class TraitsController {
         int magesNum = getTraitValue(Trait.MAGE);
         List<Creature> mages = getCreaturesByTrait(allCreatures, Trait.MAGE);
         mages.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.MAGE_TRAIT));
-        if (magesNum == Trait.MAGE.getLevels().get(0)) {
+        if (magesNum >= Trait.MAGE.getLevels().get(0) && magesNum < Trait.MAGE.getLevels().get(1)) {
             mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 4));
         }
-        if (magesNum == Trait.MAGE.getLevels().get(1)) {
+        if (magesNum >= Trait.MAGE.getLevels().get(1) && magesNum < Trait.MAGE.getLevels().get(2)) {
             mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 7));
         }
         if (magesNum >= Trait.MAGE.getLevels().get(2)) {
@@ -124,6 +145,40 @@ public class TraitsController {
 
     private void updateFrostBornBuff(List<Creature> allCreatures) {
 
+    }
+
+    private void updateAssassinBuff(List<Creature> allCreatures) {
+        //Ассасины получают [+2 / +3 / +4] атаки и [+10 / +20 / +40] скорости
+        int assassinsNum = getTraitValue(Trait.ASSASSIN);
+        List<Creature> assassins = getCreaturesByTrait(allCreatures, Trait.ASSASSIN);
+        assassins.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.ASSASSIN_TRAIT));
+        if (assassinsNum >= Trait.ASSASSIN.getLevels().get(0) && assassinsNum < Trait.ASSASSIN.getLevels().get(1)) {
+            assassins.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.ASSASSIN_TRAIT, 2));
+            assassins.forEach(c -> c.applyBuff(Stat.SPEED, StatChangeSource.ASSASSIN_TRAIT, 10));
+        }
+        if (assassinsNum >= Trait.ASSASSIN.getLevels().get(1) && assassinsNum < Trait.ASSASSIN.getLevels().get(2)) {
+            assassins.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.ASSASSIN_TRAIT, 3));
+            assassins.forEach(c -> c.applyBuff(Stat.SPEED, StatChangeSource.ASSASSIN_TRAIT, 20));
+        }
+        if (assassinsNum >= Trait.ASSASSIN.getLevels().get(2)) {
+            assassins.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.ASSASSIN_TRAIT, 4));
+            assassins.forEach(c -> c.applyBuff(Stat.SPEED, StatChangeSource.ASSASSIN_TRAIT, 40));
+        }
+    }
+
+    private void updateStudentsBuff(List<Creature> allCreatures) {
+        int studentsNum = getTraitValue(Trait.STUDENT);
+        List<Creature> students = getCreaturesByTrait(allCreatures, Trait.STUDENT);
+        students.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.STUDENT_TRAIT));
+        if (studentsNum >= Trait.STUDENT.getLevels().get(0) && studentsNum < Trait.STUDENT.getLevels().get(1)) {
+            students.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_MANA_AFTER_ALLY_USED_SKILL, StatChangeSource.STUDENT_TRAIT, 5));
+        }
+        if (studentsNum >= Trait.STUDENT.getLevels().get(1) && studentsNum < Trait.STUDENT.getLevels().get(2)) {
+            students.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_MANA_AFTER_ALLY_USED_SKILL, StatChangeSource.STUDENT_TRAIT, 11));
+        }
+        if (studentsNum >= Trait.STUDENT.getLevels().get(2)) {
+            students.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_MANA_AFTER_ALLY_USED_SKILL, StatChangeSource.STUDENT_TRAIT, 23));
+        }
     }
 
     public List<Creature> getCreaturesByTrait(List<Creature> allCreatures, Trait trait) {

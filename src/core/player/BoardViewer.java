@@ -6,14 +6,27 @@ import java.util.Map;
 
 import core.battle.BattleMap;
 import core.battlefield.Position;
+import core.creature.Creature;
 import core.traits.Trait;
-import core.utils.Constants;
+import utils.Constants;
 import core.controllers.utils.MessageController;
 
 public class BoardViewer {
 
     private static final int ROW_SIZE = Constants.BATTLEFIELD_VIEW_SIZE.value;
     private static final int OFFSET = Constants.MAP_OFFSET.value;
+
+    public static void showBoardView(Board board, Bench bench, int limit) {
+        StringBuilder boardView = new StringBuilder();
+        boardView.append(getBoardViewHeader(board, limit));
+        for (Position position : Position.values()) {
+            boardView.append(BattleMap.getCreaturesRowOnPosition(board.getCreaturesOnPosition(position), position));
+        }
+        boardView.append(getBoardViewFooter(board));
+
+        MessageController.print(boardView.toString());
+        MessageController.print(getBenchView(bench, false).toString());
+    }
 
     public static void showBoardView(Board board, int limit) {
         StringBuilder boardView = new StringBuilder();
@@ -22,7 +35,35 @@ public class BoardViewer {
             boardView.append(BattleMap.getCreaturesRowOnPosition(board.getCreaturesOnPosition(position), position));
         }
         boardView.append(getBoardViewFooter(board));
+
         MessageController.print(boardView.toString());
+    }
+
+    private static StringBuilder getBenchView(Bench bench, boolean enumerate) {
+        int limit = Constants.BENCH_SIZE.value;
+        StringBuilder view = new StringBuilder();
+        view.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
+        StringBuilder row = new StringBuilder();
+        row.append("|").append(" ".repeat(OFFSET)).append("Ваша скамейка")
+                .append(" ".repeat(OFFSET)).append("[").append(limit - bench.getFreeSpace()).append(" / ").append(limit).append("]");
+        row.append(" ".repeat(ROW_SIZE - row.length() - 1)).append("|\n");
+        view.append(row);
+        view.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
+        for (int i = 0; i < bench.getCreaturesWithDummys().size(); i++) {
+            Creature creature = bench.getCreatureOnPosition(i);
+            if (!creature.getName().equals("Пусто")) {
+                StringBuilder creatureRow = new StringBuilder();
+                creatureRow.append("|").append(" ".repeat(OFFSET));
+                if (enumerate) {
+                    creatureRow.append(i + 1).append(". ");
+                }
+                creatureRow.append(creature.getShopView());
+                creatureRow.append(" ".repeat(ROW_SIZE - creatureRow.length() - 1)).append("|\n");
+                view.append(creatureRow);
+            }
+        }
+        view.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
+        return view;
     }
 
     private static StringBuilder getBoardViewHeader(Board board, int limit) {
@@ -48,7 +89,7 @@ public class BoardViewer {
 
     private static StringBuilder getTraitsView(Map<Trait, Integer> traits) {
         StringBuilder traitsView = new StringBuilder();
-        int maxLen = 24;
+        int maxLen = 30;
         for (Map.Entry<Trait, Integer> entry : traits.entrySet()) {
             Trait trait = entry.getKey();
             int traitNum = entry.getValue();
@@ -58,11 +99,11 @@ public class BoardViewer {
             traitRow.append(" ".repeat(maxLen - traitRow.length())).append("[");
             for(int i = 0; i < levels; i++) {
                 int nextLvl = i < levels - 1 ? trait.getLevels().get(i + 1) : 100;
-                if (traitNum >= trait.getLevels().get(i) && traitNum <= nextLvl) {
+                if (traitNum >= trait.getLevels().get(i) && traitNum <= nextLvl && Constants.SHOW_CURRENT_TRAIT_LEVEL.value == 1) {
                     traitRow.append("(");
                 }
                 traitRow.append(trait.getLevels().get(i));
-                if (traitNum >= trait.getLevels().get(i) && traitNum <= nextLvl) {
+                if (traitNum >= trait.getLevels().get(i) && traitNum <= nextLvl && Constants.SHOW_CURRENT_TRAIT_LEVEL.value == 1) {
                     traitRow.append(")");
                 }
                 if (i < levels - 1) {

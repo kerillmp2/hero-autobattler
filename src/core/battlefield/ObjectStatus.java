@@ -1,6 +1,6 @@
 package core.battlefield;
 
-import core.utils.Tag;
+import utils.Tag;
 
 public enum ObjectStatus implements Tag {
     UNDEFINED("UNDEFINED", 0),

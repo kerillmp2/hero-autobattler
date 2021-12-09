@@ -3,8 +3,9 @@ package core.player;
 import java.util.ArrayList;
 import java.util.List;
 
-import core.utils.HasName;
-import core.utils.Option;
+import utils.Constants;
+import utils.HasName;
+import utils.Option;
 
 public class Player implements HasName {
     private String name;
@@ -13,18 +14,20 @@ public class Player implements HasName {
     private int hp;
     private int creatureShopLevel;
     private Board board;
+    private Bench bench;
 
-    public Player(String name, PlayerState state, int money, int hp, int creatureShopLevel, Board board) {
+    public Player(String name, PlayerState state, int money, int hp, int creatureShopLevel, Board board, Bench bench) {
         this.name = name;
         this.state = state;
         this.money = money;
         this.hp = hp;
         this.creatureShopLevel = creatureShopLevel;
         this.board = board;
+        this.bench = bench;
     }
 
     public static Player newPlayerWithName(String name) {
-        return new Player(name, PlayerState.NOT_READY_FOR_BATTLE, 100, 20, 1, new Board());
+        return new Player(name, PlayerState.NOT_READY_FOR_BATTLE, 100, 20, 1, new Board(), Bench.empty(Constants.BENCH_SIZE.value));
     }
 
     public List<Option<TurnOption>> getTurnOptions() {
@@ -53,6 +56,10 @@ public class Player implements HasName {
 
     public Board getBoard() {
         return board;
+    }
+
+    public Bench getBench() {
+        return bench;
     }
 
     public int getMoney() {

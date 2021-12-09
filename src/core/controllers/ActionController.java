@@ -11,8 +11,8 @@ import core.battlefield.BattlefieldCreature;
 import core.battlefield.ObjectStatus;
 import core.battlefield.Position;
 import core.creature.CreatureTag;
-import core.utils.Calculator;
-import core.utils.Constants;
+import utils.Calculator;
+import utils.Constants;
 
 public class ActionController {
 
@@ -112,7 +112,18 @@ public class ActionController {
 
     private static String resolveUseSkillAction(Action action) {
         BattlefieldCreature performer = action.getActionInfo().performer;
-        return performer.useSkill();
+        List<BattlefieldCreature> creatures = performer.getBattlefieldSide().getAllCreatures();
+        StringBuilder message = new StringBuilder();
+        for (BattlefieldCreature creature : creatures) {
+            message.append(resolve(creature, ResolveTime.BEFORE_ALLY_USING_SKILL));
+        }
+        message.append(resolve(performer, ResolveTime.BEFORE_USING_SKILL));
+        message.append(performer.useSkill());
+        message.append(resolve(performer, ResolveTime.AFTER_USING_SKILL));
+        for (BattlefieldCreature creature : creatures) {
+            message.append(resolve(creature, ResolveTime.AFTER_ALLY_USING_SKILL));
+        }
+        return message.toString();
     }
 
     private static void resolveTurnsCountdown(Action action) {

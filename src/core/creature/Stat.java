@@ -3,7 +3,7 @@ package core.creature;
 import java.util.Arrays;
 
 import core.controllers.utils.RandomController;
-import core.utils.Tag;
+import utils.Tag;
 
 public enum Stat implements Tag {
     UNDEFINED("UNDEFINED", "UNDEFINED", 0),

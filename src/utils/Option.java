@@ -1,4 +1,4 @@
-package core.utils;
+package utils;
 
 public class Option<T extends HasName> implements HasName {
     private String name;

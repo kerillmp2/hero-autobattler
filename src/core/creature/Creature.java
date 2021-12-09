@@ -10,8 +10,8 @@ import core.creature.skills.CreatureSkillFactory;
 import core.shop.HasShopView;
 import core.traits.Trait;
 import core.controllers.TraitContainer;
-import core.utils.Constants;
-import core.utils.TagContainer;
+import utils.Constants;
+import utils.TagContainer;
 
 public class Creature extends TagContainer<CreatureTag> implements HasShopView, HasBattleView {
     private String name;
@@ -37,6 +37,10 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     public static Creature shopDummy() {
         return new Creature("Продано", 0, 0, 0, 0, 0,0, 0, 0);
+    }
+
+    public static Creature benchDummy() {
+        return new Creature("Пусто", 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     public static Creature withStats(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int maxMana, int cost) {
@@ -136,7 +140,7 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     @Override
     public String getShopView() {
-        if (name.equals("Продано")) {
+        if (name.equals("Продано") || name.equals("Пусто")) {
             return name;
         }
         StringBuilder view = new StringBuilder();

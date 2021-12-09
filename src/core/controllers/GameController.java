@@ -11,7 +11,7 @@ import core.controllers.utils.MessageController;
 import core.creature.CreaturePool;
 import core.player.Player;
 import core.player.PlayerState;
-import core.utils.Pair;
+import utils.Pair;
 
 public class GameController {
     private List<PlayerController> playerControllers;
@@ -71,6 +71,8 @@ public class GameController {
                     dealDamageToPlayer(battlePair.first, 2);
                     addMoneyToPlayer(battlePair.second, 1);
                     break;
+                case TURN_LIMIT_REACHED:
+                    MessageController.print("Лимит ходов достигнут!");
                 case DRAW:
                     MessageController.print("Ничья между " + battlePair.second.getName() + " и " + battlePair.first.getName());
             }

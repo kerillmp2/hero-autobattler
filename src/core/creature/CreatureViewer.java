@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import core.traits.Trait;
-import core.utils.Constants;
-import core.utils.TagContainer;
+import utils.Constants;
+import utils.TagContainer;
 
 public class CreatureViewer {
 

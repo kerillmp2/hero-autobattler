@@ -1,6 +1,6 @@
 package core.action;
 
-import core.utils.Tag;
+import utils.Tag;
 
 public enum ActionTag implements Tag {
     UNDEFINED("UNDEFINED", 0),

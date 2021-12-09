@@ -1,6 +1,6 @@
 package core.action;
 
-import core.utils.Calculator;
+import utils.Calculator;
 import core.battlefield.BattlefieldCreature;
 
 public class ActionFactory {

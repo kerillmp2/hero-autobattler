@@ -1,4 +1,4 @@
-package core.shop;
+package core.controllers;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,8 +8,12 @@ import core.creature.Creature;
 import core.creature.CreaturePool;
 import core.player.Player;
 import core.controllers.utils.MessageController;
-import core.utils.Pair;
-import core.utils.Selector;
+import core.shop.HasShopView;
+import core.shop.Shop;
+import core.shop.ShopItem;
+import core.shop.ShopView;
+import utils.Pair;
+import utils.Selector;
 
 public class ShopController<T extends HasShopView> {
     private Shop<T> shop;
@@ -104,28 +108,54 @@ public class ShopController<T extends HasShopView> {
 
     private boolean buyCreature(ShopItem<Creature> shopItem) {
         if (player.getBoard().getAllCreatures().size() >= player.getCreatureShopLevel()) {
-            MessageController.print("Ваше поле переполнено!\n");
+            if (player.getBench().getFreeSpace() <= 0) {
+                MessageController.print("Ваше поле переполнено!\n");
+                return false;
+            } else {
+                player.getBench().addCreature(shopItem.getItem());
+                CreaturePool.removeCreature(shopItem.getItem());
+                int index = shop.currentLine.items.indexOf(shopItem);
+                shop.changeItemToDummy(index);
+                return true;
+            }
+        } else {
+            player.getBoard().addCreature(shopItem.getItem(), Position.FIRST_LINE);
+            CreaturePool.removeCreature(shopItem.getItem());
+            int index = shop.currentLine.items.indexOf(shopItem);
+            shop.changeItemToDummy(index);
+            return true;
+        }
+    }
+
+    public boolean sellCreature(Creature creature) {
+        if (player.getBoard().hasCreature(creature)) {
+            return sellCreatureFromBoard(creature);
+        }
+        if (player.getBench().hasCreature(creature)) {
+            return sellCreatureFromBench(creature);
+        }
+        return false;
+    }
+
+    public boolean sellCreatureFromBoard(Creature creature) {
+        if (!player.getBoard().hasCreature(creature)) {
             return false;
         }
-        player.getBoard().addCreature(shopItem.getItem(), Position.FIRST_LINE);
-        CreaturePool.removeCreature(shopItem.getItem());
-        int index = shop.currentLine.items.indexOf(shopItem);
-        shop.changeItemToDummy(index);
-        return true;
-    }
-
-    public void sellItem(T item) {
-        if (item instanceof Creature) {
-            sellCreature((Creature) item);
-        }
-    }
-
-    public void sellCreature(Creature creature) {
-        Position position = player.getBoard().getCreaturePosition(creature);
-        player.getBoard().removeCreature(creature, position);
+        player.getBoard().removeCreature(creature);
         creature.clearAllChangesFromAllSources();
         CreaturePool.addCreature(creature);
         player.addMoney(creature.getCost());
+        return true;
+    }
+
+    public boolean sellCreatureFromBench(Creature creature) {
+        if (!player.getBench().removeCreature(creature)) {
+            return false;
+        }
+        creature.clearAllChangesFromAllSources();
+        CreaturePool.addCreature(creature);
+        player.addMoney(creature.getCost());
+        return true;
     }
 
     private void levelUp() {

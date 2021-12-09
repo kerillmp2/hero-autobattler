@@ -1,4 +1,4 @@
-package core.utils;
+package utils;
 
 import core.creature.WithStats;
 

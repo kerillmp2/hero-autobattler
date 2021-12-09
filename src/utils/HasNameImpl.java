@@ -1,4 +1,4 @@
-package core.utils;
+package utils;
 
 public class HasNameImpl implements HasName {
     private String name;

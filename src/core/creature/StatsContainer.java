@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import core.utils.TagContainer;
+import utils.TagContainer;
 
 public class StatsContainer extends TagContainer<Stat> {
     private List<StatChange> buffs;

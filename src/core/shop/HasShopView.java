@@ -1,6 +1,6 @@
 package core.shop;
 
-import core.utils.HasName;
+import utils.HasName;
 
 public interface HasShopView extends HasName {
     String getShopView();

@@ -15,7 +15,7 @@ import core.creature.Stat;
 import core.creature.StatChangeSource;
 import core.creature.WithStats;
 import core.creature.CreatureViewer;
-import core.utils.Constants;
+import utils.Constants;
 
 public class BattlefieldCreature extends BattlefieldObject implements WithStats, HasBattleView {
     private Creature creature;
@@ -84,6 +84,12 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
             int amount = creature.getTagValue(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE);
             creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
             MessageController.print(String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()));
+        }
+
+        //STUDENT TRAIT
+        int manaAmount = creature.getTagValue(CreatureTag.ADD_MANA_AFTER_ALLY_USED_SKILL);
+        if (manaAmount > 0) {
+            this.addAction(ActionFactory.addManaAction(this, manaAmount, ResolveTime.AFTER_ALLY_USING_SKILL));
         }
     }
 
@@ -220,6 +226,27 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     public boolean hasTag(CreatureTag tag) {
         return creature.hasTag(tag);
+    }
+
+    public int get(Stat stat) {
+        switch (stat) {
+            case HP:
+                return getCurrentHp();
+            case MANA:
+                return getCurrentMana();
+            case ATTACK:
+                return getCurrentAttack();
+            case SPEED:
+                return getCurrentSpeed();
+            case SPELL_POWER:
+                return getCurrentSpellPower();
+            case PHYSICAL_ARMOR:
+                return getCurrentPhysicalArmor();
+            case MAGIC_ARMOR:
+                return getCurrentMagicArmor();
+            default:
+                return 0;
+        }
     }
 
     @Override

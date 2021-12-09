@@ -1,5 +1,6 @@
-package core.utils;
+package utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -8,6 +9,42 @@ import core.shop.HasShopView;
 import core.shop.ShopView;
 
 public class Selector {
+
+    public static int creatureSellingSelect(List<? extends HasName> boardCreatures) {
+        return creatureSellingSelect(boardCreatures, new ArrayList<>());
+    }
+
+    public static int creatureSellingSelect(List<? extends HasName> boardCreatures, List<? extends HasName> benchCreatures) {
+        int selectedNumber = -1;
+        while (selectedNumber == -1) {
+            int counter = 0;
+            MessageController.print("0. Назад\n");
+            counter++;
+            if (boardCreatures.size() > 0) {
+                MessageController.print("Существа на доске:\n");
+                for (HasName creature : boardCreatures) {
+                    MessageController.print(String.format("%d. %s\n", counter, creature.getName()));
+                    counter += 1;
+                }
+            }
+            if (benchCreatures.size() > 0) {
+                MessageController.print("Существа на скамейке:\n");
+                for (HasName creature : benchCreatures) {
+                    MessageController.print(String.format("%d. %s\n", counter, creature.getName()));
+                    counter += 1;
+                }
+            }
+            if (counter >= 1) {
+                selectedNumber = readCommandNumber(0, counter - 1);
+                if (selectedNumber == -1) {
+                    MessageController.print("Введите число от 0 до " + (counter - 1));
+                }
+            } else {
+                selectedNumber = 0;
+            }
+        }
+        return selectedNumber;
+    }
 
     public static int select(List<? extends HasName> options) {
         int selectedNumber = -1;

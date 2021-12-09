@@ -1,6 +1,6 @@
 package core.creature;
 
-import core.utils.Tag;
+import utils.Tag;
 
 public enum CreatureTag implements Tag {
     UNDEFINED("UNDEFINED", 0),
@@ -10,7 +10,8 @@ public enum CreatureTag implements Tag {
     ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE("ADD_TEMP_RANDOM_STAT_BEFORE_BATTLE", 4),
     ADD_TEMP_HP_BEFORE_BATTLE("ADD_TEMP_HP_BEFORE_BATTLE", 5),
     ADD_TEMP_ATTACK_BEFORE_BATTLE("ADD_TEMP_ATTACK_BEFORE_BATTLE", 6),
-    ADD_TEMP_PARM_BEFORE_BATTLE("ADD_TEMP_PARM_BEFORE_BATTLE", 5);
+    ADD_TEMP_PARM_BEFORE_BATTLE("ADD_TEMP_PARM_BEFORE_BATTLE", 7),
+    ADD_MANA_AFTER_ALLY_USED_SKILL("ADD_MANA_AFTER_ALLY_USED_SKILL", 8);
 
     private String name;
     private int id;

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import core.battlefield.BattlefieldCreature;
-import core.utils.TagContainer;
+import utils.TagContainer;
 
 public class ActionInfo extends TagContainer<ActionTag> {
     public BattlefieldCreature performer;

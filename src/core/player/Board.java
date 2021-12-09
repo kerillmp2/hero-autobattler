@@ -36,14 +36,19 @@ public class Board {
         updateTraitBuffs();
     }
 
+    public void removeCreature(Creature creature) {
+        removeCreature(creature, getCreaturePosition(creature));
+    }
+
     public void removeCreature(Creature creature, Position position) {
+        this.creatures.get(position).remove(creature);
         if (isCreatureUnique(creature)) {
             TraitContainer creatureTraits = creature.getTraitContainer();
             for(Trait trait : creatureTraits.getTags()) {
+                System.out.println("Убираем бафф");
                 traitsController.removeTrait(trait);
             }
         }
-        this.creatures.get(position).remove(creature);
         updateTraitBuffs();
     }
 
@@ -80,6 +85,10 @@ public class Board {
 
     public List<Creature> getCreaturesByTrait(Trait trait) {
         return getAllCreatures().stream().filter(creature -> creature.getTraitContainer().hasTag(trait)).collect(Collectors.toList());
+    }
+
+    public boolean hasCreature(Creature creature) {
+        return getAllCreatures().contains(creature);
     }
 
     public List<Creature> getCreaturesOnPosition(Position position) {

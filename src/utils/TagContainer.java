@@ -1,4 +1,4 @@
-package core.utils;
+package utils;
 
 import java.util.Comparator;
 import java.util.Map;

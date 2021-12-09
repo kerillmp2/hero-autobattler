@@ -6,7 +6,7 @@ import core.battlefield.BattlefieldCreature;
 import core.controllers.utils.MessageController;
 import core.player.Player;
 import core.battlefield.Battlefield;
-import core.utils.Constants;
+import utils.Constants;
 
 public class BattleController {
     private final Battlefield battlefield;

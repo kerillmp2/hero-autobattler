@@ -4,10 +4,10 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class Shop<T extends HasShopView> {
-    protected List<ShopItem<T>> itemPool;
-    protected ShopLine<T> currentLine;
-    protected int shopLineLength;
-    protected int shopLevel;
+    public List<ShopItem<T>> itemPool;
+    public ShopLine<T> currentLine;
+    public int shopLineLength;
+    public int shopLevel;
 
     public Shop(List<ShopItem<T>> itemPool, int shopLineLength, int shopLevel) {
         this.itemPool = itemPool;
