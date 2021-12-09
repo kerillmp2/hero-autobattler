@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 import core.controllers.utils.MessageController;
 import core.shop.HasShopView;
-import core.shop.ShopView;
 
 public class Selector {
 
@@ -18,17 +17,26 @@ public class Selector {
         int selectedNumber = -1;
         while (selectedNumber == -1) {
             int counter = 0;
-            MessageController.print("0. Назад\n");
+            MessageController.print(
+                    "0. Назад\n",
+                    "0. Back\n"
+            );
             counter++;
             if (boardCreatures.size() > 0) {
-                MessageController.print("Существа на доске:\n");
+                MessageController.print(
+                        "Существа на доске:\n",
+                        "Creatures on the board:\n"
+                );
                 for (HasName creature : boardCreatures) {
                     MessageController.print(String.format("%d. %s\n", counter, creature.getName()));
                     counter += 1;
                 }
             }
             if (benchCreatures.size() > 0) {
-                MessageController.print("Существа на скамейке:\n");
+                MessageController.print(
+                        "Существа на скамейке:\n",
+                        "Creatures on the bench:\n"
+                );
                 for (HasName creature : benchCreatures) {
                     MessageController.print(String.format("%d. %s\n", counter, creature.getName()));
                     counter += 1;
@@ -37,7 +45,10 @@ public class Selector {
             if (counter >= 1) {
                 selectedNumber = readCommandNumber(0, counter - 1);
                 if (selectedNumber == -1) {
-                    MessageController.print("Введите число от 0 до " + (counter - 1));
+                    MessageController.print(
+                            "Введите число от 0 до " + (counter - 1),
+                            "Input number from 0 to " + (counter - 1)
+                    );
                 }
             } else {
                 selectedNumber = 0;
@@ -50,14 +61,16 @@ public class Selector {
         int selectedNumber = -1;
         while (selectedNumber == -1) {
             int counter = 0;
-            for (HasName option : options) {
-                MessageController.print(String.format("%d. %s\n", counter, option.getName()));
+            for (HasName ignored : options) {
                 counter += 1;
             }
             if (counter >= 1) {
                 selectedNumber = readCommandNumber(0, counter - 1);
                 if (selectedNumber == -1) {
-                    MessageController.print("Введите число от 0 до " + (counter - 1));
+                    MessageController.print(
+                            "Введите число от 0 до " + (counter - 1),
+                            "Input number from 0 to " + (counter - 1)
+                    );
                 }
             } else {
                 selectedNumber = 0;
@@ -75,23 +88,20 @@ public class Selector {
 
         while (selectedNumber == -1) {
             int counter = 0;
-            MessageController.print("0. Покинуть магазин\n");
-            for (HasShopView item : items) {
+            for (HasShopView ignored : items) {
                 counter += 1;
-                MessageController.print(String.format("%d. %s\n", counter, item.getShopView()));
             }
 
-            for (Pair<String, Integer> option : additionalOptions) {
+            for (Pair<String, Integer> ignored : additionalOptions) {
                 counter += 1;
-                MessageController.print(String.format("%d. %s (%d)\n", counter, option.first, option.second));
             }
-
-            MessageController.print(ShopView.getFooter());
 
             if (counter >= 1) {
                 selectedNumber = readCommandNumber(0, counter);
                 if (selectedNumber == -1) {
-                    MessageController.print("Введите число от 0 до " + counter);
+                    MessageController.print(
+                            "Введите число от 0 до " + counter,
+                            "Input number from 0 to " + counter);
                 }
             } else {
                 selectedNumber = 0;

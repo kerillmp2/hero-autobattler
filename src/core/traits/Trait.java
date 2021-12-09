@@ -7,19 +7,19 @@ import utils.Tag;
 
 public enum Trait implements Tag {
     UNDEFINED("UNDEFINED", 0, "UNDEFINED"),
-    KNIGHT("Рыцарь", 1, "Все существа получают [+2 / +3 / +5] атаки", 2, 4, 6),
-    POISONOUS("Ядовитый", 2, "Ядовитые получают [+1 / +2 / +4] яда", 2, 3, 4),
-    DEMON("Демон", 3, "???", 2, 4),
-    ROBOT("Робот", 4, "На время боя роботы получают случайные усиления [1 / 3 / 7] раз\nиз следующих: +5 здоровья, +2 атаки, +1 физической зашиты", 1, 2, 3),
-    FROSTBORN("Хладорождённый", 5, "???", 1, 2, 3),
-    STUDENT("Ученик", 6, "Когда союзник использует способность, ученики получают [5 / 11 / 23] маны", 2, 3, 5),
+    KNIGHT("Knight", 1, "All creatures gains [+2 / +3 / +5] attack", 2, 4, 6),
+    POISONOUS("Poisonous", 2, "Poisonous gains [+1 / +2 / +4] poison", 2, 3, 4),
+    DEMON("Demon", 3, "???", 2, 4, 6),
+    ROBOT("Bot", 4, "At the beginning of the battle Bots gains random buffs \n[1 / 3 / 7] times from following: +15 health, +4 attack, +2 physical defends", 1, 2, 3),
+    FROSTBORN("Frostborn", 5, "???", 1, 2, 3),
+    STUDENT("Student", 6, "Students gains [5 / 11 / 23] mana when an ally uses ability", 2, 3, 5),
 
-    WARRIOR("Воин", 12, "Воины получают [+1 / +2 / +3] атаки и [+1 / +2 / +3] физической защиты", 2, 3, 4),
-    ASSASSIN("Ассасин", 13, "Ассасины получают [+2 / +3 / +4] атаки и [+10 / +20 / +40] скорости", 2, 3, 4),
-    DEFENDER("Защитник", 14, "???"),
-    MAGE("Маг", 15, "Маги получают [+4 / +7 / +10] силы умений", 2, 3, 4),
-    EATER("Обжора", 16, "Обжоры навсегда получают [+4 / +6 / +10] здоровья перед боем", 2, 4, 5),
-    ALCHEMIST("Алхимик", 17, "???");
+    WARRIOR("Warrior", 12, "Warriors gains [+1 / +2 / +3] attack and [+1 / +2 / +3] physical defends", 2, 3, 4),
+    ASSASSIN("Assassin", 13, "Assassins gains [+2 / +3 / +4] attack and [+10 / +20 / +40] speed", 2, 3, 4),
+    DEFENDER("Guardian", 14, "???"),
+    MAGE("Mage", 15, "Mages gains [+4 / +7 / +10] spell power", 2, 3, 4),
+    EATER("Eater", 16, "Eaters permanently gains [+4 / +6 / +10] health before each battle", 2, 4, 5),
+    ALCHEMIST("Alchemist", 17, "???", 1, 2, 3);
 
     private String name;
     private int id;

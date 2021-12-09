@@ -47,24 +47,6 @@ public enum ResolveTime {
         this.id = id;
     }
 
-    public static ResolveTime byName(String name) {
-        for (ResolveTime time : ResolveTime.values()) {
-            if (time.name.equals(name)) {
-                return time;
-            }
-        }
-        return UNDEFINED;
-    }
-
-    public static ResolveTime byId(int id) {
-        for (ResolveTime time : ResolveTime.values()) {
-            if (time.id == id) {
-                return time;
-            }
-        }
-        return UNDEFINED;
-    }
-
     @Override
     public String toString() {
         return this.name;

@@ -1,15 +1,16 @@
-package core.creature;
+package core.viewers;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import core.creature.CreatureTag;
 import core.traits.Trait;
 import utils.Constants;
 import utils.TagContainer;
 
-public class CreatureViewer {
+public class CreatureBattleViewer extends Viewer {
 
     public static List<String> getCreatureView(String name, int attack, int hp, Collection<Trait> traits, TagContainer<CreatureTag> creatureTags) {
         int rowSize = Constants.BATTLE_VIEW_LENGTH.value;

@@ -14,7 +14,7 @@ import core.creature.CreatureTag;
 import core.creature.Stat;
 import core.creature.StatChangeSource;
 import core.creature.WithStats;
-import core.creature.CreatureViewer;
+import core.viewers.CreatureBattleViewer;
 import utils.Constants;
 
 public class BattlefieldCreature extends BattlefieldObject implements WithStats, HasBattleView {
@@ -63,7 +63,10 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         int additionalHP = creature.getTagValue(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE);
         if (additionalHP > 0) {
             creature.applyBuff(Stat.HP, StatChangeSource.PERMANENT, additionalHP);
-            MessageController.print(creature.getName() + " навсегда получает " + additionalHP + " HP");
+            MessageController.print(
+                    creature.getName() + " навсегда получает " + additionalHP + " HP",
+                    creature.getName() + " gains " + additionalHP + " HP"
+            );
         }
 
         //ROBOT TRAIT
@@ -71,19 +74,28 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
             Stat stat = Stat.HP;
             int amount = creature.getTagValue(CreatureTag.ADD_TEMP_HP_BEFORE_BATTLE);
             creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
-            MessageController.print(String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()));
+            MessageController.print(
+                    String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()),
+                    String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName())
+            );
         }
         if (creature.getTagValue(CreatureTag.ADD_TEMP_ATTACK_BEFORE_BATTLE) > 0) {
             Stat stat = Stat.ATTACK;
             int amount = creature.getTagValue(CreatureTag.ADD_TEMP_ATTACK_BEFORE_BATTLE);
             creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
-            MessageController.print(String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()));
+            MessageController.print(
+                    String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()),
+                    String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName())
+            );
         }
         if (creature.getTagValue(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE) > 0) {
             Stat stat = Stat.PHYSICAL_ARMOR;
             int amount = creature.getTagValue(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE);
             creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
-            MessageController.print(String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()));
+            MessageController.print(
+                    String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()),
+                    String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName())
+            );
         }
 
         //STUDENT TRAIT
@@ -256,6 +268,6 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     @Override
     public List<String> getBattleView() {
-        return CreatureViewer.getCreatureView(creature.getName(), getCurrentAttack(), getCurrentHp(), creature.getTraitContainer().getTags(), creature);
+        return CreatureBattleViewer.getCreatureView(creature.getName(), getCurrentAttack(), getCurrentHp(), creature.getTraitContainer().getTags(), creature);
     }
 }

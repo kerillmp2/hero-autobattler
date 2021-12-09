@@ -38,14 +38,6 @@ public class ActionFactory {
         return new Action(ActionInfo.empty().from(target).to(target).wrapTag(ActionTag.HEAL, amount));
     }
 
-    public static Action actionWithTag(ActionTag actionTag) {
-        return new Action(ActionInfo.empty().wrapTag(actionTag));
-    }
-
-    public static Action actionWithTag(ActionTag actionTag, int value) {
-        return new Action(ActionInfo.empty().wrapTag(actionTag, value));
-    }
-
     public static Action chooseMainActionAction(BattlefieldCreature creature) {
         return new Action(ActionInfo.empty().from(creature).to(creature).withTime(ResolveTime.BEFORE_MAIN_PHASE).wrapTag(ActionTag.CHOOSE_MAIN_ACTION));
     }

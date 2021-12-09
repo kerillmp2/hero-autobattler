@@ -45,7 +45,6 @@ public class Board {
         if (isCreatureUnique(creature)) {
             TraitContainer creatureTraits = creature.getTraitContainer();
             for(Trait trait : creatureTraits.getTags()) {
-                System.out.println("Убираем бафф");
                 traitsController.removeTrait(trait);
             }
         }

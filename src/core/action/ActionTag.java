@@ -25,24 +25,6 @@ public enum ActionTag implements Tag {
         this.id = id;
     }
 
-    public static ActionTag byName(String name) {
-        for (ActionTag mark : ActionTag.values()) {
-            if (mark.name.equals(name)) {
-                return mark;
-            }
-        }
-        return UNDEFINED;
-    }
-
-    public static ActionTag byId(int id) {
-        for (ActionTag mark : ActionTag.values()) {
-            if (mark.id == id) {
-                return mark;
-            }
-        }
-        return UNDEFINED;
-    }
-
     @Override
     public String getName() {
         return name;

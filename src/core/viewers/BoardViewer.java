@@ -1,17 +1,18 @@
-package core.player;
+package core.viewers;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import core.battle.BattleMap;
+import core.player.Bench;
+import core.player.Board;
 import core.battlefield.Position;
 import core.creature.Creature;
 import core.traits.Trait;
 import utils.Constants;
 import core.controllers.utils.MessageController;
 
-public class BoardViewer {
+public class BoardViewer extends Viewer {
 
     private static final int ROW_SIZE = Constants.BATTLEFIELD_VIEW_SIZE.value;
     private static final int OFFSET = Constants.MAP_OFFSET.value;
@@ -20,7 +21,7 @@ public class BoardViewer {
         StringBuilder boardView = new StringBuilder();
         boardView.append(getBoardViewHeader(board, limit));
         for (Position position : Position.values()) {
-            boardView.append(BattleMap.getCreaturesRowOnPosition(board.getCreaturesOnPosition(position), position));
+            boardView.append(BattlefieldViewer.getCreaturesRowOnPosition(board.getCreaturesOnPosition(position), position));
         }
         boardView.append(getBoardViewFooter(board));
 
@@ -32,7 +33,7 @@ public class BoardViewer {
         StringBuilder boardView = new StringBuilder();
         boardView.append(getBoardViewHeader(board, limit));
         for (Position position : Position.values()) {
-            boardView.append(BattleMap.getCreaturesRowOnPosition(board.getCreaturesOnPosition(position), position));
+            boardView.append(BattlefieldViewer.getCreaturesRowOnPosition(board.getCreaturesOnPosition(position), position));
         }
         boardView.append(getBoardViewFooter(board));
 
@@ -42,48 +43,48 @@ public class BoardViewer {
     private static StringBuilder getBenchView(Bench bench, boolean enumerate) {
         int limit = Constants.BENCH_SIZE.value;
         StringBuilder view = new StringBuilder();
-        view.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
+        view.append(lineWithAngles());
         StringBuilder row = new StringBuilder();
-        row.append("|").append(" ".repeat(OFFSET)).append("Ваша скамейка")
+        row.append("|").append(" ".repeat(OFFSET)).append("Your bench")
                 .append(" ".repeat(OFFSET)).append("[").append(limit - bench.getFreeSpace()).append(" / ").append(limit).append("]");
         row.append(" ".repeat(ROW_SIZE - row.length() - 1)).append("|\n");
         view.append(row);
-        view.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
+        view.append(lineWithAngles());
         for (int i = 0; i < bench.getCreaturesWithDummys().size(); i++) {
             Creature creature = bench.getCreatureOnPosition(i);
-            if (!creature.getName().equals("Пусто")) {
+            if (!creature.getName().equals("Пусто") && !creature.getName().equals("Empty")) {
                 StringBuilder creatureRow = new StringBuilder();
                 creatureRow.append("|").append(" ".repeat(OFFSET));
                 if (enumerate) {
                     creatureRow.append(i + 1).append(". ");
                 }
                 creatureRow.append(creature.getShopView());
-                creatureRow.append(" ".repeat(ROW_SIZE - creatureRow.length() - 1)).append("|\n");
+                creatureRow.append(emptyLine());
                 view.append(creatureRow);
             }
         }
-        view.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
+        view.append(lineWithAngles());
         return view;
     }
 
     private static StringBuilder getBoardViewHeader(Board board, int limit) {
         StringBuilder header = new StringBuilder();
-        header.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
+        header.append(lineWithAngles());
         StringBuilder row = new StringBuilder();
-        row.append("|").append(" ".repeat(OFFSET)).append("Ваше поле")
+        row.append("|").append(" ".repeat(OFFSET)).append("Your board")
                 .append(" ".repeat(OFFSET)).append("[").append(board.getAllCreatures().size()).append(" / ").append(limit).append("]");
         row.append(" ".repeat(ROW_SIZE - row.length() - 1)).append("|\n");
         header.append(row);
 
-        header.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
+        header.append(lineWithAngles());
         return header;
     }
 
     private static StringBuilder getBoardViewFooter(Board board) {
         StringBuilder footer = new StringBuilder();
-        footer.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
+        footer.append(lineWithAngles());
         footer.append(getTraitsView(board.getTraits()));
-        footer.append("+").append("-".repeat(ROW_SIZE - 2)).append("+").append("\n");
+        footer.append(lineWithAngles());
         return footer;
     }
 

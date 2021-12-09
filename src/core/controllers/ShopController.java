@@ -11,7 +11,7 @@ import core.controllers.utils.MessageController;
 import core.shop.HasShopView;
 import core.shop.Shop;
 import core.shop.ShopItem;
-import core.shop.ShopView;
+import core.viewers.ShopViewer;
 import utils.Pair;
 import utils.Selector;
 
@@ -31,9 +31,9 @@ public class ShopController<T extends HasShopView> {
         List<? extends HasShopView> items = shop.getCurrentLine().items.stream().map(ShopItem::getItem).collect(Collectors.toList());
         int selectedNumber = -1;
         while (selectedNumber != 0) {
-            MessageController.print(ShopView.getHeader(player.getCreatureShopLevel(), player.getMoney()));
-            Pair<String, Integer> refreshOption = new Pair<>("Обновить", refreshCost);
-            Pair<String, Integer> levelUpOption = new Pair<>("Повысить уровень", levelUpCost);
+            Pair<String, Integer> refreshOption = new Pair<>("Refresh", refreshCost);
+            Pair<String, Integer> levelUpOption = new Pair<>("Level up", levelUpCost);
+            MessageController.print(ShopViewer.getShopView(player.getCreatureShopLevel(), player.getMoney(), items, refreshOption, levelUpOption));
             selectedNumber = Selector.shopSelect(items, refreshOption, levelUpOption);
             if (selectedNumber != 0) {
                 if (selectedNumber - 1 == items.size()) {
@@ -42,7 +42,10 @@ public class ShopController<T extends HasShopView> {
                         refreshShop();
                         items = shop.getCurrentLine().items.stream().map(ShopItem::getItem).collect(Collectors.toList());
                     } else {
-                        MessageController.print("Недостаточно монет!\n");
+                        MessageController.print(
+                                "Недостаточно монет!\n",
+                                "Not enough coins!\n"
+                        );
                     }
                     continue;
                 }
@@ -51,7 +54,10 @@ public class ShopController<T extends HasShopView> {
                         player.reduceMoney(levelUpCost);
                         levelUp();
                     } else {
-                        MessageController.print("Недостаточно монет!\n");
+                        MessageController.print(
+                                "Недостаточно монет!\n",
+                                "Not enough coins!\n"
+                        );
                     }
                     continue;
                 }
@@ -83,18 +89,24 @@ public class ShopController<T extends HasShopView> {
     private boolean tryToBuyItem(ShopItem<T> shopItem) {
         int cost = shopItem.getCost();
         if (player.hasMoney(cost)) {
-            if (!shopItem.getItem().getName().equals("Продано")) {
+            if (!shopItem.getItem().getName().equals("Продано") || !shopItem.getItem().getName().equals("Sold")) {
                 player.reduceMoney(cost);
                 boolean isOperationSuccess = buyItem(shopItem);
                 if (isOperationSuccess) {
-                    MessageController.print(player.getName() + " купил " + shopItem.getItem().getName());
+                    MessageController.print(
+                            player.getName() + " купил " + shopItem.getItem().getName(),
+                            player.getName() + " bought " + shopItem.getItem().getName()
+                    );
                     return true;
                 } else {
                     return false;
                 }
             }
         } else {
-            MessageController.print("Недостаточно золота для покупки " + shopItem.getItem().getName() + "\n");
+            MessageController.print(
+                    "Недостаточно золота для покупки " + shopItem.getItem().getName() + "\n",
+                    "Not enough gold for " + shopItem.getItem().getName() + "\n"
+            );
         }
         return false;
     }
@@ -109,7 +121,10 @@ public class ShopController<T extends HasShopView> {
     private boolean buyCreature(ShopItem<Creature> shopItem) {
         if (player.getBoard().getAllCreatures().size() >= player.getCreatureShopLevel()) {
             if (player.getBench().getFreeSpace() <= 0) {
-                MessageController.print("Ваше поле переполнено!\n");
+                MessageController.print(
+                        "Ваше поле переполнено!\n",
+                        "Your board is full!\n"
+                );
                 return false;
             } else {
                 player.getBench().addCreature(shopItem.getItem());

@@ -98,7 +98,7 @@ public class ActionController {
         int amount = action.getActionInfo().getTagValue(ActionTag.HEAL);
         int currentHP = target.getCurrentHp();
         target.setCurrentHp(currentHP + amount);
-        return target.getBattleName() + " восстанавливает " + amount + " здоровья! "
+        return target.getBattleName() + " restores " + amount + " HP! "
                 + "[" + target.getCurrentHp() + "/" + target.getMaxHp() + "]\n";
     }
 
@@ -106,7 +106,7 @@ public class ActionController {
         BattlefieldCreature target = action.getActionInfo().performer;
         int amount = action.getActionInfo().getTagValue(ActionTag.ADD_MANA);
         target.addMana(amount);
-        return target.getBattleName() + " получает " + amount + " маны! "
+        return target.getBattleName() + " gains " + amount + " mana! "
                 + "[" + target.getCurrentMana() + "/" + target.getMaxMana() + "]\n";
     }
 
@@ -155,7 +155,7 @@ public class ActionController {
         int targetHp = performer.getCurrentHp();
         int damage = action.getActionInfo().getTagValue(ActionTag.TAKE_BASIC_DAMAGE);
         performer.setCurrentHp(targetHp - damage);
-        return performer.getBattleName() + " получает " + damage + " урона" + "\n";
+        return performer.getBattleName() + " takes " + damage + " damage\n";
     }
 
     private static String resolveApplyPoissonDamageAction(Action action) {
@@ -165,7 +165,7 @@ public class ActionController {
         int poisonDamage = action.getActionInfo().getTagValue(ActionTag.APPLY_POISON_DAMAGE);
         int dealedDamage = Calculator.calculateMagicDamage(poisonDamage, target);
         target.setCurrentHp(targetHp - dealedDamage);
-        return target.getBattleName() + " получает " + dealedDamage + " урона от яда\n";
+        return target.getBattleName() + " takes " + dealedDamage + " damage from poison\n";
     }
 
     private static String resolveBasicAttackAction(Action action) {
@@ -177,7 +177,7 @@ public class ActionController {
 
         Action takeDamageAction = ActionFactory.takeBasicAtackDamageAction(performer, target);
         target.addAction(takeDamageAction);
-        message += performer.getBattleName() + " атакует " + target.getBattleName() + "\n";
+        message += performer.getBattleName() + " attacks " + target.getBattleName() + "\n";
 
         message += resolve(performer, ResolveTime.ON_DEALING_DAMAGE);
         message += resolve(target, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.ON_TAKING_DAMAGE);
@@ -191,12 +191,12 @@ public class ActionController {
                         .wrapTag(ActionTag.APPLY_POISON_DAMAGE, poisonDamage)
                         .overrideTagMax(ActionTag.TURNS_LEFT, turnsLeft);
             }
-            message += performer.getBattleName() + " отравляет " + target.getBattleName() + " на " + poisonDamage + "\n";
-            message += target.getBattleName() + " имеет "
+            message += performer.getBattleName() + " poisons " + target.getBattleName() + " by " + poisonDamage + "\n";
+            message += target.getBattleName() + " has "
                     + target.getActionByTags(ActionTag.APPLY_POISON_DAMAGE).getActionInfo().getTagValue(ActionTag.APPLY_POISON_DAMAGE)
-                    + " отравления на "
+                    + " poison on "
                     + target.getActionByTags(ActionTag.APPLY_POISON_DAMAGE).getActionInfo().getTagValue(ActionTag.TURNS_LEFT)
-                    + " ходов\n";
+                    + " turns\n";
         }
         message += resolve(target, ResolveTime.AFTER_TAKING_DAMAGE);
         message += resolve(performer, ResolveTime.AFTER_DEALING_DAMAGE);

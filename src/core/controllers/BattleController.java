@@ -1,6 +1,6 @@
 package core.controllers;
 
-import core.battle.BattleMap;
+import core.viewers.BattlefieldViewer;
 import core.battle.BattleStatus;
 import core.battlefield.BattlefieldCreature;
 import core.controllers.utils.MessageController;
@@ -32,7 +32,7 @@ public class BattleController {
 
     public BattleStatus battle() {
         while (turnController.getTurnCounter() < Constants.BATTLE_TURN_LIMIT.value) {
-            MessageController.print(BattleMap.getBattleFieldView(battlefield));
+            MessageController.print(BattlefieldViewer.getBattleFieldView(battlefield));
             boolean firstSideHasAlive = this.battlefield.getFirstSide().hasAliveCreature();
             boolean secondSideHasAlive = this.battlefield.getSecondSide().hasAliveCreature();
             if (firstSideHasAlive && !secondSideHasAlive) {

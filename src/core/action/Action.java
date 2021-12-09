@@ -14,8 +14,4 @@ public class Action {
     public void addTag(ActionTag actionTag) {
         actionInfo.addTag(actionTag);
     }
-
-    public void addTagValue(ActionTag tag, int value) {
-        actionInfo.addTagValue(tag, value);
-    }
 }

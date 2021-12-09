@@ -13,7 +13,7 @@ import static core.controllers.ActionController.resolve;
 public class CreatureSkillFactory {
 
     public static CreatureSkill emptySkill() {
-        return (battleController, user) -> user.getBattleName() + " использует способность!\n";
+        return (battleController, user) -> user.getBattleName() + " casts skill!\n";
     }
 
     public static CreatureSkill dunkanSkill() {
@@ -25,7 +25,7 @@ public class CreatureSkillFactory {
             message = resolve(dunkan, ResolveTime.BEFORE_DEALING_DAMAGE);
             Action takeDamageAction = ActionFactory.takePhysicalDamageAction(target, damage);
             target.addAction(takeDamageAction);
-            message += dunkan.getBattleName() + " использует \"Удар щитом\" на " + target.getBattleName() + "!\n";
+            message += dunkan.getBattleName() + " casts \"Shield slam\" on " + target.getBattleName() + "!\n";
             message += resolve(dunkan, ResolveTime.ON_DEALING_DAMAGE);
             message += resolve(dunkan, ResolveTime.ON_DEALING_PHYSICAL_DAMAGE);
             message += resolve(target, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.BEFORE_TAKING_PHYSICAL_DAMAGE, ResolveTime.ON_TAKING_DAMAGE, ResolveTime.ON_TAKING_PHYSICAL_DAMAGE);
@@ -40,7 +40,7 @@ public class CreatureSkillFactory {
             String message;
             BattlefieldCreature target = salvira.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             int amount = salvira.getCurrentSpellPower();
-            message = salvira.getBattleName() + " использует \"Ядовитые клинки\" и получает +" + amount + " яда при атаке!\n";
+            message = salvira.getBattleName() + " casts \"Poison daggers\" and gains +" + amount + " poison!\n";
             salvira.getCreature().applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.UNTIL_BATTLE_END, amount);
             message += resolve(ActionFactory.attackAction(salvira, target));
 
@@ -52,7 +52,7 @@ public class CreatureSkillFactory {
         return (battleController, ignar) -> {
             String message;
             int healingAmount = ignar.getCreature().getHp() / 5 + ignar.getCurrentSpellPower();
-            message = ignar.getBattleName() + " использует \"Сытный обед\"!\n";
+            message = ignar.getBattleName() + " casts \"Tasty meal\"!\n";
             message += resolve(ActionFactory.healingAction(ignar, healingAmount));
 
             return message;
@@ -63,8 +63,8 @@ public class CreatureSkillFactory {
         return (battleController, warbot) -> {
           String message;
           int buffAmount = warbot.getCurrentSpellPower();
-          message = warbot.getBattleName() + " использует навык \"Холодная сталь\"!\n";
-          message += warbot.getBattleName() + " получает " + buffAmount + " атаки!\n";
+          message = warbot.getBattleName() + " casts \"Cold steel\"!\n";
+          message += warbot.getBattleName() + " gains " + buffAmount + " attack!\n";
           warbot.setCurrentAttack(warbot.getCurrentAttack() + buffAmount);
           return message;
         };
@@ -77,7 +77,7 @@ public class CreatureSkillFactory {
 
             int damage = kodji.getCurrentSpellPower() * 3;
             int slow = kodji.getCurrentSpellPower();
-            message = kodji.getBattleName() + " использует навык \"Ледяная стрела\" на " + target.getBattleName() + "\n";
+            message = kodji.getBattleName() + " casts \"Frost bolt\" on " + target.getBattleName() + "\n";
             message += resolve(kodji, ResolveTime.BEFORE_DEALING_DAMAGE);
             message += resolve(kodji, ResolveTime.BEFORE_DEALING_MAGIC_DAMAGE);
             Action takeDamageAction = ActionFactory.takeMagicDamageAction(target, damage);
@@ -88,7 +88,7 @@ public class CreatureSkillFactory {
             message += resolve(target, ResolveTime.AFTER_TAKING_DAMAGE, ResolveTime.AFTER_TAKING_MAGIC_DAMAGE);
             message += resolve(kodji, ResolveTime.AFTER_DEALING_DAMAGE, ResolveTime.AFTER_DEALING_MAGIC_DAMAGE);
             target.setCurrentSpeed(target.getCurrentSpeed() - slow);
-            message += target.getBattleName() + " замедляется на " + slow + "\n";
+            message += target.getBattleName() + " slows by " + slow + "\n";
             battleController.getTurnController().regenerateTurnOrder();
             return message;
         };
@@ -101,7 +101,7 @@ public class CreatureSkillFactory {
 
             int missingHealth = target.getMaxHp() - target.getCurrentHp();
             int healingAmount = 2 * mira.get(Stat.SPELL_POWER) + missingHealth / 6;
-            message = mira.getBattleName() + " использует навык \"Зелье лечения\" на " + target.getBattleName() + "\n";
+            message = mira.getBattleName() + " casts \"Healing potion\" on " + target.getBattleName() + "\n";
             message += resolve(ActionFactory.healingAction(target, healingAmount));
 
             return message;

@@ -42,7 +42,7 @@ public class Bench {
     }
 
     public boolean addCreature(Creature creature, int position) {
-        if (getCreatureOnPosition(position).getName().equals("Пусто")) {
+        if (getCreatureOnPosition(position).getName().equals("Пусто") || getCreatureOnPosition(position).getName().equals("Empty")) {
             creatures.set(position, creature);
             freeSpace--;
             return true;
@@ -52,7 +52,7 @@ public class Bench {
 
     public Creature removeCreature(int position) {
         Creature creature = creatures.get(position);
-        if (!creature.getName().equals("Пусто")) {
+        if (!creature.getName().equals("Пусто") || !creature.getName().equals("Empty") ) {
             freeSpace++;
         }
         creatures.set(position, Creature.benchDummy());
@@ -60,7 +60,7 @@ public class Bench {
     }
 
     public boolean removeCreature(Creature creature) {
-        if (creature.getName().equals("Пусто")) {
+        if (creature.getName().equals("Пусто") || creature.getName().equals("Empty") ) {
             return false;
         }
         int index = creatures.indexOf(creature);
@@ -89,7 +89,7 @@ public class Bench {
     }
 
     public List<Creature> getCreatures() {
-        return creatures.stream().filter(c -> !c.getName().equals("Пусто")).collect(Collectors.toList());
+        return creatures.stream().filter(c -> (!c.getName().equals("Пусто") && (!c.getName().equals("Empty")))).collect(Collectors.toList());
     }
 
     public List<Creature> getCreaturesWithDummys() {

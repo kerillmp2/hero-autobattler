@@ -11,22 +11,8 @@ public class ActionInfo extends TagContainer<ActionTag> {
     public BattlefieldCreature target;
     public ResolveTime resolveTime;
 
-    public ActionInfo(BattlefieldCreature performer, BattlefieldCreature target, ResolveTime resolveTime, Map<ActionTag, Integer> tagValues) {
-        super(tagValues);
-        this.performer = performer;
-        this.target = target;
-        this.resolveTime = resolveTime;
-    }
-
     public ActionInfo(BattlefieldCreature performer, BattlefieldCreature target, ResolveTime resolveTime) {
         super();
-        this.performer = performer;
-        this.target = target;
-        this.resolveTime = resolveTime;
-    }
-
-    public ActionInfo(BattlefieldCreature performer, BattlefieldCreature target, ResolveTime resolveTime, ActionTag... tags) {
-        super(Arrays.asList(tags));
         this.performer = performer;
         this.target = target;
         this.resolveTime = resolveTime;
