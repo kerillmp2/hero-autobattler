@@ -59,7 +59,7 @@ public class CreatureBattleViewer extends Viewer {
             }
         }
         view.append(" ".repeat(rowSize - curLength)).append("|\n");
-        view.append("+").append("-".repeat(rowSize)).append("+\n");
+        /*view.append("+").append("-".repeat(rowSize)).append("+\n");
 
         for (Trait trait : traits) {
             StringBuilder traitRow = new StringBuilder();
@@ -67,7 +67,7 @@ public class CreatureBattleViewer extends Viewer {
             traitRow.append(" ".repeat(rowSize - traitRow.length() + 1)).append("|\n");
             view.append(traitRow);
             curHeight++;
-        }
+        }*/
 
         view.append("+").append("-".repeat(rowSize)).append("+\n");
 
@@ -79,7 +79,7 @@ public class CreatureBattleViewer extends Viewer {
             curHeight++;
         }
 
-        view.append(("|" + " ".repeat(rowSize) + "|\n").repeat(height - 5 - curHeight));
+        view.append(("|" + " ".repeat(rowSize) + "|\n").repeat((height - 4) - curHeight));
 
         view.append("|").append(curAttack).append(" ".repeat(rowSize - curHp.length() - curAttack.length())).append(curHp).append("|\n");
         view.append("+").append("-".repeat(rowSize)).append("+\n");
