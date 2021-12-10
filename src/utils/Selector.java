@@ -17,30 +17,12 @@ public class Selector {
         int selectedNumber = -1;
         while (selectedNumber == -1) {
             int counter = 0;
-            MessageController.print(
-                    "0. Назад\n",
-                    "0. Back\n"
-            );
             counter++;
-            if (boardCreatures.size() > 0) {
-                MessageController.print(
-                        "Существа на доске:\n",
-                        "Creatures on the board:\n"
-                );
-                for (HasName creature : boardCreatures) {
-                    MessageController.print(String.format("%d. %s\n", counter, creature.getName()));
-                    counter += 1;
-                }
+            for (HasName ignored : boardCreatures) {
+                counter += 1;
             }
-            if (benchCreatures.size() > 0) {
-                MessageController.print(
-                        "Существа на скамейке:\n",
-                        "Creatures on the bench:\n"
-                );
-                for (HasName creature : benchCreatures) {
-                    MessageController.print(String.format("%d. %s\n", counter, creature.getName()));
-                    counter += 1;
-                }
+            for (HasName ignored : benchCreatures) {
+                counter += 1;
             }
             if (counter >= 1) {
                 selectedNumber = readCommandNumber(0, counter - 1);

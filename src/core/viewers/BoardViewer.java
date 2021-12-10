@@ -1,8 +1,10 @@
 package core.viewers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import core.player.Bench;
 import core.player.Board;
@@ -11,6 +13,7 @@ import core.creature.Creature;
 import core.traits.Trait;
 import utils.Constants;
 import core.controllers.utils.MessageController;
+import utils.HasName;
 
 public class BoardViewer extends Viewer {
 
@@ -144,5 +147,21 @@ public class BoardViewer extends Viewer {
             traitsView.append(traitRow);
         }
         return traitsView;
+    }
+
+    public static String benchBoardSimpleView(List<Creature> boardCreatures, List<Creature> benchCreatures) {
+        Window window = new Window();
+        window.lineWithAngles();
+        window.emptyLine();
+        window.line("0. Back");
+        window.emptyLine();
+        window.line("Creatures on board:");
+        window.emptyLine();
+        window.list(boardCreatures.stream().map(Creature::getShopView).collect(Collectors.toList()), true, 1, true, false);
+        window.line("Creatures on bench:");
+        window.emptyLine();
+        window.list(benchCreatures.stream().map(Creature::getShopView).collect(Collectors.toList()), true, boardCreatures.size() + 1, true, false);
+        window.lineWithAngles();
+        return window.getView();
     }
 }

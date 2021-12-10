@@ -1,6 +1,8 @@
 package core.viewers;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import core.shop.HasShopView;
 import utils.Constants;
@@ -35,34 +37,10 @@ public class ShopViewer extends Viewer {
     }
 
     public static String getBody(List<? extends HasShopView> items, Pair<String, Integer>... additionalOptions) {
-        int counter = 0;
-        StringBuilder view = new StringBuilder();
-        StringBuilder row = new StringBuilder();
-        row.append("|").append(" ".repeat(OFFSET));
-        row.append("0. Back");
-        row.append(" ".repeat(ROW_SIZE - row.length() - 1)).append("|\n");
-        view.append(row);
-        view.append(emptyLine());
-        for (HasShopView item : items) {
-            counter += 1;
-            row = new StringBuilder();
-            row.append("|").append(" ".repeat(OFFSET));
-            row.append(String.format("%d. %s", counter, item.getShopView()));
-            row.append(" ".repeat(ROW_SIZE - row.length() - 1)).append("|\n");
-            view.append(row);
-            view.append(emptyLine());
-        }
-
-        for (Pair<String, Integer> option : additionalOptions) {
-            counter += 1;
-            row = new StringBuilder();
-            row.append("|").append(" ".repeat(OFFSET));
-            row.append(String.format("%d. %s (%d)", counter, option.first, option.second));
-            row.append(" ".repeat(ROW_SIZE - row.length() - 1)).append("|\n");
-            view.append(row);
-            view.append(emptyLine());
-        }
-        return view.toString();
+        Window window = new Window();
+        window.list(items.stream().map(HasShopView::getShopView).collect(Collectors.toList()), true, 0, true, true);
+        window.list(Arrays.stream(additionalOptions).map(option -> String.format("%s (%d)", option.first, option.second)).collect(Collectors.toList()), true, items.size() + 1, true, false);
+        return window.getView();
     }
 
     public static String getFooter() {

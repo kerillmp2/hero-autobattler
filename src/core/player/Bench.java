@@ -32,7 +32,7 @@ public class Bench {
 
     public boolean addCreature(Creature creature) {
         for (int i = 0; i < creatures.size(); i++) {
-            if (creatures.get(i).getName().equals("Пусто")) {
+            if (creatures.get(i).getName().equals("Пусто") || creatures.get(i).getName().equals("Empty")) {
                 creatures.set(i, creature);
                 freeSpace--;
                 return true;
@@ -52,7 +52,7 @@ public class Bench {
 
     public Creature removeCreature(int position) {
         Creature creature = creatures.get(position);
-        if (!creature.getName().equals("Пусто") || !creature.getName().equals("Empty") ) {
+        if (!creature.getName().equals("Пусто") && !creature.getName().equals("Empty") ) {
             freeSpace++;
         }
         creatures.set(position, Creature.benchDummy());
