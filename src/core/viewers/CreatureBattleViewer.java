@@ -73,7 +73,7 @@ public class CreatureBattleViewer extends Viewer {
 
         if (creatureTags.getTagValue(CreatureTag.POISONOUS) > 0) {
             StringBuilder poisonRow = new StringBuilder();
-            poisonRow.append("|").append(" ".repeat(offset)).append("Яд: ").append(creatureTags.getTagValue(CreatureTag.POISONOUS));
+            poisonRow.append("|").append(" ".repeat(offset)).append("Poison: ").append(creatureTags.getTagValue(CreatureTag.POISONOUS));
             poisonRow.append(" ".repeat(rowSize - poisonRow.length() + 1)).append("|\n");
             view.append(poisonRow);
             curHeight++;
