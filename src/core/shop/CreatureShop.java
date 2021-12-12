@@ -20,7 +20,7 @@ public class CreatureShop extends Shop<Creature> {
         return new CreatureShop(
                 CreaturePool.toShopItems(),
                 5,
-                player.getCreatureShopLevel()
+                player.getBoard().getMaxSize()
         );
     }
 
@@ -47,6 +47,7 @@ public class CreatureShop extends Shop<Creature> {
         inlineCostCounter.put(5, 0);
 
         int lineSize = Math.min(length, itemPool.size());
+        int rollCostLimit = 100;
         for (int i = 0; i < lineSize; i++) {
             int creatureCost = generateCostOfCreature();
             int costCounter = inlineCostCounter.get(creatureCost);
@@ -58,6 +59,10 @@ public class CreatureShop extends Shop<Creature> {
                 inlineCostCounter.put(creatureCost, costCounter + 1);
             } else {
                 i--;
+                rollCostLimit--;
+                if (rollCostLimit == 0) {
+                    break;
+                }
             }
         }
         return shopLine;

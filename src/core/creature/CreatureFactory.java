@@ -10,7 +10,8 @@ public class CreatureFactory {
     2. Создать трейты в Trait
     3. Прописать баффы трейтов в TraitsController (не забыть добавить StatChangeSource для трейта)
     4. Создать метод для создания существа в CreatureFactoty (тут)
-    5. Добавить метод создания существа в CreaturePool.init()
+    5. Добавить метод создания существа в creatureByName()
+    6. Добавить метод создания существа в CreaturePool.init()
      */
 
     public static Creature dunkan() {
@@ -21,7 +22,7 @@ public class CreatureFactory {
     }
 
     public static Creature salvira() {
-        Creature salvira = new Creature ("Salvira", 92, 13, 1, 1, 2, 120, 90, 1, CreatureTag.HAVE_BASIC_ATTACK)
+        Creature salvira = new Creature ("Salvira", 92, 13, 1, 1, 2, 120, 90, 1, 1, CreatureTag.HAVE_BASIC_ATTACK)
                 .wrapTrait(Trait.ASSASSIN)
                 .wrapTrait(Trait.POISONOUS)
                 .wrapSkill(CreatureSkillFactory.salviraSkill());
@@ -30,30 +31,64 @@ public class CreatureFactory {
     }
 
     public static Creature ignar() {
-        return new Creature ("Ignar", 128, 14, 0, 3, 5, 80, 100, 1, CreatureTag.HAVE_BASIC_ATTACK)
+        return new Creature ("Ignar", 128, 14, 0, 3, 5, 80, 100, 1, 1, CreatureTag.HAVE_BASIC_ATTACK)
                 .wrapTrait(Trait.DEMON)
                 .wrapTrait(Trait.EATER)
                 .wrapSkill(CreatureSkillFactory.ignarSkill());
     }
 
     public static Creature warbot() {
-        return new Creature ("Warbot", 105, 15, 4, 0, 2, 90, 100, 1, CreatureTag.HAVE_BASIC_ATTACK)
+        return new Creature ("Warbot", 105, 15, 4, 0, 2, 90, 100, 1, 1, CreatureTag.HAVE_BASIC_ATTACK)
                 .wrapTrait(Trait.ROBOT)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapSkill(CreatureSkillFactory.warbotSkill());
     }
 
     public static Creature kodji() {
-        return new Creature ("Kodji", 92, 12, 2, 4, 7, 105, 30, 1, CreatureTag.HAVE_BASIC_ATTACK)
+        return new Creature ("Kodji", 92, 12, 2, 4, 7, 105, 30, 1, 1, CreatureTag.HAVE_BASIC_ATTACK)
                 .wrapTrait(Trait.FROSTBORN)
                 .wrapTrait(Trait.MAGE)
                 .wrapSkill(CreatureSkillFactory.kodjiSkill());
     }
 
     public static Creature mira() {
-        return new Creature ("Mira", 97, 14, 2, 3, 4, 108, 40, 1, CreatureTag.HAVE_BASIC_ATTACK)
+        return new Creature ("Mira", 97, 14, 2, 3, 4, 108, 40, 1, 1, CreatureTag.HAVE_BASIC_ATTACK)
                 .wrapTrait(Trait.ALCHEMIST)
                 .wrapTrait(Trait.STUDENT)
                 .wrapSkill(CreatureSkillFactory.miraSkill());
+    }
+
+    public static Creature dummy() {
+        return new Creature ("Dummy", 97, 14, 2, 3, 4, 108, 40, 5, 1, CreatureTag.HAVE_BASIC_ATTACK)
+                .wrapTrait(Trait.ALCHEMIST)
+                .wrapTrait(Trait.STUDENT)
+                .wrapSkill(CreatureSkillFactory.miraSkill());
+    }
+
+    public static Creature creatureByName(String name) {
+        switch (name) {
+            case "Dunkan": {
+                return dunkan();
+            }
+            case "Salvira": {
+                return salvira();
+            }
+            case "Ignar": {
+                return ignar();
+            }
+            case "Warbot": {
+                return warbot();
+            }
+            case "Kodji": {
+                return kodji();
+            }
+            case "Mira": {
+                return mira();
+            }
+            case "Dummy": {
+                return dummy();
+            }
+        }
+        return Creature.shopDummy();
     }
 }

@@ -3,8 +3,8 @@ package core.controllers;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import core.battlefield.Position;
 import core.creature.Creature;
+import core.creature.CreatureFactory;
 import core.creature.CreaturePool;
 import core.player.Player;
 import core.controllers.utils.MessageController;
@@ -18,13 +18,13 @@ import utils.Selector;
 public class ShopController<T extends HasShopView> {
     private Shop<T> shop;
     private Player player;
-    private int refreshCost = 1;
+    private int refreshCost = 2;
     private int levelUpCost;
 
     public ShopController(Shop<T> shop, Player player) {
         this.shop = shop;
         this.player = player;
-        this.levelUpCost = generateLevelUpCost(player.getCreatureShopLevel());
+        this.levelUpCost = generateLevelUpCost(player.getBoard().getMaxSize());
     }
 
     public void shopProcessing() {
@@ -33,12 +33,13 @@ public class ShopController<T extends HasShopView> {
         while (selectedNumber != 0) {
             Pair<String, Integer> refreshOption = new Pair<>("Refresh", refreshCost);
             Pair<String, Integer> levelUpOption = new Pair<>("Level up", levelUpCost);
-            MessageController.print(ShopViewer.getShopView(player.getCreatureShopLevel(), player.getMoney(), items, refreshOption, levelUpOption));
+            MessageController.print(ShopViewer.getShopView(player.getBoard().getMaxSize(), player.getMoney(), items, refreshOption, levelUpOption));
             selectedNumber = Selector.shopSelect(items, refreshOption, levelUpOption);
             if (selectedNumber != 0) {
                 if (selectedNumber - 1 == items.size()) {
                     if (player.getMoney() >= refreshCost) {
                         player.reduceMoney(refreshCost);
+                        regenerateShop();
                         refreshShop();
                         items = shop.getCurrentLine().items.stream().map(ShopItem::getItem).collect(Collectors.toList());
                     } else {
@@ -52,6 +53,7 @@ public class ShopController<T extends HasShopView> {
                 if (selectedNumber - 2 == items.size()) {
                     if (player.getMoney() >= levelUpCost) {
                         player.reduceMoney(levelUpCost);
+                        regenerateShop();
                         levelUp();
                     } else {
                         MessageController.print(
@@ -89,7 +91,7 @@ public class ShopController<T extends HasShopView> {
     private boolean tryToBuyItem(ShopItem<T> shopItem) {
         int cost = shopItem.getCost();
         if (player.hasMoney(cost)) {
-            if (!shopItem.getItem().getName().equals("Продано") || !shopItem.getItem().getName().equals("Sold")) {
+            if (!shopItem.getItem().getName().equals("Продано") && !shopItem.getItem().getName().equals("Sold")) {
                 player.reduceMoney(cost);
                 boolean isOperationSuccess = buyItem(shopItem);
                 if (isOperationSuccess) {
@@ -119,67 +121,52 @@ public class ShopController<T extends HasShopView> {
     }
 
     private boolean buyCreature(ShopItem<Creature> shopItem) {
-        if (player.getBoard().getAllCreatures().size() >= player.getCreatureShopLevel()) {
-            if (player.getBench().getFreeSpace() <= 0) {
-                MessageController.print(
-                        "Ваше поле переполнено!\n",
-                        "Your board is full!\n"
-                );
-                return false;
-            } else {
-                player.getBench().addCreature(shopItem.getItem());
-                CreaturePool.removeCreature(shopItem.getItem());
-                int index = shop.currentLine.items.indexOf(shopItem);
-                shop.changeItemToDummy(index);
-                return true;
-            }
-        } else {
-            player.getBoard().addCreature(shopItem.getItem(), Position.FIRST_LINE);
+        if (player.getBoardController().addCreature(shopItem.getItem())) {
             CreaturePool.removeCreature(shopItem.getItem());
             int index = shop.currentLine.items.indexOf(shopItem);
             shop.changeItemToDummy(index);
             return true;
+        } else {
+            MessageController.print(
+                    "Ваше поле и скамейка переполнены!\n",
+                    "Your board and bench is full!\n"
+            );
+            return false;
         }
     }
 
     public boolean sellCreature(Creature creature) {
+        boolean sold = false;
         if (player.getBoard().hasCreature(creature)) {
-            return sellCreatureFromBoard(creature);
+            player.getBoardController().removeCreatureFromBoard(creature);
+            sold = true;
         }
         if (player.getBench().hasCreature(creature)) {
-            return sellCreatureFromBench(creature);
+            player.getBoardController().removeCreatureFromBench(creature);
+            sold = true;
         }
-        return false;
+        if (sold) {
+            player.getBoardController().getCreatureCounter().clear(creature.getName());
+            creature.clearAllChangesFromAllSources();
+            for (int i = 0; i < creature.getLevel(); i++) {
+                CreaturePool.addCreature(CreatureFactory.creatureByName(creature.getName()));
+            }
+            player.addMoney(creature.getSellingCost());
+        }
+        return sold;
     }
 
-    public boolean sellCreatureFromBoard(Creature creature) {
-        if (!player.getBoard().hasCreature(creature)) {
-            return false;
-        }
-        player.getBoard().removeCreature(creature);
-        creature.clearAllChangesFromAllSources();
-        CreaturePool.addCreature(creature);
-        player.addMoney(creature.getCost());
-        return true;
-    }
-
-    public boolean sellCreatureFromBench(Creature creature) {
-        if (!player.getBench().removeCreature(creature)) {
-            return false;
-        }
-        creature.clearAllChangesFromAllSources();
-        CreaturePool.addCreature(creature);
-        player.addMoney(creature.getCost());
-        return true;
+    public void reduceLevelUpCost(int amount) {
+        this.levelUpCost = Math.max(0, levelUpCost - amount);
     }
 
     private void levelUp() {
         shop.incrementShopLevel();
         player.incrementShopLevel();
-        this.levelUpCost = generateLevelUpCost(player.getCreatureShopLevel());
+        this.levelUpCost = generateLevelUpCost(player.getBoard().getMaxSize());
     }
 
     private int generateLevelUpCost(int level) {
-        return 2 + 2 * level;
+        return 2 + 3 * level;
     }
 }

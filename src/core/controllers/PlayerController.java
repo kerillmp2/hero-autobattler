@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import core.battlefield.Position;
 import core.controllers.utils.MessageController;
 import core.creature.Creature;
 import core.viewers.BoardViewer;
@@ -14,7 +13,6 @@ import core.player.TurnOption;
 import core.shop.CreatureShop;
 import core.viewers.ListViewer;
 import core.viewers.TurnOptionsViewer;
-import core.viewers.Viewer;
 import utils.HasNameImpl;
 import utils.Option;
 import utils.Selector;
@@ -44,6 +42,7 @@ public class PlayerController {
             currentOption = TurnOption.byName(turnOptions.get(currentOptionNum).getTag().getName());
             resolveTurnOption(currentOption);
         }
+        creatureShopController.reduceLevelUpCost(2);
     }
 
     private void resolveTurnOption(TurnOption turnOption) {
@@ -84,7 +83,7 @@ public class PlayerController {
     private void processViewBoard() {
         int selectedNumber = -1;
         while (true) {
-            BoardViewer.showBoardView(player.getBoard(), player.getBench(), player.getCreatureShopLevel());
+            BoardViewer.showBoardView(player.getBoard(), player.getBench(), player.getBoard().getMaxSize());
             List<Option<TurnOption>> options = new ArrayList<>();
             options.add(new Option<>(TurnOption.DEFAULT, "Back"));
             options.add(new Option<>(TurnOption.MOVE_FROM_BOARD, "Remove creature from board"));
@@ -104,7 +103,7 @@ public class PlayerController {
         int selectedNumber = -1;
         Creature selectedCreature = null;
         while (selectedNumber != 0) {
-            BoardViewer.showBoardView(player.getBoard(), player.getBench(), player.getCreatureShopLevel());
+            BoardViewer.showBoardView(player.getBoard(), player.getBench(), player.getBoard().getMaxSize());
             List<Creature> allBoardCreatures = player.getBoard().getAllCreatures();
             List<Creature> allBenchCreatures = player.getBench().getCreaturesWithDummys();
             List<HasNameImpl> boardCreatures = allBoardCreatures.stream().map(creature -> new HasNameImpl(creature.getShopView())).collect(Collectors.toList());
@@ -136,15 +135,15 @@ public class PlayerController {
         if (creature.getName().equals("Пусто") || creature.getName().equals("Empty")) {
             return;
         }
-        if (player.getBoard().getAllCreatures().size() >= player.getCreatureShopLevel()) {
+        if (!player.getBoardController().canAddCreatureToBoard()) {
             MessageController.print(
                     "Нет места на доске!",
                     "Your board is full!"
             );
             return;
         }
-        player.getBench().removeCreature(creature);
-        player.getBoard().addCreature(creature, Position.FIRST_LINE);
+        player.getBoardController().removeCreatureFromBench(creature);
+        player.getBoardController().addCreatureToBoard(creature);
         MessageController.print(
                 creature.getName() + " выставлен на доску\n",
                 creature.getName() + " put on the board\n"
@@ -156,8 +155,9 @@ public class PlayerController {
         if (creature == null) {
             return;
         }
-        if (player.getBench().addCreature(creature)) {
-            player.getBoard().removeCreature(creature);
+        if (player.getBoardController().canAddCreatureToBench()) {
+            player.getBoardController().addCreatureToBench(creature);
+            player.getBoardController().removeCreatureFromBoard(creature);
             MessageController.print(
                     creature.getName() + " возвращается на скамейку\n",
                     creature.getName() + " returned to the bench\n"
@@ -191,7 +191,9 @@ public class PlayerController {
     private void processSelling() {
         Creature creature = selectCreature();
         if (creature != null) {
-            creatureShopController.sellCreature(creature);
+            if (creatureShopController.sellCreature(creature)) {
+                MessageController.print(creature.getNameLevel() + " sold for " + creature.getSellingCost() + " gold");
+            }
         }
     }
 

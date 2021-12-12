@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import core.battle.BattleStatus;
-import core.battlefield.Position;
 import core.controllers.BattleController;
 import core.controllers.utils.MessageController;
 import core.creature.Creature;
@@ -17,10 +16,10 @@ public class BattleTester {
         Player p1 = Player.newPlayerWithName("Player 1");
         Player p2 = Player.newPlayerWithName("Player 2");
         for (Creature creature : firstSide) {
-            p1.getBoard().addCreature(creature, Position.FIRST_LINE);
+            p1.getBoardController().addCreature(creature);
         }
         for (Creature creature : secondSide) {
-            p2.getBoard().addCreature(creature, Position.FIRST_LINE);
+            p2.getBoardController().addCreature(creature);
         }
         return BattleController.processBattleForPlayers(p1, p2);
     }

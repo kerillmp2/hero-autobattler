@@ -30,24 +30,14 @@ public class Bench {
         return creatures.get(position);
     }
 
-    public boolean addCreature(Creature creature) {
+    public void addCreature(Creature creature) {
         for (int i = 0; i < creatures.size(); i++) {
             if (creatures.get(i).getName().equals("Пусто") || creatures.get(i).getName().equals("Empty")) {
                 creatures.set(i, creature);
                 freeSpace--;
-                return true;
+                return;
             }
         }
-        return false;
-    }
-
-    public boolean addCreature(Creature creature, int position) {
-        if (getCreatureOnPosition(position).getName().equals("Пусто") || getCreatureOnPosition(position).getName().equals("Empty")) {
-            creatures.set(position, creature);
-            freeSpace--;
-            return true;
-        }
-        return false;
     }
 
     public Creature removeCreature(int position) {
@@ -59,16 +49,15 @@ public class Bench {
         return creature;
     }
 
-    public boolean removeCreature(Creature creature) {
+    public void removeCreature(Creature creature) {
         if (creature.getName().equals("Пусто") || creature.getName().equals("Empty") ) {
-            return false;
+            return;
         }
         int index = creatures.indexOf(creature);
         if (index == -1) {
-            return false;
+            return;
         }
         removeCreature(index);
-        return true;
     }
 
     public int positionOf(Creature creature) {
@@ -82,6 +71,10 @@ public class Bench {
 
     public int getFreeSpace() {
         return freeSpace;
+    }
+
+    public boolean hasFreeSpace() {
+        return freeSpace > 0;
     }
 
     public int getSize() {

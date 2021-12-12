@@ -17,18 +17,20 @@ public class Board {
 
     private final Map<Position, List<Creature>> creatures;
     private final TraitsController traitsController = TraitsController.build();
+    private int maxSize;
 
-    public Board() {
+    public Board(int maxSize) {
         this.creatures = new HashMap<>();
         for (Position position : Position.values()) {
             this.creatures.put(position, new ArrayList<>());
         }
+        this.maxSize = maxSize;
     }
 
     public void addCreature(Creature creature, Position position) {
         if (isCreatureUnique(creature)) {
             TraitContainer creatureTraits = creature.getTraitContainer();
-            for(Trait trait : creatureTraits.getTags()) {
+            for (Trait trait : creatureTraits.getTags()) {
                 traitsController.addTrait(trait);
             }
         }
@@ -49,14 +51,6 @@ public class Board {
             }
         }
         updateTraitBuffs();
-    }
-
-    public void moveCreature(Creature creature, Position position) {
-        Position creaturesPosition = getCreaturePosition(creature);
-        if(creaturesPosition != Position.UNDEFINED) {
-            this.creatures.get(creaturesPosition).remove(creature);
-            this.creatures.get(position).add(creature);
-        }
     }
 
     public Position getCreaturePosition(Creature creature) {
@@ -107,5 +101,13 @@ public class Board {
             }
         }
         return traits;
+    }
+
+    public int getMaxSize() {
+        return maxSize;
+    }
+
+    public void setMaxSize(int maxSize) {
+        this.maxSize = maxSize;
     }
 }

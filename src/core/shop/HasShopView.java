@@ -4,6 +4,6 @@ import utils.HasName;
 
 public interface HasShopView extends HasName {
     String getShopView();
-    int getCost();
+    int getSellingCost();
 
 }

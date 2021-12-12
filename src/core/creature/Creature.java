@@ -3,6 +3,7 @@ package core.creature;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import core.battle.HasBattleView;
 import core.creature.skills.CreatureSkill;
@@ -17,11 +18,12 @@ import utils.TagContainer;
 public class Creature extends TagContainer<CreatureTag> implements HasShopView, HasBattleView {
     private String name;
     private int cost;
+    private int level;
     private CreatureSkill skill = CreatureSkillFactory.emptySkill();
     private TraitContainer traitContainer;
     private StatsContainer statsContainer;
 
-    public Creature(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int maxMana, int cost, CreatureTag... tags) {
+    public Creature(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int maxMana, int cost, int level, CreatureTag... tags) {
         super(Arrays.asList(tags));
         this.name = name;
         traitContainer = new TraitContainer();
@@ -34,18 +36,19 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         statsContainer.addTagValue(Stat.SPEED, speed);
         statsContainer.addTagValue(Stat.MANA, maxMana);
         this.cost = cost;
+        this.level = level;
     }
 
     public static Creature shopDummy() {
-        return new Creature("Sold", 0, 0, 0, 0, 0,0, 0, 0);
+        return new Creature("Sold", 0, 0, 0, 0, 0,0, 0, 0, 1);
     }
 
     public static Creature benchDummy() {
-        return new Creature("Empty", 0, 0, 0, 0, 0, 0, 0, 0);
+        return new Creature("Empty", 0, 0, 0, 0, 0, 0, 0, 0, 1);
     }
 
     public static Creature withStats(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int maxMana, int cost) {
-        return new Creature(name, hp, attack, physicalArmor, magicArmor, spellPower, speed, maxMana, cost, CreatureTag.HAVE_BASIC_ATTACK);
+        return new Creature(name, hp, attack, physicalArmor, magicArmor, spellPower, speed, maxMana, cost, 1, CreatureTag.HAVE_BASIC_ATTACK);
     }
 
     @Override
@@ -57,6 +60,10 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     public String getName() {
         return name;
+    }
+
+    public String getNameLevel() {
+        return name + " <" + level + ">";
     }
 
     public int getHp() {
@@ -134,6 +141,18 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         return skill;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void incrementLevel() {
+        this.level++;
+    }
+
     @Override
     public String toString() {
         return this.name;
@@ -145,7 +164,7 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
             return name;
         }
         StringBuilder view = new StringBuilder();
-        view.append(name).append(" ".repeat(Constants.MAX_NAME_LEN.value - name.length() + 1));
+        view.append(name).append(" <").append(level).append(">").append(" ".repeat(Constants.MAX_NAME_LEN.value - String.valueOf(level).length() - name.length() - 1));
         int traitsLen = 0;
         view.append("[");
         List<Trait> traits = new ArrayList<>(traitContainer.getTags());
@@ -162,7 +181,7 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
         StringBuilder statsView = new StringBuilder();
 
-        statsView.append("(").append(cost).append(") ")
+        statsView.append("(").append(getSellingCost()).append(") ")
                 .append("[AD: ").append(getAttack()).append(", ").append("HP: ").append(getHp()).append("]");
         statsView.append(" ".repeat(Constants.AD_HP_LEN.value - statsView.length()));
         statsView.append("<PhysArm: ").append(getPhysicalArmor()).append(", ").append("MagArm: ").append(getMagicArmor()).append(", ").append("Speed: ").append(getSpeed()).append(">");
@@ -183,12 +202,16 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
     }
 
     @Override
+    public int getSellingCost() {
+        return cost * level;
+    }
+
     public int getCost() {
         return cost;
     }
 
     @Override
     public List<String> getBattleView() {
-        return CreatureBattleViewer.getCreatureView(name, getAttack(), getHp(), traitContainer.getTags(), this);
+        return CreatureBattleViewer.getCreatureView(getNameLevel(), getAttack(), getHp(), traitContainer.getTags(), this);
     }
 }

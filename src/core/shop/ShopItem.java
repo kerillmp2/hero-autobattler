@@ -21,6 +21,6 @@ public class ShopItem<T extends HasShopView> {
 
     public static ShopItem<Creature> creatureDummy() {
         Creature dummy = Creature.shopDummy();
-        return new ShopItem<>(dummy, dummy.getCost());
+        return new ShopItem<>(dummy, dummy.getSellingCost());
     }
 }

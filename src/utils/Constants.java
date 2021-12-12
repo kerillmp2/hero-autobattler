@@ -27,7 +27,7 @@ public enum Constants {
 
 
     //Другие игровые константы
-    BENCH_SIZE("BENCH_SIZE", 199, 7),
+    BENCH_SIZE("BENCH_SIZE", 199, 5),
     BATTLE_TURN_LIMIT("BATTLE_TURN_LIMIT", 200, 50),
     MONEY_AFTER_BATTLE("MONEY_AFTER_BATTLE", 201, 2),
     MONEY_FOR_WIN("MONEY_FOR_WIN", 202, 1),

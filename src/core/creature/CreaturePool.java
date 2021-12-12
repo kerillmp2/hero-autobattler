@@ -1,7 +1,9 @@
 package core.creature;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import core.shop.ShopItem;
@@ -22,14 +24,23 @@ public class CreaturePool {
     }
 
     public static List<ShopItem<Creature>> toShopItems() {
-        return creaturePool.stream().map(creature -> new ShopItem<>(creature, creature.getCost())).collect(Collectors.toList());
+        return creaturePool.stream().map(creature -> new ShopItem<>(creature, creature.getSellingCost())).collect(Collectors.toList());
     }
 
     public static void init() {
-        final int firstLevelAmount = 10;
+        Map<Integer, Integer> amountByCost = new HashMap<>();
+        amountByCost.put(1, 10);
+        amountByCost.put(2, 1);
+        amountByCost.put(3, 1);
+        amountByCost.put(4, 1);
+        amountByCost.put(5, 9);
 
-        for (int i = 0; i < firstLevelAmount; i++) {
-            creaturePool.addAll(getCreaturesWithCost(1));
+        for (Map.Entry<Integer, Integer> costAmount : amountByCost.entrySet()) {
+            int cost = costAmount.getKey();
+            int amount = costAmount.getValue();
+            for (int i = 0; i < amount; i++) {
+                creaturePool.addAll(getCreaturesWithCost(cost));
+            }
         }
     }
 
@@ -42,6 +53,9 @@ public class CreaturePool {
             creatures.add(CreatureFactory.warbot());
             creatures.add(CreatureFactory.kodji());
             creatures.add(CreatureFactory.mira());
+        }
+        if (cost == 5) {
+            creatures.add(CreatureFactory.dummy());
         }
         return creatures;
     }
