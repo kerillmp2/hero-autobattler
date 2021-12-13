@@ -29,8 +29,8 @@ public class CreaturePool {
 
     public static void init() {
         Map<Integer, Integer> amountByCost = new HashMap<>();
-        amountByCost.put(1, 10);
-        amountByCost.put(2, 1);
+        amountByCost.put(1, 0);
+        amountByCost.put(2, 5);
         amountByCost.put(3, 1);
         amountByCost.put(4, 1);
         amountByCost.put(5, 9);
@@ -54,7 +54,7 @@ public class CreaturePool {
             creatures.add(CreatureFactory.kodji());
             creatures.add(CreatureFactory.mira());
         }
-        if (cost == 5) {
+        if (cost == 2) {
             creatures.add(CreatureFactory.dummy());
         }
         return creatures;

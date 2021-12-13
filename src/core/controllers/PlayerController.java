@@ -106,8 +106,8 @@ public class PlayerController {
             BoardViewer.showBoardView(player.getBoard(), player.getBench(), player.getBoard().getMaxSize());
             List<Creature> allBoardCreatures = player.getBoard().getAllCreatures();
             List<Creature> allBenchCreatures = player.getBench().getCreaturesWithDummys();
-            List<HasNameImpl> boardCreatures = allBoardCreatures.stream().map(creature -> new HasNameImpl(creature.getShopView())).collect(Collectors.toList());
-            List<HasNameImpl> benchCreatures = allBenchCreatures.stream().map(creature -> new HasNameImpl(creature.getShopView())).collect(Collectors.toList());
+            List<HasNameImpl> boardCreatures = allBoardCreatures.stream().map(creature -> new HasNameImpl(creature.getShopView(true))).collect(Collectors.toList());
+            List<HasNameImpl> benchCreatures = allBenchCreatures.stream().map(creature -> new HasNameImpl(creature.getShopView(true))).collect(Collectors.toList());
             MessageController.print(BoardViewer.benchBoardSimpleView(allBoardCreatures, allBenchCreatures));
             selectedNumber = Selector.creatureSellingSelect(boardCreatures, benchCreatures);
             if (selectedNumber != 0) {
@@ -174,8 +174,8 @@ public class PlayerController {
         int selectedNumber = -1;
         Creature selectedCreature = null;
         while (selectedNumber != 0) {
-            List<HasNameImpl> boardCreatures = creatures.stream().map(creature -> new HasNameImpl(creature.getShopView())).collect(Collectors.toList());
-            MessageController.print(ListViewer.viewList(creatures.stream().map(Creature::getShopView).collect(Collectors.toList()), true));
+            List<HasNameImpl> boardCreatures = creatures.stream().map(creature -> new HasNameImpl(creature.getShopView(true))).collect(Collectors.toList());
+            MessageController.print(ListViewer.viewList(creatures.stream().map(c -> c.getShopView(true)).collect(Collectors.toList()), true));
             selectedNumber = Selector.creatureSellingSelect(boardCreatures);
             if (selectedNumber != 0) {
                 selectedNumber--;

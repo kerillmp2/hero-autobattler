@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import core.controllers.utils.RandomController;
-import core.creature.Stat;
+import core.creature.stat.Stat;
 import core.player.Board;
 import core.creature.Creature;
 

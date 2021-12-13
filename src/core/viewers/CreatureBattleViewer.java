@@ -15,7 +15,7 @@ public class CreatureBattleViewer extends Viewer {
     public static List<String> getCreatureView(String name, int attack, int hp, Collection<Trait> traits, TagContainer<CreatureTag> creatureTags) {
         int rowSize = Constants.BATTLE_VIEW_LENGTH.value;
         int height = Constants.BATTLE_VIEW_HEIGHT.value;
-        int offset = 1;
+        int offset = Constants.BATTLE_VIEW_OFFSET.value;
         int curHeight = 0;
         int curLength = 0;
         StringBuilder view = new StringBuilder();

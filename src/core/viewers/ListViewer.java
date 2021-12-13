@@ -1,9 +1,6 @@
 package core.viewers;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import utils.HasName;
 
 public class ListViewer extends Viewer {
 

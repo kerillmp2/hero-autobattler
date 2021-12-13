@@ -174,6 +174,7 @@ public class ActionController {
         String message;
 
         message = resolve(performer, ResolveTime.BEFORE_DEALING_DAMAGE);
+        message += resolve(performer, ResolveTime.BEFORE_ATTACK);
 
         Action takeDamageAction = ActionFactory.takeBasicAtackDamageAction(performer, target);
         target.addAction(takeDamageAction);
@@ -198,6 +199,7 @@ public class ActionController {
                     + target.getActionByTags(ActionTag.APPLY_POISON_DAMAGE).getActionInfo().getTagValue(ActionTag.TURNS_LEFT)
                     + " turns\n";
         }
+        message += resolve(performer, ResolveTime.AFTER_ATTACK);
         message += resolve(target, ResolveTime.AFTER_TAKING_DAMAGE);
         message += resolve(performer, ResolveTime.AFTER_DEALING_DAMAGE);
 

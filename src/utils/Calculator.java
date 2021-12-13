@@ -1,6 +1,6 @@
 package utils;
 
-import core.creature.WithStats;
+import core.creature.stat.WithStats;
 
 public class Calculator {
     public static int calculateBasicAttackDamage(WithStats attacker, WithStats target) {

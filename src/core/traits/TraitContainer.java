@@ -1,4 +1,4 @@
-package core.controllers;
+package core.traits;
 
 import core.traits.Trait;
 import utils.TagContainer;

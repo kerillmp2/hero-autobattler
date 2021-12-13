@@ -59,9 +59,9 @@ public class CreatureFactory {
     }
 
     public static Creature dummy() {
-        return new Creature ("Dummy", 97, 14, 2, 3, 4, 108, 40, 5, 1, CreatureTag.HAVE_BASIC_ATTACK)
-                .wrapTrait(Trait.ALCHEMIST)
-                .wrapTrait(Trait.STUDENT)
+        return new Creature ("Dummy", 97, 10, 2, 3, 4, 108, 40, 2, 1, CreatureTag.HAVE_BASIC_ATTACK)
+                .wrapTrait(Trait.WARRIOR)
+                .wrapTrait(Trait.KNIGHT)
                 .wrapSkill(CreatureSkillFactory.miraSkill());
     }
 

@@ -3,14 +3,17 @@ package core.creature;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import core.battle.HasBattleView;
+import core.controllers.LevelController;
 import core.creature.skills.CreatureSkill;
 import core.creature.skills.CreatureSkillFactory;
+import core.creature.stat.Stat;
+import core.creature.stat.StatChangeSource;
+import core.creature.stat.StatsContainer;
 import core.shop.HasShopView;
 import core.traits.Trait;
-import core.controllers.TraitContainer;
+import core.traits.TraitContainer;
 import core.viewers.CreatureBattleViewer;
 import utils.Constants;
 import utils.TagContainer;
@@ -94,6 +97,10 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         return statsContainer.getTagValue(Stat.MANA);
     }
 
+    public int getStat(Stat stat) {
+        return statsContainer.getTagValue(stat);
+    }
+
     public Creature wrapTrait(Trait trait) {
         traitContainer.addTagValue(trait, 1);
         return this;
@@ -107,11 +114,19 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
     }
 
     public void applyBuff(Stat stat, StatChangeSource source, int amount) {
-        statsContainer.addBuff(stat, source, amount);
+        statsContainer.addBuff(stat, source, amount, false);
+    }
+
+    public void applyBuff(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
+        statsContainer.addBuff(stat, source, amount, isPercentage);
     }
 
     public void applyDebuff(Stat stat, StatChangeSource source, int amount) {
-        statsContainer.addDebuff(stat, source, amount);
+        statsContainer.addDebuff(stat, source, amount, false);
+    }
+
+    public void applyDebuff(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
+        statsContainer.addDebuff(stat, source, amount, isPercentage);
     }
 
     public void applyCreatureTagChange(CreatureTag creatureTag, StatChangeSource source, int amount) {
@@ -147,10 +162,7 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     public void setLevel(int level) {
         this.level = level;
-    }
-
-    public void incrementLevel() {
-        this.level++;
+        LevelController.levelUpCreature(this, level);
     }
 
     @Override
@@ -160,11 +172,20 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     @Override
     public String getShopView() {
+        return getShopView(false);
+    }
+
+    public String getShopView(boolean additionalInfo) {
         if (name.equals("Продано") || name.equals("Пусто") || name.equals("Sold") || name.equals("Empty")) {
             return name;
         }
         StringBuilder view = new StringBuilder();
-        view.append(name).append(" <").append(level).append(">").append(" ".repeat(Constants.MAX_NAME_LEN.value - String.valueOf(level).length() - name.length() - 1));
+        view.append(name);
+        if(additionalInfo) {
+            view.append(" <").append(level).append(">").append(" ".repeat(Constants.MAX_NAME_LEN.value - String.valueOf(level).length() - name.length() - 1));
+        } else {
+            view.append(" ".repeat(Constants.MAX_NAME_LEN.value - name.length() + 1));
+        }
         int traitsLen = 0;
         view.append("[");
         List<Trait> traits = new ArrayList<>(traitContainer.getTags());

@@ -1,4 +1,4 @@
-package core.creature;
+package core.creature.stat;
 
 import java.util.Arrays;
 

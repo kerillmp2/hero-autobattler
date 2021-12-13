@@ -11,7 +11,7 @@ import core.battlefield.Position;
 import core.controllers.TraitsController;
 import core.creature.Creature;
 import core.traits.Trait;
-import core.controllers.TraitContainer;
+import core.traits.TraitContainer;
 
 public class Board {
 

@@ -1,9 +1,10 @@
-package core.creature;
+package core.creature.stat;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import core.creature.CreatureTag;
 import utils.TagContainer;
 
 public class StatsContainer extends TagContainer<Stat> {
@@ -21,19 +22,32 @@ public class StatsContainer extends TagContainer<Stat> {
     @Override
     public int getTagValue(Stat stat) {
         int defaultValue = super.getTagValue(stat);
-        int buffs = Math.max(calculateBuffsForStat(stat), 0);
+        int floatBuffs = Math.max(calculateFloatBuffsForStat(stat), 0);
+        int percentageBuffs = Math.max(calculatePercentageBuffsForStat(stat), 0);
+        double buffCoefficient = (100.0 + (double) percentageBuffs) / 100.0;
         int debuffs = Math.max(calculateDebuffsForStat(stat), 0);
-        return Math.max(defaultValue + buffs - debuffs, 0);
+        int percentageDebuffs = Math.max(calculatePercentageDebuffsForStat(stat), 0);
+        double debuffCoefficient = (100.0 + (double) percentageDebuffs) / 100.0;
+        return Math.max((int) (((defaultValue + floatBuffs) * buffCoefficient - debuffs) * debuffCoefficient), 0);
     }
 
     public int getTagValue(CreatureTag tag) {
         return tagChanges.stream().filter(c -> c.creatureTag == tag).mapToInt(c -> c.amount).sum();
     }
 
-    private int calculateBuffsForStat(Stat stat) {
+    private int calculateFloatBuffsForStat(Stat stat) {
         int buff = 0;
-        List<StatChange> buffs = getBuffsForStat(stat);
-        for (StatChange statChange : buffs) {
+        List<StatChange> floatBuffs = getBuffsForStat(stat).stream().filter(b -> !b.isPercentage()).collect(Collectors.toList());
+        for (StatChange statChange : floatBuffs) {
+            buff += statChange.getAmount();
+        }
+        return buff;
+    }
+
+    private int calculatePercentageBuffsForStat(Stat stat) {
+        int buff = 0;
+        List<StatChange> percentageBuffs = getBuffsForStat(stat).stream().filter(StatChange::isPercentage).collect(Collectors.toList());
+        for (StatChange statChange : percentageBuffs) {
             buff += statChange.getAmount();
         }
         return buff;
@@ -43,6 +57,15 @@ public class StatsContainer extends TagContainer<Stat> {
         int debuff = 0;
         List<StatChange> debuffs = getDebuffsForStat(stat);
         for (StatChange statChange : debuffs) {
+            debuff += statChange.getAmount();
+        }
+        return debuff;
+    }
+
+    private int calculatePercentageDebuffsForStat(Stat stat) {
+        int debuff = 0;
+        List<StatChange> percentageDebuffs = getDebuffsForStat(stat).stream().filter(StatChange::isPercentage).collect(Collectors.toList());
+        for (StatChange statChange : percentageDebuffs) {
             debuff += statChange.getAmount();
         }
         return debuff;
@@ -60,12 +83,12 @@ public class StatsContainer extends TagContainer<Stat> {
         tagChanges.add(new CreatureTagChange(creatureTag, source, amount));
     }
 
-    public void addBuff(Stat stat, StatChangeSource source, int amount) {
-        buffs.add(new StatChange(stat, source, amount));
+    public void addBuff(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
+        buffs.add(new StatChange(stat, source, amount, isPercentage));
     }
 
-    public void addDebuff(Stat stat, StatChangeSource source, int amount) {
-        debuffs.add(new StatChange(stat, source, amount));
+    public void addDebuff(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
+        debuffs.add(new StatChange(stat, source, amount, isPercentage));
     }
 
     public void clearAllChangesFromSource(StatChangeSource source) {
@@ -102,11 +125,13 @@ public class StatsContainer extends TagContainer<Stat> {
         private final Stat stat;
         private final StatChangeSource source;
         private final int amount;
+        private final boolean isPercentage;
 
-        public StatChange(Stat stat, StatChangeSource source, int amount) {
+        public StatChange(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
             this.stat = stat;
             this.source = source;
             this.amount = amount;
+            this.isPercentage = isPercentage;
         }
 
         public Stat getStat() {
@@ -119,6 +144,10 @@ public class StatsContainer extends TagContainer<Stat> {
 
         public int getAmount() {
             return amount;
+        }
+
+        public boolean isPercentage() {
+            return isPercentage;
         }
     }
 

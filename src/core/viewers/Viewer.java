@@ -12,61 +12,74 @@ public class Viewer {
         return line(" ", "|", "|", true);
     }
 
+    protected static String emptyLine(int length) {
+        return line(" ", "|", "|", length, true);
+    }
+
     protected static String lineWithAngles() {
         return line("-", "+", "+", true);
+    }
+
+    protected static String lineWithAngles(int length) {
+        return line("-", "+", "+", length, true);
     }
 
     protected static String line() {
         return line("-", "-", "-", true);
     }
 
+    protected static String line(int length) {
+        return line("-", "-", "-", length, true);
+    }
+
     protected static String line(String sym, String leftAngle, String rightAngle, boolean endLine) {
         return leftAngle + sym.repeat(ROW_SIZE - 2) + rightAngle + (endLine ? "\n" : "");
     }
 
-    protected static String windowWith(List<String>... windows) {
-        StringBuilder view = new StringBuilder();
-        for (List<String> lines : windows) {
-            if (lines.size() > 0) {
-                view.append(lineWithAngles());
-                for (String line : lines) {
-                    StringBuilder row = new StringBuilder();
-                    row.append("|").append(" ".repeat(OFFSET));
-                    row.append(line);
-                    row.append(" ".repeat(ROW_SIZE - row.length() - 1)).append("|\n");
-                    view.append(row);
-                    view.append(emptyLine());
-                }
-            }
-        }
-        view.append(lineWithAngles());
-        return view.toString();
+    protected static String line(String sym, String leftAngle, String rightAngle, int length, boolean endLine) {
+        return leftAngle + sym.repeat(length - 2) + rightAngle + (endLine ? "\n" : "");
     }
 
     protected static class Window {
-        StringBuilder view = new StringBuilder();
+        private StringBuilder view = new StringBuilder();
+        private int length = ROW_SIZE;
+        private int offset = OFFSET;
+        private int currentHeight = 0;
+
+        public Window() {
+        }
+
+        public Window(int length, int offset) {
+            this.length = length;
+            this.offset = offset;
+        }
 
         public Window lineWithAngles() {
-            view.append(Viewer.lineWithAngles());
+            view.append(Viewer.lineWithAngles(length));
+            currentHeight++;
             return this;
         }
 
         public Window emptyLine() {
-            view.append(Viewer.emptyLine());
+            view.append(Viewer.emptyLine(length));
+            currentHeight++;
             return this;
         }
 
         public Window line() {
-            view.append(Viewer.line());
+            view.append(Viewer.line(length));
+            currentHeight++;
             return this;
         }
 
         public Window line(String line) {
             StringBuilder row = new StringBuilder();
-            row.append("|").append(" ".repeat(OFFSET));
+            line = line.replaceAll("\\$", "");
+            row.append("|").append(" ".repeat(offset));
             row.append(line);
-            row.append(" ".repeat(ROW_SIZE - row.length() - 1)).append("|\n");
+            row.append(" ".repeat(length - row.length() - 1)).append("|\n");
             add(row);
+            currentHeight++;
             return this;
         }
 
@@ -105,11 +118,16 @@ public class Viewer {
 
         public Window clear() {
             view = new StringBuilder();
+            currentHeight = 0;
             return this;
         }
 
         public String getView() {
             return view.toString();
+        }
+
+        public int getCurrentHeight() {
+            return currentHeight;
         }
     }
 }

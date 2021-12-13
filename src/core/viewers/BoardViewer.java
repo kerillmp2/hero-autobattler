@@ -50,7 +50,7 @@ public class BoardViewer extends Viewer {
         window.line(header + " ".repeat(Constants.MAX_NAME_LEN.value - header.length() + 2) + "[" + (limit - bench.getFreeSpace()) + " / " + limit + "]");
         window.lineWithAngles();
         window.list(
-                bench.getCreaturesWithDummys().stream().map(Creature::getShopView).filter(c -> !c.equals("Empty") && !c.equals("Пусто")).collect(Collectors.toList()),
+                bench.getCreaturesWithDummys().stream().map(c -> c.getShopView(true)).filter(c -> !c.equals("Empty") && !c.equals("Пусто")).collect(Collectors.toList()),
                 enumerate, 1, false, false);
         window.lineWithAngles();
         return window.getView();
@@ -144,10 +144,10 @@ public class BoardViewer extends Viewer {
         window.emptyLine();
         window.line("Creatures on board:");
         window.emptyLine();
-        window.list(boardCreatures.stream().map(Creature::getShopView).collect(Collectors.toList()), true, 1, true, false);
+        window.list(boardCreatures.stream().map(c -> c.getShopView(true)).collect(Collectors.toList()), true, 1, true, false);
         window.line("Creatures on bench:");
         window.emptyLine();
-        window.list(benchCreatures.stream().map(Creature::getShopView).collect(Collectors.toList()), true, boardCreatures.size() + 1, true, false);
+        window.list(benchCreatures.stream().map(c -> c.getShopView(true)).collect(Collectors.toList()), true, boardCreatures.size() + 1, true, false);
         window.lineWithAngles();
         return window.getView();
     }

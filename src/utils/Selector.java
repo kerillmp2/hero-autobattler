@@ -39,11 +39,11 @@ public class Selector {
         return selectedNumber;
     }
 
-    public static int select(List<? extends HasName> options) {
+    public static int select(List<? extends Object> options) {
         int selectedNumber = -1;
         while (selectedNumber == -1) {
             int counter = 0;
-            for (HasName ignored : options) {
+            for (Object ignored : options) {
                 counter += 1;
             }
             if (counter >= 1) {
@@ -61,7 +61,7 @@ public class Selector {
         return selectedNumber;
     }
 
-    public static int select(HasName... options) {
+    public static int select(Object... options) {
         return select(List.of(options));
     }
 

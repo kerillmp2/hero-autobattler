@@ -11,9 +11,9 @@ import core.battle.HasBattleView;
 import core.controllers.utils.MessageController;
 import core.creature.Creature;
 import core.creature.CreatureTag;
-import core.creature.Stat;
-import core.creature.StatChangeSource;
-import core.creature.WithStats;
+import core.creature.stat.Stat;
+import core.creature.stat.StatChangeSource;
+import core.creature.stat.WithStats;
 import core.viewers.CreatureBattleViewer;
 import utils.Constants;
 
@@ -57,8 +57,10 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
         this.addAction(ActionFactory.chooseMainActionAction(this));
         this.addAction(ActionFactory.addManaAction(this, Constants.MANA_AFTER_TAKING_DAMAGE.value, ResolveTime.AFTER_TAKING_DAMAGE));
-        this.addAction(ActionFactory.addManaAction(this, Constants.MANA_AFTER_DEALING_DAMAGE.value, ResolveTime.AFTER_DEALING_DAMAGE));
-
+        this.addAction(ActionFactory.addManaAction(this, Constants.MANA_AFTER_DEALING_DAMAGE.value, ResolveTime.AFTER_ATTACK));
+        if (getTagValue(CreatureTag.ADD_MANA_AFTER_ATTACK) > 0) {
+            this.addAction(ActionFactory.addManaAction(this, getTagValue(CreatureTag.ADD_MANA_AFTER_ATTACK), ResolveTime.AFTER_ATTACK));
+        }
         //EATER TRAIT
         int additionalHP = creature.getTagValue(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE);
         if (additionalHP > 0) {

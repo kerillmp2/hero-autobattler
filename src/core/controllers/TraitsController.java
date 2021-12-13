@@ -5,9 +5,10 @@ import java.util.stream.Collectors;
 
 import core.creature.Creature;
 import core.creature.CreatureTag;
-import core.creature.Stat;
-import core.creature.StatChangeSource;
+import core.creature.stat.Stat;
+import core.creature.stat.StatChangeSource;
 import core.traits.Trait;
+import core.traits.TraitContainer;
 
 public class TraitsController {
     private final TraitContainer traitContainer;

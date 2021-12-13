@@ -1,4 +1,4 @@
-package core.creature;
+package core.creature.stat;
 
 public interface WithStats {
     int getCurrentHp();

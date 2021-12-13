@@ -5,8 +5,8 @@ import core.action.ActionFactory;
 import core.action.ResolveTime;
 import core.battlefield.BattlefieldCreature;
 import core.creature.CreatureTag;
-import core.creature.Stat;
-import core.creature.StatChangeSource;
+import core.creature.stat.Stat;
+import core.creature.stat.StatChangeSource;
 
 import static core.controllers.ActionController.resolve;
 
