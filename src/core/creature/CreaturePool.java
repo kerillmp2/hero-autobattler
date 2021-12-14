@@ -29,8 +29,8 @@ public class CreaturePool {
 
     public static void init() {
         Map<Integer, Integer> amountByCost = new HashMap<>();
-        amountByCost.put(1, 0);
-        amountByCost.put(2, 5);
+        amountByCost.put(1, 1);
+        amountByCost.put(2, 15);
         amountByCost.put(3, 1);
         amountByCost.put(4, 1);
         amountByCost.put(5, 9);

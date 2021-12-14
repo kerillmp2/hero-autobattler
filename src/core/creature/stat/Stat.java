@@ -7,13 +7,13 @@ import utils.Tag;
 
 public enum Stat implements Tag {
     UNDEFINED("UNDEFINED", "UNDEFINED", 0),
-    HP("Hit points", "HP", 1),
+    HP("HP", "HP", 1),
     ATTACK("Attack", "А", 2),
-    PHYSICAL_ARMOR("Physical defense", "PDef", 3),
-    MAGIC_ARMOR("Magic defense", "MDef", 4),
+    PHYSICAL_ARMOR("Physical armor", "PArm", 3),
+    MAGIC_ARMOR("Magic armor", "MArm", 4),
     SPELL_POWER("Spell power", "AP", 5),
     SPEED("Speed", "Speed", 6),
-    MANA("Mana", "Mana", 7);
+    MANA("Max Mana", "Mana", 7);
 
     private String name;
     private String shortName;

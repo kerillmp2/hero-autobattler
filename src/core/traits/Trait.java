@@ -16,7 +16,7 @@ public enum Trait implements Tag {
 
     WARRIOR("Warrior", 12, "Warriors gains [+1 / +2 / +3] attack and [+1 / +2 / +3] physical defends", 2, 3, 4),
     ASSASSIN("Assassin", 13, "Assassins gains [+2 / +3 / +4] attack and [+10 / +20 / +40] speed", 2, 3, 4),
-    DEFENDER("Guardian", 14, "???"),
+    DEFENDER("Guardian", 14, "All creatures gains [+2 / +4 / +6] physical armor", 2, 3, 4),
     MAGE("Mage", 15, "Mages gains [+4 / +7 / +10] spell power", 2, 3, 4),
     EATER("Eater", 16, "Eaters permanently gains [+4 / +6 / +10] health before each battle", 2, 4, 5),
     ALCHEMIST("Alchemist", 17, "???", 1, 2, 3);

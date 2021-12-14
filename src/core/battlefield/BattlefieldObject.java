@@ -13,19 +13,16 @@ import core.action.ResolveTime;
 
 public class BattlefieldObject {
     private final Set<ObjectStatus> statusSet;
-    private Position position;
     private final Map<ResolveTime, List<Action>> actions;
 
-    public BattlefieldObject(Set<ObjectStatus> statusSet, Position position, Map<ResolveTime, List<Action>> actions) {
+    public BattlefieldObject(Set<ObjectStatus> statusSet, Map<ResolveTime, List<Action>> actions) {
         this.statusSet = statusSet;
-        this.position = position;
         this.actions = actions;
         rebaseActions();
-        statusSet.add(ObjectStatus.byPosition(position));
     }
 
-    public BattlefieldObject(Set<ObjectStatus> statusSet, Position position) {
-        this(statusSet, position, new HashMap<>());
+    public BattlefieldObject(Set<ObjectStatus> statusSet) {
+        this(statusSet, new HashMap<>());
     }
 
     private void rebaseActions() {
@@ -93,14 +90,6 @@ public class BattlefieldObject {
 
     public Set<ObjectStatus> getStatusSet() {
         return statusSet;
-    }
-
-    public Position getPosition() {
-        return position;
-    }
-
-    public void setPosition(Position position) {
-        this.position = position;
     }
 
     public Action getActionByTags(ActionTag... actionTags) {

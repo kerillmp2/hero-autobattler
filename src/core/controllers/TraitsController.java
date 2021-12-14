@@ -22,7 +22,7 @@ public class TraitsController {
     }
 
     public void updateTraitBuffs(List<Creature> allCreatures) {
-        updateKingGuardBuff(allCreatures);
+        updateKnightBuff(allCreatures);
         updateWarriorBuff(allCreatures);
         updatePoisonousBuff(allCreatures);
         updateEaterBuff(allCreatures);
@@ -31,19 +31,35 @@ public class TraitsController {
         updateFrostBornBuff(allCreatures);
         updateAssassinBuff(allCreatures);
         updateStudentsBuff(allCreatures);
+        updateDefenderBuff(allCreatures);
     }
 
-    private void updateKingGuardBuff(List<Creature> allCreatures) {
+    public void updateDefenderBuff(List<Creature> allCreatures) {
+        //Defender: All creatures gains [+2 / +4 / +6] physical armor
+        int defendersNum = getTraitValue(Trait.DEFENDER);
+        allCreatures.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.DEFENDER_TRAIT));
+        if (defendersNum >= Trait.DEFENDER.getLevels().get(0) && defendersNum < Trait.DEFENDER.getLevels().get(1)) {
+            allCreatures.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.DEFENDER_TRAIT, 2));
+        }
+        if (defendersNum >= Trait.DEFENDER.getLevels().get(1) && defendersNum < Trait.DEFENDER.getLevels().get(2)) {
+            allCreatures.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.DEFENDER_TRAIT, 4));
+        }
+        if (defendersNum >= Trait.DEFENDER.getLevels().get(2)) {
+            allCreatures.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.DEFENDER_TRAIT, 6));
+        }
+    }
+
+    private void updateKnightBuff(List<Creature> allCreatures) {
         //KING_GUARD: <+2 Attack, +3 Attack, +5 Attack> to all Creatures.
-        int kingGuardNum = getTraitValue(Trait.KNIGHT);
+        int knight = getTraitValue(Trait.KNIGHT);
         allCreatures.forEach(c -> c.clearAllChangesFromSource(StatChangeSource.KNIGHT_TRAIT));
-        if (kingGuardNum >= Trait.KNIGHT.getLevels().get(0) && kingGuardNum < Trait.KNIGHT.getLevels().get(1)) {
+        if (knight >= Trait.KNIGHT.getLevels().get(0) && knight < Trait.KNIGHT.getLevels().get(1)) {
             allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KNIGHT_TRAIT, 2));
         }
-        if (kingGuardNum >= Trait.KNIGHT.getLevels().get(1) && kingGuardNum < Trait.KNIGHT.getLevels().get(2)) {
+        if (knight >= Trait.KNIGHT.getLevels().get(1) && knight < Trait.KNIGHT.getLevels().get(2)) {
             allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KNIGHT_TRAIT, 3));
         }
-        if (kingGuardNum >= Trait.KNIGHT.getLevels().get(2)) {
+        if (knight >= Trait.KNIGHT.getLevels().get(2)) {
             allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KNIGHT_TRAIT, 5));
         }
     }

@@ -13,43 +13,40 @@ import core.creature.Creature;
 import core.creature.CreatureTag;
 import core.creature.stat.Stat;
 import core.creature.stat.StatChangeSource;
+import core.creature.stat.StatsContainer;
 import core.creature.stat.WithStats;
 import core.viewers.CreatureBattleViewer;
 import utils.Constants;
 
 public class BattlefieldCreature extends BattlefieldObject implements WithStats, HasBattleView {
     private Creature creature;
-    private int currentHp;
-    private int currentAttack;
-    private int currentPhysicalArmor;
-    private int currentMagicArmor;
-    private int currentSpellPower;
-    private int currentSpeed;
     private int currentMana;
+    private final StatsContainer statsContainer;
     private final String battleName;
     private Battlefield battlefield;
     private BattlefieldSide battlefieldSide;
 
-    public BattlefieldCreature(Creature creature, Position position, String battleName, Set<ObjectStatus> statusSet) {
-        super(statusSet, position);
+    public BattlefieldCreature(Creature creature, String battleName, StatsContainer statsContainer, Set<ObjectStatus> statusSet) {
+        super(statusSet);
         this.creature = creature;
+        this.statsContainer = statsContainer;
         beforeBattleStart();
-        this.currentHp = creature.getHp();
-        this.currentAttack = creature.getAttack();
-        this.currentPhysicalArmor = creature.getPhysicalArmor();
-        this.currentMagicArmor = creature.getMagicArmor();
-        this.currentSpellPower = creature.getSpellPower();
-        this.currentSpeed = creature.getSpeed();
+        statsContainer.setTagValue(Stat.HP, creature.getHp());
+        statsContainer.setTagValue(Stat.ATTACK, creature.getAttack());
+        statsContainer.setTagValue(Stat.PHYSICAL_ARMOR, creature.getPhysicalArmor());
+        statsContainer.setTagValue(Stat.MAGIC_ARMOR, creature.getMagicArmor());
+        statsContainer.setTagValue(Stat.SPELL_POWER, creature.getSpellPower());
+        statsContainer.setTagValue(Stat.SPEED, creature.getSpeed());
         this.battleName = battleName;
         this.battlefield = null;
     }
 
-    public BattlefieldCreature(Creature creature, Position position, ObjectStatus... statuses) {
-        this(creature, position, Arrays.stream(statuses).collect(Collectors.toSet()));
+    public BattlefieldCreature(Creature creature, ObjectStatus... statuses) {
+        this(creature, Arrays.stream(statuses).collect(Collectors.toSet()));
     }
 
-    public BattlefieldCreature(Creature creature, Position position, Set<ObjectStatus> statusSet) {
-        this(creature, position, creature.getName(), statusSet);
+    public BattlefieldCreature(Creature creature, Set<ObjectStatus> statusSet) {
+        this(creature, creature.getName(), new StatsContainer(), statusSet);
     }
 
     private void beforeBattleStart() {
@@ -60,6 +57,12 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         this.addAction(ActionFactory.addManaAction(this, Constants.MANA_AFTER_DEALING_DAMAGE.value, ResolveTime.AFTER_ATTACK));
         if (getTagValue(CreatureTag.ADD_MANA_AFTER_ATTACK) > 0) {
             this.addAction(ActionFactory.addManaAction(this, getTagValue(CreatureTag.ADD_MANA_AFTER_ATTACK), ResolveTime.AFTER_ATTACK));
+        }
+        if (getTagValue(CreatureTag.DAMAGE_ALL_ENEMIES_AFTER_ATTACK) > 0) {
+            this.addAction(ActionFactory.dealDamageToAllEnemiesAction(this, getTagValue(CreatureTag.DAMAGE_ALL_ENEMIES_AFTER_ATTACK), ResolveTime.AFTER_ATTACK));
+        }
+        if (getTagValue(CreatureTag.ADD_ARMOR_AFTER_TAKING_PHYSICAL_DAMAGE) > 0) {
+            this.addAction(ActionFactory.addStatAction(this, Stat.PHYSICAL_ARMOR, getTagValue(CreatureTag.ADD_ARMOR_AFTER_TAKING_PHYSICAL_DAMAGE), ResolveTime.AFTER_TAKING_PHYSICAL_DAMAGE));
         }
         //EATER TRAIT
         int additionalHP = creature.getTagValue(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE);
@@ -107,6 +110,10 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         }
     }
 
+    public int getStat(Stat stat) {
+        return statsContainer.getTagValue(stat);
+    }
+
     public void onBattleEnd() {
         creature.clearAllChangesFromSource(StatChangeSource.UNTIL_BATTLE_END);
     }
@@ -124,15 +131,48 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         return creature.getHp();
     }
 
+    public void apply(StatsContainer.StatChange statChange) {
+        apply(statChange.getStat(), statChange.getSource(), statChange.getAmount(), statChange.isPercentage());
+    }
+
+    public void apply(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
+        if (amount > 0) {
+            applyBuff(stat, source, amount, isPercentage);
+        }
+        if (amount < 0) {
+            applyDebuff(stat, source, -amount, isPercentage);
+        }
+    }
+
+    public void applyBuff(Stat stat, StatChangeSource source, int amount) {
+        statsContainer.addBuff(stat, source, amount, false);
+    }
+
+    public void applyBuff(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
+        statsContainer.addBuff(stat, source, amount, isPercentage);
+    }
+
+    public void applyDebuff(Stat stat, StatChangeSource source, int amount) {
+        statsContainer.addDebuff(stat, source, amount, false);
+    }
+
+    public void applyDebuff(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
+        statsContainer.addDebuff(stat, source, amount, isPercentage);
+    }
+
+    public void applyCreatureTagChange(CreatureTag creatureTag, StatChangeSource source, int amount) {
+        statsContainer.addTagChange(creatureTag, source, amount);
+    }
+
     @Override
     public int getCurrentHp() {
-        return currentHp;
+        return statsContainer.getTagValue(Stat.HP);
     }
 
     @Override
     public void setCurrentHp(int currentHp) {
-        this.currentHp = Math.min(creature.getHp(), currentHp);
-        if (this.currentHp <= 0) {
+        statsContainer.setTagValue(Stat.HP, Math.max(Math.min(creature.getHp(), currentHp), 0));
+        if (statsContainer.getTagValue(Stat.HP) <= 0) {
             this.removeStatus(ObjectStatus.ALIVE);
             this.addStatus(ObjectStatus.DEAD);
         }
@@ -140,56 +180,56 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     @Override
     public int getCurrentAttack() {
-        return currentAttack;
+        return statsContainer.getTagValue(Stat.ATTACK);
     }
 
     @Override
     public void setCurrentAttack(int currentAttack) {
-        this.currentAttack = currentAttack;
+        statsContainer.setTagValue(Stat.ATTACK, Math.max(currentAttack, 0));
     }
 
     @Override
     public int getCurrentPhysicalArmor() {
-        return currentPhysicalArmor;
+        return statsContainer.getTagValue(Stat.PHYSICAL_ARMOR);
     }
 
     @Override
     public void setCurrentPhysicalArmor(int currentPhysicalArmor) {
-        this.currentPhysicalArmor = currentPhysicalArmor;
+        statsContainer.setTagValue(Stat.PHYSICAL_ARMOR, currentPhysicalArmor);
     }
 
     @Override
     public int getCurrentMagicArmor() {
-        return currentMagicArmor;
+        return statsContainer.getTagValue(Stat.MAGIC_ARMOR);
     }
 
     @Override
     public void setCurrentMagicArmor(int currentMagicArmor) {
-        this.currentMagicArmor = currentMagicArmor;
+        statsContainer.setTagValue(Stat.MAGIC_ARMOR, currentMagicArmor);
     }
 
     @Override
     public int getCurrentSpellPower() {
-        return currentSpellPower;
+        return statsContainer.getTagValue(Stat.SPELL_POWER);
     }
 
     @Override
     public void setCurrentSpellPower(int currentSpellPower) {
-        this.currentSpellPower = currentSpellPower;
+        statsContainer.setTagValue(Stat.SPELL_POWER, Math.max(currentSpellPower, 0));
     }
 
     public String getBattleName() {
-        return battleName + " [HP: " + currentHp + "]";
+        return battleName + " [HP: " + getCurrentHp() + "]";
     }
 
     @Override
     public int getCurrentSpeed() {
-        return currentSpeed;
+        return statsContainer.getTagValue(Stat.SPEED);
     }
 
     @Override
     public void setCurrentSpeed(int currentSpeed) {
-        this.currentSpeed = currentSpeed;
+        statsContainer.setTagValue(Stat.SPEED, currentSpeed);
     }
 
     @Override
@@ -240,27 +280,6 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     public boolean hasTag(CreatureTag tag) {
         return creature.hasTag(tag);
-    }
-
-    public int get(Stat stat) {
-        switch (stat) {
-            case HP:
-                return getCurrentHp();
-            case MANA:
-                return getCurrentMana();
-            case ATTACK:
-                return getCurrentAttack();
-            case SPEED:
-                return getCurrentSpeed();
-            case SPELL_POWER:
-                return getCurrentSpellPower();
-            case PHYSICAL_ARMOR:
-                return getCurrentPhysicalArmor();
-            case MAGIC_ARMOR:
-                return getCurrentMagicArmor();
-            default:
-                return 0;
-        }
     }
 
     @Override

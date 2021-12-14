@@ -1,6 +1,5 @@
 package core.controllers;
 
-import core.battlefield.Position;
 import core.creature.Creature;
 import core.player.Bench;
 import core.player.Board;
@@ -30,7 +29,7 @@ public class BoardController {
     }
 
     public boolean canAddCreatureToBoard() {
-        return board.getAllCreatures().size() + 1 <= board.getMaxSize();
+        return board.getCreatures().size() + 1 <= board.getMaxSize();
     }
 
     public boolean canAddCreatureToBench() {
@@ -39,7 +38,7 @@ public class BoardController {
 
     public void addCreatureToBoard(Creature creature) {
         if (canAddCreatureToBoard()) {
-            board.addCreature(creature, Position.FIRST_LINE);
+            board.addCreature(creature);
         }
     }
 

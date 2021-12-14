@@ -18,7 +18,7 @@ public class CreatureSkillFactory {
 
     public static CreatureSkill dunkanSkill() {
         return (battleController, dunkan) -> {
-            int damage = dunkan.getCurrentAttack() + dunkan.getCurrentPhysicalArmor() + dunkan.getCurrentSpellPower();
+            int damage = dunkan.getCurrentAttack() / 2 + dunkan.getCurrentPhysicalArmor() * 2 + dunkan.getCurrentSpellPower() + dunkan.getCreature().getLevel() * 2;
             BattlefieldCreature target = dunkan.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message;
 
@@ -39,7 +39,7 @@ public class CreatureSkillFactory {
         return (battleController, salvira) -> {
             String message;
             BattlefieldCreature target = salvira.getBattlefieldSide().getRandomOppositeSideAliveCreature();
-            int amount = salvira.getCurrentSpellPower();
+            int amount = salvira.getCurrentSpellPower() + salvira.getCreature().getLevel();
             message = salvira.getBattleName() + " casts \"Poison daggers\" and gains +" + amount + " poison!\n";
             salvira.getCreature().applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.UNTIL_BATTLE_END, amount);
             message += resolve(ActionFactory.attackAction(salvira, target));
@@ -51,7 +51,7 @@ public class CreatureSkillFactory {
     public static CreatureSkill ignarSkill() {
         return (battleController, ignar) -> {
             String message;
-            int healingAmount = ignar.getCreature().getHp() / 5 + ignar.getCurrentSpellPower();
+            int healingAmount = ignar.getCreature().getHp() / 6 + ignar.getCurrentSpellPower() * 4 + ignar.getCreature().getLevel() * 3;
             message = ignar.getBattleName() + " casts \"Tasty meal\"!\n";
             message += resolve(ActionFactory.healingAction(ignar, healingAmount));
 
@@ -62,7 +62,7 @@ public class CreatureSkillFactory {
     public static CreatureSkill warbotSkill() {
         return (battleController, warbot) -> {
           String message;
-          int buffAmount = warbot.getCurrentSpellPower();
+          int buffAmount = warbot.getCurrentSpellPower() + warbot.getCreature().getLevel() * 2;
           message = warbot.getBattleName() + " casts \"Cold steel\"!\n";
           message += warbot.getBattleName() + " gains " + buffAmount + " attack!\n";
           warbot.setCurrentAttack(warbot.getCurrentAttack() + buffAmount);
@@ -75,8 +75,8 @@ public class CreatureSkillFactory {
             BattlefieldCreature target = kodji.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message;
 
-            int damage = kodji.getCurrentSpellPower() * 3;
-            int slow = kodji.getCurrentSpellPower();
+            int damage = kodji.getCurrentSpellPower() * 2 + kodji.getCreature().getLevel() * 3;
+            int slow = kodji.getCurrentSpellPower() + kodji.getCreature().getLevel() * 2;
             message = kodji.getBattleName() + " casts \"Frost bolt\" on " + target.getBattleName() + "\n";
             message += resolve(kodji, ResolveTime.BEFORE_DEALING_DAMAGE);
             message += resolve(kodji, ResolveTime.BEFORE_DEALING_MAGIC_DAMAGE);
@@ -100,7 +100,7 @@ public class CreatureSkillFactory {
             String message;
 
             int missingHealth = target.getMaxHp() - target.getCurrentHp();
-            int healingAmount = 2 * mira.get(Stat.SPELL_POWER) + missingHealth / 6;
+            int healingAmount = 2 * mira.getCreature().getLevel() + 2 * mira.getStat(Stat.SPELL_POWER) + missingHealth / 4;
             message = mira.getBattleName() + " casts \"Healing potion\" on " + target.getBattleName() + "\n";
             message += resolve(ActionFactory.healingAction(target, healingAmount));
 

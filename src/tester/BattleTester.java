@@ -79,10 +79,12 @@ public class BattleTester {
 
         for (Creature creature_1 : firstCostCreatures) {
             for (Creature creature_2 : secondCostCreatures) {
-                List<Creature> composition = new ArrayList<>();
-                composition.add(creature_1);
-                composition.add(creature_2);
-                compositions.add(composition);
+                if (!creature_1.getName().equals(creature_2.getName())) {
+                    List<Creature> composition = new ArrayList<>();
+                    composition.add(creature_1);
+                    composition.add(creature_2);
+                    compositions.add(composition);
+                }
             }
         }
 

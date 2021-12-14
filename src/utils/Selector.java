@@ -39,19 +39,19 @@ public class Selector {
         return selectedNumber;
     }
 
-    public static int select(List<? extends Object> options) {
+    public static int select(List<?> options, int from) {
         int selectedNumber = -1;
         while (selectedNumber == -1) {
-            int counter = 0;
+            int counter = from;
             for (Object ignored : options) {
                 counter += 1;
             }
             if (counter >= 1) {
-                selectedNumber = readCommandNumber(0, counter - 1);
+                selectedNumber = readCommandNumber(from, counter - 1);
                 if (selectedNumber == -1) {
                     MessageController.print(
-                            "Введите число от 0 до " + (counter - 1),
-                            "Input number from 0 to " + (counter - 1)
+                            "Введите число от " + from + " до " + (counter - 1),
+                            "Input number from " + from + " to " + (counter - 1)
                     );
                 }
             } else {
@@ -62,7 +62,7 @@ public class Selector {
     }
 
     public static int select(Object... options) {
-        return select(List.of(options));
+        return select(List.of(options), 0);
     }
 
     public static int shopSelect(List<? extends HasShopView> items, Pair<String, Integer>... additionalOptions) {

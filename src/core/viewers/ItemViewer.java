@@ -1,6 +1,5 @@
 package core.viewers;
 
-import core.controllers.utils.MessageController;
 import core.item.Item;
 import utils.Constants;
 
@@ -57,7 +56,6 @@ public class ItemViewer extends Viewer {
             rowsRemains--;
         }
         window.lineWithAngles();
-        MessageController.print(window.getView());
         return window.getView();
     }
 

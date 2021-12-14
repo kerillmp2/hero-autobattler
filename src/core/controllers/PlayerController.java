@@ -38,7 +38,7 @@ public class PlayerController {
         while (currentOption != TurnOption.END_TURN) {
             List<Option<TurnOption>> turnOptions = player.getTurnOptions();
             MessageController.print(TurnOptionsViewer.getOptionsView(turnOptions));
-            currentOptionNum = Selector.select(turnOptions);
+            currentOptionNum = Selector.select(turnOptions, 0);
             currentOption = TurnOption.byName(turnOptions.get(currentOptionNum).getTag().getName());
             resolveTurnOption(currentOption);
         }
@@ -90,7 +90,7 @@ public class PlayerController {
             options.add(new Option<>(TurnOption.MOVE_TO_BOARD, "Put creature on board"));
             options.add(new Option<>(TurnOption.SELL_CREATURE, "Sell creature"));
             MessageController.print(TurnOptionsViewer.getOptionsView(options));
-            selectedNumber = Selector.select(options);
+            selectedNumber = Selector.select(options, 0);
             if (selectedNumber == 0) {
                 break;
             }
@@ -104,7 +104,7 @@ public class PlayerController {
         Creature selectedCreature = null;
         while (selectedNumber != 0) {
             BoardViewer.showBoardView(player.getBoard(), player.getBench(), player.getBoard().getMaxSize());
-            List<Creature> allBoardCreatures = player.getBoard().getAllCreatures();
+            List<Creature> allBoardCreatures = player.getBoard().getCreatures();
             List<Creature> allBenchCreatures = player.getBench().getCreaturesWithDummys();
             List<HasNameImpl> boardCreatures = allBoardCreatures.stream().map(creature -> new HasNameImpl(creature.getShopView(true))).collect(Collectors.toList());
             List<HasNameImpl> benchCreatures = allBenchCreatures.stream().map(creature -> new HasNameImpl(creature.getShopView(true))).collect(Collectors.toList());
@@ -151,7 +151,7 @@ public class PlayerController {
     }
 
     private void processMoveFromBoard() {
-        Creature creature = selectCreature(player.getBoard().getAllCreatures());
+        Creature creature = selectCreature(player.getBoard().getCreatures());
         if (creature == null) {
             return;
         }

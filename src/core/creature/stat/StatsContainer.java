@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import core.controllers.utils.MessageController;
 import core.creature.CreatureTag;
 import utils.TagContainer;
 
@@ -27,7 +28,16 @@ public class StatsContainer extends TagContainer<Stat> {
         double buffCoefficient = (100.0 + (double) percentageBuffs) / 100.0;
         int debuffs = Math.max(calculateDebuffsForStat(stat), 0);
         int percentageDebuffs = Math.max(calculatePercentageDebuffsForStat(stat), 0);
-        double debuffCoefficient = (100.0 + (double) percentageDebuffs) / 100.0;
+        double debuffCoefficient = (100.0 - (double) percentageDebuffs) / 100.0;
+        /*if (stat == Stat.MANA) {
+            MessageController.print("defaultValue: " + defaultValue);
+            MessageController.print("floatBuffs: " + floatBuffs);
+            MessageController.print("percentageBuffs: " + percentageBuffs);
+            MessageController.print("buffCoefficient: " + buffCoefficient);
+            MessageController.print("debuffs: " + debuffs);
+            MessageController.print("percentageDebuffs: " + percentageDebuffs);
+            MessageController.print("debuffCoefficient: " + debuffCoefficient);
+        }*/
         return Math.max((int) (((defaultValue + floatBuffs) * buffCoefficient - debuffs) * debuffCoefficient), 0);
     }
 
@@ -121,7 +131,7 @@ public class StatsContainer extends TagContainer<Stat> {
         tagChanges.removeIf(tagChange -> (tagChange.creatureTag == tag && tagChange.source == source));
     }
 
-    private static class StatChange {
+    public static class StatChange {
         private final Stat stat;
         private final StatChangeSource source;
         private final int amount;

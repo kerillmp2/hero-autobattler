@@ -113,6 +113,19 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         return this;
     }
 
+    public void apply(StatsContainer.StatChange statChange) {
+        apply(statChange.getStat(), statChange.getSource(), statChange.getAmount(), statChange.isPercentage());
+    }
+
+    public void apply(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
+        if (amount > 0) {
+            applyBuff(stat, source, amount, isPercentage);
+        }
+        if (amount < 0) {
+            applyDebuff(stat, source, -amount, isPercentage);
+        }
+    }
+
     public void applyBuff(Stat stat, StatChangeSource source, int amount) {
         statsContainer.addBuff(stat, source, amount, false);
     }

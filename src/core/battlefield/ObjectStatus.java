@@ -10,10 +10,6 @@ public enum ObjectStatus implements Tag {
     DEAD("DEAD", 4),
     HERO("HERO", 5),
     UNIT("UNIT", 6),
-    FIRST_LINE("FIRST_LINE", 7),
-    SECOND_LINE("SECOND_LINE", 8),
-    THIRD_LINE("THIRD_LINE", 9),
-    FOURTH_LINE("FOURTH_LINE", 10),
     AIR("AIR", 11),
     UNDERGROUND("UNDERGROUND", 12),
     NOT_ON_BATTLEFIELD("NOT_ON_BATTLEFIELD", 13),
@@ -54,9 +50,5 @@ public enum ObjectStatus implements Tag {
     @Override
     public int getId() {
         return id;
-    }
-
-    public static ObjectStatus byPosition(Position position) {
-        return ObjectStatus.byName(position.name);
     }
 }

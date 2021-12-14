@@ -1,5 +1,6 @@
 package core.action;
 
+import core.creature.stat.Stat;
 import utils.Calculator;
 import core.battlefield.BattlefieldCreature;
 
@@ -46,7 +47,15 @@ public class ActionFactory {
         return new Action(ActionInfo.empty().from(creature).to(creature).withTime(ResolveTime.ON_MAIN_PHASE).wrapTag(ActionTag.USE_SKILL).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
     }
 
+    public static Action dealDamageToAllEnemiesAction(BattlefieldCreature creature, int amount, ResolveTime resolveTime) {
+        return new Action(ActionInfo.empty().from(creature).to(creature).withTime(resolveTime).wrapTag(ActionTag.DEAL_DAMAGE_TO_ALL_ENEMIES, amount));
+    }
+
     public static Action undefinedAction() {
         return new Action(ActionInfo.empty().wrapTag(ActionTag.UNDEFINED));
+    }
+
+    public static Action addStatAction(BattlefieldCreature creature, Stat stat, int amount, ResolveTime resolveTime) {
+        return new Action(ActionInfo.empty().from(creature).to(creature).withTime(resolveTime).wrapTag(ActionTag.ADD_STAT).wrapTag(ActionTag.addStat(stat), amount));
     }
 }

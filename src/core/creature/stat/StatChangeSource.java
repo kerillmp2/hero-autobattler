@@ -10,5 +10,6 @@ public enum StatChangeSource {
     MAGE_TRAIT,
     WARRIOR_TRAIT,
     ASSASSIN_TRAIT,
-    STUDENT_TRAIT;
+    STUDENT_TRAIT,
+    DEFENDER_TRAIT;
 }

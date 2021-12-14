@@ -1,13 +1,10 @@
 package core.viewers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import core.battle.HasBattleView;
 import core.battlefield.Battlefield;
 import core.battlefield.BattlefieldCreature;
-import core.battlefield.ObjectStatus;
-import core.battlefield.Position;
 import utils.Constants;
 
 public class BattlefieldViewer extends Viewer {
@@ -24,25 +21,13 @@ public class BattlefieldViewer extends Viewer {
 
         List<BattlefieldCreature> creatures;
 
-        creatures = battlefield.getSecondSide().getCreaturesOnPosition(Position.THIRD_LINE).stream().filter(c -> c.hasStatus(ObjectStatus.ALIVE)).collect(Collectors.toList());
-        view.append(getCreaturesRowOnPosition(creatures, Position.THIRD_LINE));
-
-        creatures = battlefield.getSecondSide().getCreaturesOnPosition(Position.SECOND_LINE).stream().filter(c -> c.hasStatus(ObjectStatus.ALIVE)).collect(Collectors.toList());
-        view.append(getCreaturesRowOnPosition(creatures, Position.SECOND_LINE));
-
-        creatures = battlefield.getSecondSide().getCreaturesOnPosition(Position.FIRST_LINE).stream().filter(c -> c.hasStatus(ObjectStatus.ALIVE)).collect(Collectors.toList());
-        view.append(getCreaturesRowOnPosition(creatures, Position.FIRST_LINE));
+        creatures = battlefield.getSecondSide().getCreatures();
+        view.append(getCreaturesRow(creatures));
 
         view.append(line("=", "|", "|", true));
 
-        creatures = battlefield.getFirstSide().getCreaturesOnPosition(Position.FIRST_LINE).stream().filter(c -> c.hasStatus(ObjectStatus.ALIVE)).collect(Collectors.toList());
-        view.append(getCreaturesRowOnPosition(creatures, Position.FIRST_LINE));
-
-        creatures = battlefield.getFirstSide().getCreaturesOnPosition(Position.SECOND_LINE).stream().filter(c -> c.hasStatus(ObjectStatus.ALIVE)).collect(Collectors.toList());
-        view.append(getCreaturesRowOnPosition(creatures, Position.SECOND_LINE));
-
-        creatures = battlefield.getFirstSide().getCreaturesOnPosition(Position.THIRD_LINE).stream().filter(c -> c.hasStatus(ObjectStatus.ALIVE)).collect(Collectors.toList());
-        view.append(getCreaturesRowOnPosition(creatures, Position.THIRD_LINE));
+        creatures = battlefield.getFirstSide().getCreatures();
+        view.append(getCreaturesRow(creatures));
 
         view.append(lineWithAngles());
         return view.toString();
@@ -79,11 +64,11 @@ public class BattlefieldViewer extends Viewer {
         return view;
     }
 
-    public static StringBuilder getCreaturesRowOnPosition(List<? extends HasBattleView> creatures, Position position) {
+    public static StringBuilder getCreaturesRow(List<? extends HasBattleView> creatures) {
         StringBuilder view = new StringBuilder();
         if (creatures.size() > 0 && Constants.SHOW_POSITION_NAMES.value == 1) {
-            view.append("|").append(" ".repeat(CREATURE_OFFSET)).append(position.name)
-                    .append(" ".repeat(ROW_SIZE - CREATURE_OFFSET - 2 - position.name.length())).append("|\n");
+            view.append("|").append(" ".repeat(CREATURE_OFFSET))
+                    .append(" ".repeat(ROW_SIZE - CREATURE_OFFSET - 2)).append("|\n");
         }
         view.append(getViewForCreatures(creatures));
         return view;
