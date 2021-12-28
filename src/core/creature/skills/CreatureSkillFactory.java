@@ -51,10 +51,11 @@ public class CreatureSkillFactory {
     public static CreatureSkill ignarSkill() {
         return (battleController, ignar) -> {
             String message;
-            int healingAmount = ignar.getCreature().getHp() / 6 + ignar.getCurrentSpellPower() * 4 + ignar.getCreature().getLevel() * 3;
+            int level = ignar.getCreature().getLevel();
+            int coeff = level >= 9 ? 5 : level >= 6 ? 7 : level >= 3 ? 10 : 12;
+            int healingAmount = ignar.getCreature().getHp() / coeff + ignar.getCurrentSpellPower() * 5;
             message = ignar.getBattleName() + " casts \"Tasty meal\"!\n";
             message += resolve(ActionFactory.healingAction(ignar, healingAmount));
-
             return message;
         };
     }
@@ -64,8 +65,7 @@ public class CreatureSkillFactory {
           String message;
           int buffAmount = warbot.getCurrentSpellPower() + warbot.getCreature().getLevel() * 2;
           message = warbot.getBattleName() + " casts \"Cold steel\"!\n";
-          message += warbot.getBattleName() + " gains " + buffAmount + " attack!\n";
-          warbot.setCurrentAttack(warbot.getCurrentAttack() + buffAmount);
+          message += resolve(ActionFactory.addStatAction(warbot, Stat.ATTACK, buffAmount, ResolveTime.UNDEFINED));
           return message;
         };
     }
@@ -75,7 +75,7 @@ public class CreatureSkillFactory {
             BattlefieldCreature target = kodji.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message;
 
-            int damage = kodji.getCurrentSpellPower() * 2 + kodji.getCreature().getLevel() * 3;
+            int damage = kodji.getCurrentSpellPower() * 2 + kodji.getCreature().getLevel() * 3 + 2;
             int slow = kodji.getCurrentSpellPower() + kodji.getCreature().getLevel() * 2;
             message = kodji.getBattleName() + " casts \"Frost bolt\" on " + target.getBattleName() + "\n";
             message += resolve(kodji, ResolveTime.BEFORE_DEALING_DAMAGE);
@@ -100,7 +100,7 @@ public class CreatureSkillFactory {
             String message;
 
             int missingHealth = target.getMaxHp() - target.getCurrentHp();
-            int healingAmount = 2 * mira.getCreature().getLevel() + 2 * mira.getStat(Stat.SPELL_POWER) + missingHealth / 4;
+            int healingAmount = 4 * mira.getStat(Stat.SPELL_POWER) + missingHealth / (10 - mira.getCreature().getLevel());
             message = mira.getBattleName() + " casts \"Healing potion\" on " + target.getBattleName() + "\n";
             message += resolve(ActionFactory.healingAction(target, healingAmount));
 

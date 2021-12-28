@@ -6,24 +6,26 @@ import core.controllers.utils.RandomController;
 import utils.Tag;
 
 public enum Stat implements Tag {
-    UNDEFINED("UNDEFINED", "UNDEFINED", 0),
-    HP("HP", "HP", 1),
-    ATTACK("Attack", "А", 2),
-    PHYSICAL_ARMOR("Physical armor", "PArm", 3),
-    MAGIC_ARMOR("Magic armor", "MArm", 4),
-    SPELL_POWER("Spell power", "AP", 5),
-    SPEED("Speed", "Speed", 6),
-    MANA("Max Mana", "Mana", 7);
+    UNDEFINED("UNDEFINED", "UNDEFINED", 0, 1000),
+    HP("HP", "HP", 1, 4.5),
+    ATTACK("Attack", "А", 2, 1.1),
+    PHYSICAL_ARMOR("Physical armor", "PArm", 3, 1),
+    MAGIC_ARMOR("Magic armor", "MArm", 4, 1.8),
+    SPELL_POWER("Spell power", "AP", 5, 1.4),
+    SPEED("Speed", "Speed", 6, 6),
+    MANA("Max Mana", "Mana", 7, 0);
 
     private String name;
     private String shortName;
     private int id;
+    private double value;
     private static int maxId;
 
-    Stat(String name, String shortName, int id) {
+    Stat(String name, String shortName, int id, double value) {
         this.name = name;
         this.shortName = shortName;
         this.id = id;
+        this.value = value;
         updateMaxId(id);
     }
 
@@ -88,6 +90,10 @@ public enum Stat implements Tag {
     @Override
     public int getId() {
         return id;
+    }
+
+    public double getValue() {
+        return value;
     }
 
     public String getShortName() {

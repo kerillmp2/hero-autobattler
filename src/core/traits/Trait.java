@@ -10,7 +10,7 @@ public enum Trait implements Tag {
     KNIGHT("Knight", 1, "All creatures gains [+2 / +3 / +5] attack", 2, 4, 6),
     POISONOUS("Poisonous", 2, "Poisonous gains [+1 / +2 / +4] poison", 2, 3, 4),
     DEMON("Demon", 3, "???", 2, 4, 6),
-    ROBOT("Bot", 4, "At the beginning of the battle Bots gains random buffs \n[1 / 3 / 7] times from following: +15 health, +4 attack, +2 physical defends", 1, 2, 3),
+    ROBOT("Bot", 4, "At the beginning of the battle Bots gets random buffs [1 / 3 / 7] times from following:\n+8 health, +2 attack, +1 physical and magic armor", 1, 2, 3),
     FROSTBORN("Frostborn", 5, "???", 1, 2, 3),
     STUDENT("Student", 6, "Students gains [5 / 11 / 23] mana when an ally uses ability", 2, 3, 5),
 

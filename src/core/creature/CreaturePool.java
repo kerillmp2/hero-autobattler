@@ -29,9 +29,9 @@ public class CreaturePool {
 
     public static void init() {
         Map<Integer, Integer> amountByCost = new HashMap<>();
-        amountByCost.put(1, 1);
+        amountByCost.put(1, 9);
         amountByCost.put(2, 15);
-        amountByCost.put(3, 1);
+        amountByCost.put(3, 15);
         amountByCost.put(4, 1);
         amountByCost.put(5, 9);
 
@@ -47,12 +47,12 @@ public class CreaturePool {
     public static List<Creature> getCreaturesWithCost(int cost) {
         List<Creature> creatures = new ArrayList<>();
         if (cost == 1) {
-            creatures.add(CreatureFactory.dunkan());
-            creatures.add(CreatureFactory.salvira());
-            creatures.add(CreatureFactory.ignar());
+            //creatures.add(CreatureFactory.dunkan());
+            //creatures.add(CreatureFactory.salvira());
+            //creatures.add(CreatureFactory.ignar());
             creatures.add(CreatureFactory.warbot());
-            creatures.add(CreatureFactory.kodji());
-            creatures.add(CreatureFactory.mira());
+            //creatures.add(CreatureFactory.kodji());
+            //creatures.add(CreatureFactory.mira());
         }
         if (cost == 2) {
             creatures.add(CreatureFactory.dummy());

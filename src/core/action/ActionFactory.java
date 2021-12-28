@@ -1,8 +1,12 @@
 package core.action;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import core.creature.stat.Stat;
 import utils.Calculator;
 import core.battlefield.BattlefieldCreature;
+import utils.Constants;
 
 public class ActionFactory {
 
@@ -31,12 +35,16 @@ public class ActionFactory {
         return new Action(ActionInfo.empty().to(target).from(target).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_BASIC_DAMAGE, damage).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
     }
 
+    public static Action takeTrueDamageAction(BattlefieldCreature target, int amount) {
+        return new Action(ActionInfo.empty().to(target).from(target).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_BASIC_DAMAGE, amount).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
+    }
+
     public static Action addManaAction(BattlefieldCreature target, int amount, ResolveTime time) {
         return new Action(ActionInfo.empty().from(target).to(target).withTime(time).wrapTag(ActionTag.ADD_MANA, amount));
     }
 
     public static Action healingAction(BattlefieldCreature target, int amount) {
-        return new Action(ActionInfo.empty().from(target).to(target).wrapTag(ActionTag.HEAL, amount));
+        return new Action(ActionInfo.empty().from(target).to(target).wrapTag(ActionTag.HEAL_FLOAT, amount));
     }
 
     public static Action chooseMainActionAction(BattlefieldCreature creature) {
@@ -56,6 +64,73 @@ public class ActionFactory {
     }
 
     public static Action addStatAction(BattlefieldCreature creature, Stat stat, int amount, ResolveTime resolveTime) {
-        return new Action(ActionInfo.empty().from(creature).to(creature).withTime(resolveTime).wrapTag(ActionTag.ADD_STAT).wrapTag(ActionTag.addStat(stat), amount));
+        return new Action(ActionInfo.empty().from(creature).to(creature).withTime(resolveTime).wrapTag(ActionTag.ADD_FLOAT_STAT).wrapTag(ActionTag.addStat(stat), amount));
+    }
+
+    public static Action addStatAction(BattlefieldCreature creature, Stat stat, int amount, ResolveTime resolveTime, boolean percentage) {
+        if (percentage) {
+            return new Action(ActionInfo.empty().from(creature).to(creature).withTime(resolveTime).wrapTag(ActionTag.ADD_PERCENTAGE_STAT).wrapTag(ActionTag.addStat(stat), amount));
+        } else {
+            return addStatAction(creature, stat, amount, resolveTime);
+        }
+    }
+
+    public static List<Action> defaultCreatureActions() {
+        List<Action> defaultActions = new ArrayList<>();
+        defaultActions.add(chooseMainActionAction(null));
+        defaultActions.add(addManaAction(null, Constants.MANA_AFTER_TAKING_DAMAGE.value, ResolveTime.AFTER_TAKING_DAMAGE));
+        defaultActions.add(addManaAction(null, Constants.MANA_AFTER_DEALING_DAMAGE.value, ResolveTime.AFTER_ATTACK));
+        return defaultActions;
+    }
+
+    public static class ActionBuilder {
+        ActionInfo actionInfo;
+
+        private ActionBuilder(ActionInfo actionInfo) {
+            this.actionInfo = actionInfo;
+        }
+
+        public static ActionBuilder empty() {
+            return new ActionBuilder(ActionInfo.empty());
+        }
+
+        public ActionBuilder wrapTag(ActionTag tag) {
+            actionInfo.wrapTag(tag);
+            return this;
+        }
+
+        public ActionBuilder wrapTag(ActionTag tag, Integer value) {
+            actionInfo.wrapTag(tag, value);
+            return this;
+        }
+
+        public ActionBuilder from(BattlefieldCreature performer) {
+            actionInfo.performer = performer;
+            return this;
+        }
+
+        public ActionBuilder to(BattlefieldCreature target) {
+            actionInfo.target = target;
+            return this;
+        }
+
+        public ActionBuilder withTime(ResolveTime resolveTime) {
+            actionInfo.resolveTime = resolveTime;
+            return this;
+        }
+
+        public ActionBuilder withPrefix(String prefix) {
+            actionInfo.withPrefix(prefix);
+            return this;
+        }
+
+        public ActionBuilder withPostfix(String postfix) {
+            actionInfo.withPostfix(postfix);
+            return this;
+        }
+
+        public Action build() {
+            return new Action(actionInfo);
+        }
     }
 }

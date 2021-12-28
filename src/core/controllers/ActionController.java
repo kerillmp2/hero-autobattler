@@ -15,6 +15,8 @@ import core.creature.stat.StatChangeSource;
 import utils.Calculator;
 import utils.Constants;
 
+import static core.action.ActionTag.*;
+
 public class ActionController {
 
     public static List<String> resolve(List<Action> actions) {
@@ -42,14 +44,23 @@ public class ActionController {
 
     public static String resolve(Action action) {
         BattlefieldCreature performer = action.getActionInfo().performer;
+        BattlefieldCreature target = action.getActionInfo().target;
         String message = "";
+
+        if (!action.getActionInfo().prefix.equals("")) {
+            if (target != null) {
+                message += String.format(action.getActionInfo().prefix, performer.getBattleName(), target.getBattleName());
+            } else {
+                message += String.format(action.getActionInfo().prefix, performer.getBattleName());
+            }
+        }
 
         if (!performer.hasStatus(ObjectStatus.ALIVE) || performer.hasStatus(ObjectStatus.DEAD)) {
             performer.getBattlefield().getBattleController().getTurnController().removeCreatureFromTurnOrder(performer);
             return message;
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.CHOOSE_MAIN_ACTION)) {
+        if (action.getActionInfo().hasTag(CHOOSE_MAIN_ACTION)) {
             if (performer.hasEnoughManaForSkill()) {
                 resolveGenerateUseSkillAction(action);
             } else {
@@ -59,76 +70,151 @@ public class ActionController {
             }
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.USE_SKILL)) {
+        if (action.getActionInfo().hasTag(USE_SKILL)) {
             message += resolveUseSkillAction(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.BASIC_ATTACK)) {
+        if (action.getActionInfo().hasTag(BASIC_ATTACK)) {
             message += resolveBasicAttackAction(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.ADD_STAT)) {
-            message += resolveAddStatAction(action);
+        if (action.getActionInfo().hasTag(ADD_FLOAT_STAT)) {
+            message += resolveAddFloatStatAction(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.ADD_MANA)) {
+        if (action.getActionInfo().hasTag(ADD_PERCENTAGE_STAT)) {
+            message += resolveAddPercentageStatAction(action);
+        }
+
+        if (action.getActionInfo().hasTag(ADD_MANA)) {
             message += resolveGetManaAction(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.HEAL)) {
-            message += resolveHealingAction(action);
+        if (action.getActionInfo().hasTag(HEAL_FLOAT)) {
+            message += resolveFloatHealingAction(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.APPLY_POISON_DAMAGE)) {
+        if (action.getActionInfo().hasTag(HEAL_PERCENT_OF_MAX)) {
+            message += resolvePercentHealingAction(action, true);
+        }
+
+        if (action.getActionInfo().hasTag(HEAL_PERCENT_OF_MISSING)) {
+            message += resolvePercentHealingAction(action, false);
+        }
+
+        if (action.getActionInfo().hasTag(APPLY_POISON_DAMAGE)) {
             message += resolveApplyPoissonDamageAction(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.DEAL_DAMAGE_TO_ALL_ENEMIES)) {
+        if (action.getActionInfo().hasTag(DEAL_PHYSICAL_DAMAGE_TO_RANDOM_ENEMY)) {
+            message += resolveDealPhysicalDamageToRandomEnemy(action);
+        }
+
+        if (action.getActionInfo().hasTag(DEAL_DAMAGE_TO_ALL_ENEMIES)) {
             message += resolveDealDamageToAllEnemies(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.TAKE_BASIC_DAMAGE)) {
+        if (action.getActionInfo().hasTag(TAKE_BASIC_DAMAGE)) {
             message += resolveTakeBasicDamageAction(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.TURNS_LEFT)) {
+        if (action.getActionInfo().hasTag(TURNS_LEFT)) {
             resolveTurnsCountdown(action);
         }
 
-        if (action.getActionInfo().hasTag(ActionTag.DELETE_AFTER_RESOLVE)) {
+        if (action.getActionInfo().hasTag(DELETE_AFTER_RESOLVE)) {
             performer.removeAction(action);
+        }
+
+        if (!action.getActionInfo().postfix.equals("")) {
+            message += "\n" + action.getActionInfo().postfix;
         }
 
         return message;
     }
 
-    private static String resolveAddStatAction(Action action) {
+    private static String resolveAddFloatStatAction(Action action) {
         BattlefieldCreature performer = action.getActionInfo().performer;
         String message = "";
         if (action.getActionInfo().hasTag(ActionTag.ATTACK)) {
             int amount = action.getActionInfo().getTagValue(ActionTag.ATTACK);
             performer.applyBuff(Stat.ATTACK, StatChangeSource.UNTIL_BATTLE_END, amount);
-            message += performer.getBattleName() + " gains " + amount + " attack! [" + performer.getStat(Stat.ATTACK) + "]\n";
+            message += performer.getBattleName() + " gains " + amount + " " + Stat.ATTACK.getName() + "! [" + performer.getStat(Stat.ATTACK) + "]\n";
         }
         if (action.getActionInfo().hasTag(ActionTag.SPEED)) {
             int amount = action.getActionInfo().getTagValue(ActionTag.SPEED);
             performer.applyBuff(Stat.SPEED, StatChangeSource.UNTIL_BATTLE_END, amount);
-            message += performer.getBattleName() + " gains " + amount + " speed! [" + performer.getStat(Stat.SPEED) + "]\n";
+            message += performer.getBattleName() + " gains " + amount + " " + Stat.SPEED.getName() + "! [" + performer.getStat(Stat.SPEED) + "]\n";
         }
         if (action.getActionInfo().hasTag(ActionTag.PHYSICAL_ARMOR)) {
             int amount = action.getActionInfo().getTagValue(ActionTag.PHYSICAL_ARMOR);
             performer.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.UNTIL_BATTLE_END, amount);
-            message += performer.getBattleName() + " gains " + amount + " physical armor! [" + performer.getStat(Stat.PHYSICAL_ARMOR) + "]\n";
+            message += performer.getBattleName() + " gains " + amount + " " + Stat.PHYSICAL_ARMOR.getName() + "! ["+ performer.getStat(Stat.PHYSICAL_ARMOR) + "]\n";
         }
         if (action.getActionInfo().hasTag(ActionTag.MAGIC_ARMOR)) {
             int amount = action.getActionInfo().getTagValue(ActionTag.MAGIC_ARMOR);
             performer.applyBuff(Stat.MAGIC_ARMOR, StatChangeSource.UNTIL_BATTLE_END, amount);
-            message += performer.getBattleName() + " gains " + amount + " magic armor! [" + performer.getStat(Stat.MAGIC_ARMOR) + "]\n";
+            message += performer.getBattleName() + " gains " + amount + " " + Stat.MAGIC_ARMOR.getName() + "! [" + performer.getStat(Stat.MAGIC_ARMOR) + "]\n";
         }
         if (action.getActionInfo().hasTag(ActionTag.SPELL_POWER)) {
             int amount = action.getActionInfo().getTagValue(ActionTag.SPELL_POWER);
             performer.applyBuff(Stat.SPELL_POWER, StatChangeSource.UNTIL_BATTLE_END, amount);
-            message += performer.getBattleName() + " gains " + amount + " spell power! [" + performer.getStat(Stat.SPELL_POWER) + "]\n";
+            message += performer.getBattleName() + " gains " + amount + " " + Stat.SPELL_POWER.getName() + "! ["+ performer.getStat(Stat.SPELL_POWER) + "]\n";
+        }
+        return message;
+    }
+
+    private static String resolveAddPercentageStatAction(Action action) {
+        BattlefieldCreature performer = action.getActionInfo().performer;
+        String message = "";
+        if (action.getActionInfo().hasTag(ActionTag.ATTACK)) {
+            int percentage = action.getActionInfo().getTagValue(ActionTag.ATTACK);
+            int amount = (int) (performer.getStat(Stat.ATTACK) / 100.0 * percentage);
+            performer.applyBuff(Stat.ATTACK, StatChangeSource.UNTIL_BATTLE_END, amount);
+            message += performer.getBattleName() + " gains " + amount + " " + Stat.ATTACK.getName() + "! [" + performer.getStat(Stat.ATTACK) + "]\n";
+        }
+        if (action.getActionInfo().hasTag(ActionTag.SPEED)) {
+            int percentage = action.getActionInfo().getTagValue(SPEED);
+            int amount = (int) (performer.getStat(Stat.SPEED) / 100.0 * percentage);
+            performer.applyBuff(Stat.SPEED, StatChangeSource.UNTIL_BATTLE_END, amount);
+            message += performer.getBattleName() + " gains " + amount + " " + Stat.SPEED.getName() + "! [" + performer.getStat(Stat.SPEED) + "]\n";
+        }
+        if (action.getActionInfo().hasTag(ActionTag.PHYSICAL_ARMOR)) {
+            int percentage = action.getActionInfo().getTagValue(PHYSICAL_ARMOR);
+            int amount = (int) (performer.getStat(Stat.PHYSICAL_ARMOR) / 100.0 * percentage);
+            performer.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.UNTIL_BATTLE_END, amount);
+            message += performer.getBattleName() + " gains " + amount + " " + Stat.PHYSICAL_ARMOR.getName() + "! [" + performer.getStat(Stat.PHYSICAL_ARMOR) + "]\n";
+        }
+        if (action.getActionInfo().hasTag(ActionTag.MAGIC_ARMOR)) {
+            int percentage = action.getActionInfo().getTagValue(MAGIC_ARMOR);
+            int amount = (int) (performer.getStat(Stat.MAGIC_ARMOR) / 100.0 * percentage);
+            performer.applyBuff(Stat.MAGIC_ARMOR, StatChangeSource.UNTIL_BATTLE_END, amount);
+            message += performer.getBattleName() + " gains " + amount + " " + Stat.MAGIC_ARMOR.getName() + "! [" + performer.getStat(Stat.MAGIC_ARMOR) + "]\n";
+        }
+        if (action.getActionInfo().hasTag(ActionTag.SPELL_POWER)) {
+            int percentage = action.getActionInfo().getTagValue(SPELL_POWER);
+            int amount = (int) (performer.getStat(Stat.SPELL_POWER) / 100.0 * percentage);
+            performer.applyBuff(Stat.SPELL_POWER, StatChangeSource.UNTIL_BATTLE_END, amount);
+            message += performer.getBattleName() + " gains " + amount + " " + Stat.SPELL_POWER.getName() + "! [" + performer.getStat(Stat.SPELL_POWER) + "]\n";
+        }
+        return message;
+    }
+
+    private static String resolveDealPhysicalDamageToRandomEnemy(Action action) {
+        BattlefieldCreature performer = action.getActionInfo().performer;
+        BattlefieldCreature target = performer.getBattlefieldSide().getRandomOppositeSideAliveCreature();
+        double coeff = (action.getActionInfo().getTagValue(ActionTag.DEAL_PHYSICAL_DAMAGE_TO_RANDOM_ENEMY)) / 100.0;
+        String message = "";
+        if (target != null) {
+            message += resolve(performer, ResolveTime.BEFORE_DEALING_PHYSICAL_DAMAGE, ResolveTime.BEFORE_DEALING_DAMAGE);
+
+            Action takeDamageAction = ActionFactory.takePhysicalDamageAction(target, (int) (performer.getCurrentAttack() * coeff));
+            target.addAction(takeDamageAction);
+
+            message += resolve(performer, ResolveTime.ON_DEALING_DAMAGE);
+            message += resolve(target, ResolveTime.BEFORE_TAKING_PHYSICAL_DAMAGE, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.ON_TAKING_DAMAGE);
+            message += resolve(target, ResolveTime.AFTER_TAKING_PHYSICAL_DAMAGE, ResolveTime.AFTER_TAKING_DAMAGE);
+            message += resolve(performer, ResolveTime.AFTER_DEALING_PHYSICAL_DAMAGE, ResolveTime.AFTER_DEALING_DAMAGE);
         }
         return message;
     }
@@ -152,10 +238,28 @@ public class ActionController {
         return message.toString();
     }
 
-    private static String resolveHealingAction(Action action) {
+    private static String resolveFloatHealingAction(Action action) {
         BattlefieldCreature target = action.getActionInfo().performer;
-        int amount = action.getActionInfo().getTagValue(ActionTag.HEAL);
+        int amount = action.getActionInfo().getTagValue(HEAL_FLOAT);
         int currentHP = target.getCurrentHp();
+        target.setCurrentHp(currentHP + amount);
+        return target.getBattleName() + " restores " + amount + " HP! "
+                + "[" + target.getCurrentHp() + "/" + target.getMaxHp() + "]\n";
+    }
+
+    private static String resolvePercentHealingAction(Action action, boolean fromMax) {
+        BattlefieldCreature target = action.getActionInfo().performer;
+        int percent;
+        int amount;
+        int currentHP = target.getCurrentHp();
+        int maxHp = target.getMaxHp();
+        if (fromMax) {
+            percent = action.getActionInfo().getTagValue(HEAL_PERCENT_OF_MAX);
+            amount = (int) (((double) maxHp / 100.0) * percent);
+        } else {
+            percent =  action.getActionInfo().getTagValue(HEAL_PERCENT_OF_MISSING);
+            amount = (int) ((((double) maxHp - currentHP) / 100.0) * percent);
+        }
         target.setCurrentHp(currentHP + amount);
         return target.getBattleName() + " restores " + amount + " HP! "
                 + "[" + target.getCurrentHp() + "/" + target.getMaxHp() + "]\n";

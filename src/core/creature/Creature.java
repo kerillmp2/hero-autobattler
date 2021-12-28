@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import core.action.Action;
+import core.action.ActionFactory;
 import core.battle.HasBattleView;
 import core.controllers.LevelController;
 import core.creature.skills.CreatureSkill;
@@ -15,6 +17,7 @@ import core.shop.HasShopView;
 import core.traits.Trait;
 import core.traits.TraitContainer;
 import core.viewers.CreatureBattleViewer;
+import core.viewers.CreatureShopViewer;
 import utils.Constants;
 import utils.TagContainer;
 
@@ -25,8 +28,9 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
     private CreatureSkill skill = CreatureSkillFactory.emptySkill();
     private TraitContainer traitContainer;
     private StatsContainer statsContainer;
+    private List<Action> actions;
 
-    public Creature(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int maxMana, int cost, int level, CreatureTag... tags) {
+    private Creature(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int maxMana, int cost, int level, List<Action> actions, CreatureTag... tags) {
         super(Arrays.asList(tags));
         this.name = name;
         traitContainer = new TraitContainer();
@@ -40,18 +44,19 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         statsContainer.addTagValue(Stat.MANA, maxMana);
         this.cost = cost;
         this.level = level;
+        this.actions = actions;
     }
 
     public static Creature shopDummy() {
-        return new Creature("Sold", 0, 0, 0, 0, 0,0, 0, 0, 1);
+        return new Creature("Sold", 0, 0, 0, 0, 0,0, 0, 0, 1, new ArrayList<>());
     }
 
     public static Creature benchDummy() {
-        return new Creature("Empty", 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        return new Creature("Empty", 0, 0, 0, 0, 0, 0, 0, 0, 1, new ArrayList<>());
     }
 
     public static Creature withStats(String name, int hp, int attack, int physicalArmor, int magicArmor, int spellPower, int speed, int maxMana, int cost) {
-        return new Creature(name, hp, attack, physicalArmor, magicArmor, spellPower, speed, maxMana, cost, 1, CreatureTag.HAVE_BASIC_ATTACK);
+        return new Creature(name, hp, attack, physicalArmor, magicArmor, spellPower, speed, maxMana, cost, 1, ActionFactory.defaultCreatureActions(), CreatureTag.HAVE_BASIC_ATTACK);
     }
 
     @Override
@@ -178,6 +183,14 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         LevelController.levelUpCreature(this, level);
     }
 
+    public List<Action> getActions() {
+        return actions;
+    }
+
+    public void addAction(Action action) {
+        actions.add(action);
+    }
+
     @Override
     public String toString() {
         return this.name;
@@ -185,54 +198,11 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     @Override
     public String getShopView() {
-        return getShopView(false);
+        return getShopView(false, true, true, true);
     }
 
-    public String getShopView(boolean additionalInfo) {
-        if (name.equals("Продано") || name.equals("Пусто") || name.equals("Sold") || name.equals("Empty")) {
-            return name;
-        }
-        StringBuilder view = new StringBuilder();
-        view.append(name);
-        if(additionalInfo) {
-            view.append(" <").append(level).append(">").append(" ".repeat(Constants.MAX_NAME_LEN.value - String.valueOf(level).length() - name.length() - 1));
-        } else {
-            view.append(" ".repeat(Constants.MAX_NAME_LEN.value - name.length() + 1));
-        }
-        int traitsLen = 0;
-        view.append("[");
-        List<Trait> traits = new ArrayList<>(traitContainer.getTags());
-        for (int i = 0; i < traits.size(); i++) {
-            view.append(traits.get(i));
-            traitsLen += traits.get(i).getName().length();
-            if (i < traits.size() - 1) {
-                view.append(", ");
-                traitsLen += 2;
-            }
-        }
-        view.append("]");
-        view.append(" ".repeat(Constants.MAX_TRAIT_NAME_LEN.value * 3 - traitsLen + 1));
-
-        StringBuilder statsView = new StringBuilder();
-
-        statsView.append("(").append(getSellingCost()).append(") ")
-                .append("[AD: ").append(getAttack()).append(", ").append("HP: ").append(getHp()).append("]");
-        statsView.append(" ".repeat(Constants.AD_HP_LEN.value - statsView.length()));
-        statsView.append("<PhysArm: ").append(getPhysicalArmor()).append(", ").append("MagArm: ").append(getMagicArmor()).append(", ").append("Speed: ").append(getSpeed()).append(">");
-        view.append(statsView);
-        List<String> tagsView = new ArrayList<>();
-        if (this.hasTag(CreatureTag.POISONOUS)) {
-            tagsView.add("Poison " + this.getTagValue(CreatureTag.POISONOUS));
-        }
-        if (tagsView.size() > 0) {
-            view.append(" {");
-            view.append(tagsView.get(0));
-            for (int i = 1; i < tagsView.size(); i++) {
-                view.append(", ").append(tagsView.get(i));
-            }
-            view.append("}");
-        }
-        return view.toString();
+    public String getShopView(boolean showLevel, boolean showCost, boolean showTraits, boolean showStats) {
+        return CreatureShopViewer.getShopViewFor(this, showLevel, showCost, showTraits, showStats);
     }
 
     @Override

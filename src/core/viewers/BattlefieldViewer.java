@@ -66,7 +66,7 @@ public class BattlefieldViewer extends Viewer {
 
     public static StringBuilder getCreaturesRow(List<? extends HasBattleView> creatures) {
         StringBuilder view = new StringBuilder();
-        if (creatures.size() > 0 && Constants.SHOW_POSITION_NAMES.value == 1) {
+        if (creatures.size() > 0) {
             view.append("|").append(" ".repeat(CREATURE_OFFSET))
                     .append(" ".repeat(ROW_SIZE - CREATURE_OFFSET - 2)).append("|\n");
         }

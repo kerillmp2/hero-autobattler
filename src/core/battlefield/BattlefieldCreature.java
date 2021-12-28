@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import core.action.Action;
 import core.action.ActionFactory;
 import core.action.ResolveTime;
 import core.battle.HasBattleView;
@@ -52,18 +53,11 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
     private void beforeBattleStart() {
         addStatus(ObjectStatus.CREATURE);
 
-        this.addAction(ActionFactory.chooseMainActionAction(this));
-        this.addAction(ActionFactory.addManaAction(this, Constants.MANA_AFTER_TAKING_DAMAGE.value, ResolveTime.AFTER_TAKING_DAMAGE));
-        this.addAction(ActionFactory.addManaAction(this, Constants.MANA_AFTER_DEALING_DAMAGE.value, ResolveTime.AFTER_ATTACK));
-        if (getTagValue(CreatureTag.ADD_MANA_AFTER_ATTACK) > 0) {
-            this.addAction(ActionFactory.addManaAction(this, getTagValue(CreatureTag.ADD_MANA_AFTER_ATTACK), ResolveTime.AFTER_ATTACK));
+        List<Action> creatureActions = creature.getActions();
+        for (Action action : creatureActions) {
+            this.addAction(action.withPerformer(this));
         }
-        if (getTagValue(CreatureTag.DAMAGE_ALL_ENEMIES_AFTER_ATTACK) > 0) {
-            this.addAction(ActionFactory.dealDamageToAllEnemiesAction(this, getTagValue(CreatureTag.DAMAGE_ALL_ENEMIES_AFTER_ATTACK), ResolveTime.AFTER_ATTACK));
-        }
-        if (getTagValue(CreatureTag.ADD_ARMOR_AFTER_TAKING_PHYSICAL_DAMAGE) > 0) {
-            this.addAction(ActionFactory.addStatAction(this, Stat.PHYSICAL_ARMOR, getTagValue(CreatureTag.ADD_ARMOR_AFTER_TAKING_PHYSICAL_DAMAGE), ResolveTime.AFTER_TAKING_PHYSICAL_DAMAGE));
-        }
+
         //EATER TRAIT
         int additionalHP = creature.getTagValue(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE);
         if (additionalHP > 0) {
@@ -96,6 +90,15 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         if (creature.getTagValue(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE) > 0) {
             Stat stat = Stat.PHYSICAL_ARMOR;
             int amount = creature.getTagValue(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE);
+            creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
+            MessageController.print(
+                    String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()),
+                    String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName())
+            );
+        }
+        if (creature.getTagValue(CreatureTag.ADD_TEMP_MARM_BEFORE_BATTLE) > 0) {
+            Stat stat = Stat.MAGIC_ARMOR;
+            int amount = creature.getTagValue(CreatureTag.ADD_TEMP_MARM_BEFORE_BATTLE);
             creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
             MessageController.print(
                     String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()),

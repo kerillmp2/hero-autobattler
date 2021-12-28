@@ -27,13 +27,20 @@ public class ItemController {
         if (level == 3) {
             pool.add(leatherCloak());
             pool.add(leatherBoots());
+            pool.add(ironKnife());
+            pool.add(ironSword());
+            pool.add(ironShield());
+            pool.add(ironArmor());
+            pool.add(ironLance());
+            pool.add(oldBook());
+            pool.add(ironStaff());
             pool.add(rubyAmulet());
             pool.add(topazAmulet());
             pool.add(sapphireAmulet());
             pool.add(emeraldAmulet());
         }
         if (level == 6) {
-            
+            pool.add(backpack());
         }
         if (level == 9) {
             pool.add(dragonRay());
@@ -48,69 +55,66 @@ public class ItemController {
             //CLASS
             case WARRIOR: {
                 if (level == 3) {
-                    pool.add(ironKnife());
-                    pool.add(ironSword());
-                    pool.add(ironShield());
-                    pool.add(ironArmor());
-                    break;
                 }
+                break;
             }
             case KNIGHT: {
                 if (level == 3) {
-                    pool.add(ironLance());
-                    pool.add(ironSword());
-                    pool.add(ironShield());
-                    pool.add(ironArmor());
-                    break;
                 }
+                break;
             }
             case ASSASSIN: {
                 if (level == 3) {
-                    pool.add(ironKnife());
-                    pool.add(ironSword());
-                    break;
                 }
+                if (level == 6) {
+                    pool.add(throwingDagger());
+                }
+                break;
             }
 
             case MAGE: {
                 if (level == 3) {
-                    pool.add(oldBook());
-                    pool.add(ironStaff());
-                    break;
                 }
+                break;
             }
             case EATER: {
                 if (level == 3) {
-                    pool.add(oldBook());
-                    break;
                 }
+                break;
             }
             case ALCHEMIST: {
                 if (level == 3) {
-                    pool.add(oldBook());
-                    pool.add(ironStaff());
-                    break;
                 }
+                break;
             }
 
             //TYPE
             case DEFENDER: {
                 if (level == 3) {
-                    break;
                 }
                 if (level == 6) {
                     pool.add(ironHeart());
-                    break;
                 }
+                break;
             }
             case POISONOUS: {
-
+                if (level == 6) {
+                    pool.add(poisonBlade());
+                }
+                break;
             }
             case DEMON: {
 
             }
             case ROBOT: {
-
+                if (level == 3) {
+                    pool.add(repairKit());
+                }
+                if (level == 6) {
+                    pool.add(rageModule());
+                    pool.add(mindModule());
+                    pool.add(heatModule());
+                }
             }
             case FROSTBORN: {
 

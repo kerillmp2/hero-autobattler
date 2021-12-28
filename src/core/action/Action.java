@@ -1,10 +1,17 @@
 package core.action;
 
+import core.battlefield.BattlefieldCreature;
+
 public class Action {
     protected final ActionInfo actionInfo;
 
     public Action(ActionInfo actionInfo) {
         this.actionInfo = actionInfo;
+    }
+
+    public Action withPerformer(BattlefieldCreature performer) {
+        actionInfo.performer = performer;
+        return this;
     }
 
     public ActionInfo getActionInfo() {

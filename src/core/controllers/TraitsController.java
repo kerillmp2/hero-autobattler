@@ -133,13 +133,14 @@ public class TraitsController {
         for (int i = 0; i < numberOfRobotBuffs; i++) {
             Stat stat = Stat.getRandomStatFrom(Stat.HP, Stat.ATTACK, Stat.PHYSICAL_ARMOR);
             if (stat == Stat.HP) {
-                robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_HP_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 5));
+                robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_HP_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 8));
             }
             if (stat == Stat.ATTACK) {
                 robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_ATTACK_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 2));
             }
             if (stat == Stat.PHYSICAL_ARMOR) {
                 robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 1));
+                robots.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_TEMP_MARM_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 1));
             }
         }
     }

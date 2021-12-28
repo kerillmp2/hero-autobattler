@@ -1,8 +1,5 @@
 package core.action;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import core.battlefield.BattlefieldCreature;
 import utils.TagContainer;
 
@@ -10,16 +7,20 @@ public class ActionInfo extends TagContainer<ActionTag> {
     public BattlefieldCreature performer;
     public BattlefieldCreature target;
     public ResolveTime resolveTime;
+    public String prefix = "";
+    public String postfix = "";
 
-    public ActionInfo(BattlefieldCreature performer, BattlefieldCreature target, ResolveTime resolveTime) {
+    public ActionInfo(BattlefieldCreature performer, BattlefieldCreature target, ResolveTime resolveTime, String prefix, String postfix) {
         super();
         this.performer = performer;
         this.target = target;
         this.resolveTime = resolveTime;
+        this.prefix = prefix;
+        this.postfix = postfix;
     }
 
     public static ActionInfo empty() {
-        return new ActionInfo(null, null, ResolveTime.UNDEFINED);
+        return new ActionInfo(null, null, ResolveTime.UNDEFINED, "", "");
     }
 
     public ActionInfo wrapTag(ActionTag tag) {
@@ -67,6 +68,16 @@ public class ActionInfo extends TagContainer<ActionTag> {
 
     public ActionInfo withTime(ResolveTime resolveTime) {
         this.resolveTime = resolveTime;
+        return this;
+    }
+
+    public ActionInfo withPrefix(String prefix) {
+        this.prefix = prefix;
+        return this;
+    }
+
+    public ActionInfo withPostfix(String postfix) {
+        this.postfix = postfix;
         return this;
     }
 }

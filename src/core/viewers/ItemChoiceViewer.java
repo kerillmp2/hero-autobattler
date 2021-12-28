@@ -19,6 +19,8 @@ public class ItemChoiceViewer extends Viewer {
         window.lineWithAngles();
         window.line(creature.getName() + " has reached level " + creature.getLevel() + "! Choose one item to equip!");
         window.lineWithAngles();
+        window.line(creature.getShopView(false, false, false, true));
+        window.lineWithAngles();
         List<List<String>> splittedItemViews = new ArrayList<>();
         for (Item item : items) {
             splittedItemViews.add(Arrays.stream(ItemViewer.getItemView(item).split("\n")).collect(Collectors.toList()));

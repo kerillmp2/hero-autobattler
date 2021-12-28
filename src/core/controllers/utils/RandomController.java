@@ -1,5 +1,6 @@
 package core.controllers.utils;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomController {
@@ -22,5 +23,13 @@ public class RandomController {
 
     public static int randomInt(int from, int to) {
         return ThreadLocalRandom.current().nextInt(from, to);
+    }
+
+    public static <T> T randomElementOf(List<T> list) {
+        return list.get(randomInt(0, list.size()));
+    }
+
+    public static <T> T randomElementOf(T[] list) {
+        return list[randomInt(0, list.length)];
     }
 }

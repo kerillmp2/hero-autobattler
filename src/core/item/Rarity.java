@@ -3,7 +3,8 @@ package core.item;
 public enum Rarity {
     UNDEFINED("Undefined", "Undef"),
     COMMON("Common", "C"),
-    Rare("Rare", "R"),
+    UNCOMMON("Uncommon", "U"),
+    RARE("Rare", "R"),
     EPIC("Epic", "SR"),
     LEGENDARY("Legendary", "SSR");
 
