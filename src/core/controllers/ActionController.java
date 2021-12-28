@@ -47,14 +47,6 @@ public class ActionController {
         BattlefieldCreature target = action.getActionInfo().target;
         String message = "";
 
-        if (!action.getActionInfo().prefix.equals("")) {
-            if (target != null) {
-                message += String.format(action.getActionInfo().prefix, performer.getBattleName(), target.getBattleName());
-            } else {
-                message += String.format(action.getActionInfo().prefix, performer.getBattleName());
-            }
-        }
-
         if (!performer.hasStatus(ObjectStatus.ALIVE) || performer.hasStatus(ObjectStatus.DEAD)) {
             performer.getBattlefield().getBattleController().getTurnController().removeCreatureFromTurnOrder(performer);
             return message;
@@ -124,6 +116,17 @@ public class ActionController {
 
         if (action.getActionInfo().hasTag(DELETE_AFTER_RESOLVE)) {
             performer.removeAction(action);
+        }
+
+        performer = action.getActionInfo().performer;
+        target = action.getActionInfo().target;
+
+        if (!action.getActionInfo().prefix.equals("")) {
+            if (action.getActionInfo().target != null) {
+                message = String.format(action.getActionInfo().prefix, performer.getBattleName(), target.getBattleName()) + "\n" + message;
+            } else {
+                message += String.format(action.getActionInfo().prefix, performer.getBattleName()) + "\n" + message;
+            }
         }
 
         if (!action.getActionInfo().postfix.equals("")) {
@@ -197,18 +200,27 @@ public class ActionController {
             performer.applyBuff(Stat.SPELL_POWER, StatChangeSource.UNTIL_BATTLE_END, amount);
             message += performer.getBattleName() + " gains " + amount + " " + Stat.SPELL_POWER.getName() + "! [" + performer.getStat(Stat.SPELL_POWER) + "]\n";
         }
+
         return message;
     }
 
     private static String resolveDealPhysicalDamageToRandomEnemy(Action action) {
         BattlefieldCreature performer = action.getActionInfo().performer;
         BattlefieldCreature target = performer.getBattlefieldSide().getRandomOppositeSideAliveCreature();
-        double coeff = (action.getActionInfo().getTagValue(ActionTag.DEAL_PHYSICAL_DAMAGE_TO_RANDOM_ENEMY)) / 100.0;
         String message = "";
         if (target != null) {
+            action.getActionInfo().target = target;
             message += resolve(performer, ResolveTime.BEFORE_DEALING_PHYSICAL_DAMAGE, ResolveTime.BEFORE_DEALING_DAMAGE);
+            Action takeDamageAction;
 
-            Action takeDamageAction = ActionFactory.takePhysicalDamageAction(target, (int) (performer.getCurrentAttack() * coeff));
+            if (action.getActionInfo().hasTag(PERCENTAGE)) {
+                double coeff = (action.getActionInfo().getTagValue(ActionTag.DEAL_PHYSICAL_DAMAGE_TO_RANDOM_ENEMY)) / 100.0;
+                takeDamageAction = ActionFactory.takePhysicalDamageAction(target, (int) (performer.getCurrentAttack() * coeff));
+            } else {
+                int amount = action.getActionInfo().getTagValue(DEAL_PHYSICAL_DAMAGE_TO_RANDOM_ENEMY);
+                takeDamageAction = ActionFactory.takeTrueDamageAction(target, amount);
+            }
+
             target.addAction(takeDamageAction);
 
             message += resolve(performer, ResolveTime.ON_DEALING_DAMAGE);

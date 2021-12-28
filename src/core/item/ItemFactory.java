@@ -22,6 +22,17 @@ import static core.creature.stat.Stat.*;
 public class ItemFactory {
 
     //All creatures
+    public static Item snowball() {
+        int throwingDamage = randomInt(4, 6, true);
+        return ItemTemplate.empty().withName("Snowball").withRarity(Rarity.UNCOMMON)
+                .withStatChange(ATTACK, randomInt(2, 3, true), false)
+                .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.ON_END_TURN)
+                        .wrapTag(ActionTag.DEAL_PHYSICAL_DAMAGE_TO_RANDOM_ENEMY, throwingDamage)
+                        .withPrefix("%s throws snowball at %s!").build())
+                .addDescription("At the end of the turn throw snowball that deals %d physical damage to random enemy").addValue(throwingDamage)
+                .build();
+    }
+
     public static Item ironKnife() {
         return ItemTemplate.empty().withName("Iron Knife").withRarity(Rarity.COMMON)
                 .withStatChange(ATTACK, randomInt(2, 4, true), false)
@@ -216,9 +227,9 @@ public class ItemFactory {
     }
 
     public static Item throwingDagger() {
-        int throwingDamagePercent = randomInt(20, 35, true);
+        int throwingDamagePercent = randomInt(30, 35, true);
         int throwingNumber = randomInt(2, 3, true);
-        ItemTemplate itemTemplate = ItemTemplate.empty().withName("Throwing dagger").withRarity(Rarity.EPIC)
+        ItemTemplate itemTemplate = ItemTemplate.empty().withName("Throwing daggers").withRarity(Rarity.EPIC)
                 .withStatChange(ATTACK, randomInt(15, 20), true)
                 .withStatChange(SPEED, randomInt(10, 15), true)
                 .addDescription("After attack throws %d daggers, each dagger deals %d%% damage to random enemy")
@@ -227,6 +238,7 @@ public class ItemFactory {
             itemTemplate
                     .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.AFTER_ATTACK)
                             .wrapTag(ActionTag.DEAL_PHYSICAL_DAMAGE_TO_RANDOM_ENEMY, throwingDamagePercent)
+                            .wrapTag(ActionTag.PERCENTAGE)
                             .withPrefix("%s throws dagger to %s!")
                             .build());
         }

@@ -25,6 +25,7 @@ public class ItemController {
     public static List<Item> getItemsForLevel(int level) {
         List<Item> pool = new ArrayList<>();
         if (level == 3) {
+            pool.add(snowball());
             pool.add(leatherCloak());
             pool.add(leatherBoots());
             pool.add(ironKnife());
