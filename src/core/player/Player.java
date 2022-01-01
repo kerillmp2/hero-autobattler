@@ -15,7 +15,7 @@ public class Player implements HasName {
     private int hp;
     BoardController boardController;
 
-    private Player(String name, PlayerState state, int money, int hp, BoardController boardController) {
+    protected Player(String name, PlayerState state, int money, int hp, BoardController boardController) {
         this.name = name;
         this.state = state;
         this.money = money;
@@ -24,14 +24,14 @@ public class Player implements HasName {
     }
 
     public static Player newPlayerWithName(String name) {
-        return new Player(name, PlayerState.NOT_READY_FOR_BATTLE, 100, 20, BoardController.empty(1, Constants.BENCH_SIZE.value));
+        return new Player(name, PlayerState.NOT_READY_FOR_BATTLE, 1, 20, BoardController.empty(1, Constants.BENCH_SIZE.value));
     }
 
     public List<Option<TurnOption>> getTurnOptions() {
         List<Option<TurnOption>> options = new ArrayList<>();
         options.add(new Option<>(TurnOption.END_TURN, "End turn"));
         options.add(new Option<>(TurnOption.VIEW_BOARD, "Field"));
-        options.add(new Option<>(TurnOption.OPEN_SHOP, "Shop [Level " + getBoard().getMaxSize() + "]"));
+        options.add(new Option<>(TurnOption.OPEN_SHOP, "Shop [Level " + getShopLevel() + "]"));
         return options;
     }
 
@@ -88,6 +88,10 @@ public class Player implements HasName {
 
     public void incrementShopLevel() {
         this.boardController.incrementBoardMaxSize();
+    }
+
+    public int getShopLevel() {
+        return this.boardController.getBoard().getMaxSize();
     }
 
     @Override

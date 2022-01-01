@@ -33,7 +33,7 @@ public class BattleTester {
     }
 
     public static void testCreature(Creature creature) {
-        List<Creature> opponents = CreaturePool.getCreaturesWithCost(creature.getCost());
+        List<Creature> opponents = CreaturePool.getPlayerCreaturesWithCost(creature.getCost());
         int wins = 0;
         int loses = 0;
         int draws = 0;
@@ -63,7 +63,7 @@ public class BattleTester {
     }
 
     public static void testCreaturesWithCost(int cost) {
-        List<Creature> creatures = CreaturePool.getCreaturesWithCost(cost);
+        List<Creature> creatures = CreaturePool.getPlayerCreaturesWithCost(cost);
         for (Creature creature : creatures) {
             testCreature(creature);
         }
@@ -74,8 +74,8 @@ public class BattleTester {
         testSide.add(firstCreature);
         testSide.add(secondCreature);
         List<List<Creature>> compositions = new ArrayList<>();
-        List<Creature> firstCostCreatures = CreaturePool.getCreaturesWithCost(firstCreature.getCost());
-        List<Creature> secondCostCreatures = CreaturePool.getCreaturesWithCost(secondCreature.getCost());
+        List<Creature> firstCostCreatures = CreaturePool.getPlayerCreaturesWithCost(firstCreature.getCost());
+        List<Creature> secondCostCreatures = CreaturePool.getPlayerCreaturesWithCost(secondCreature.getCost());
 
         for (Creature creature_1 : firstCostCreatures) {
             for (Creature creature_2 : secondCostCreatures) {
@@ -119,8 +119,8 @@ public class BattleTester {
     }
 
     public static void testPairsWithCost(int firstCost, int secondCost, int times) {
-        List<Creature> firstCostCreatures = CreaturePool.getCreaturesWithCost(firstCost);
-        List<Creature> secondCostCreatures = CreaturePool.getCreaturesWithCost(secondCost);
+        List<Creature> firstCostCreatures = CreaturePool.getPlayerCreaturesWithCost(firstCost);
+        List<Creature> secondCostCreatures = CreaturePool.getPlayerCreaturesWithCost(secondCost);
         for (Creature firstCreature : firstCostCreatures) {
             for (Creature secondCreature : secondCostCreatures) {
                 testPair(firstCreature, secondCreature, times);

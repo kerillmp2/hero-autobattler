@@ -292,6 +292,6 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     @Override
     public List<String> getBattleView() {
-        return CreatureBattleViewer.getCreatureView(creature.getNameLevel(), getCurrentAttack(), getCurrentHp(), creature.getTraitContainer().getTags(), creature);
+        return CreatureBattleViewer.getCreatureView(creature.getNameLevel(), getCurrentAttack(), getCurrentHp(), creature.getItems(), creature);
     }
 }

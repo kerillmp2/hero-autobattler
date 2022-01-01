@@ -61,4 +61,8 @@ public abstract class Shop<T extends HasShopView> {
     public void incrementShopLevel() {
         shopLevel++;
     }
+
+    public boolean lineIsEmpty() {
+        return currentLine.isEmpty();
+    }
 }

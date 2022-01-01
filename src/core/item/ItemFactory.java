@@ -374,7 +374,7 @@ public class ItemFactory {
                 );
                 addDescription(descriptionForStatChange(change.getKey(), change.getValue(), true));
             }
-            return new Item(this.name, String.format(this.descriptionTemplate, values.toArray()), rarity,
+            return Item.newItem(this.name, String.format(this.descriptionTemplate, values.toArray()), rarity,
                     creature -> {
                         equipAction.onEquip(creature);
                         for (StatsContainer.StatChange statChange : recalculatedStatChanges) {

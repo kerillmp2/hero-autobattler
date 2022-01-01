@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import core.creature.CreatureTag;
+import core.item.Item;
 import core.traits.Trait;
 import utils.Constants;
 import utils.TagContainer;
 
 public class CreatureBattleViewer extends Viewer {
 
-    public static List<String> getCreatureView(String name, int attack, int hp, Collection<Trait> traits, TagContainer<CreatureTag> creatureTags) {
+    public static List<String> getCreatureView(String name, int attack, int hp, List<Item> items, TagContainer<CreatureTag> creatureTags) {
         int rowSize = Constants.BATTLE_VIEW_LENGTH.value;
         int height = Constants.BATTLE_VIEW_HEIGHT.value;
         int offset = Constants.BATTLE_VIEW_OFFSET.value;
@@ -67,6 +68,14 @@ public class CreatureBattleViewer extends Viewer {
             poisonRow.append("|").append(" ".repeat(offset)).append("Poison: ").append(creatureTags.getTagValue(CreatureTag.POISONOUS));
             poisonRow.append(" ".repeat(rowSize - poisonRow.length() + 1)).append("|\n");
             view.append(poisonRow);
+            curHeight++;
+        }
+
+        for (Item item : items) {
+            StringBuilder itemRow = new StringBuilder();
+            itemRow.append("|").append(" ".repeat(offset)).append(item.getName());
+            itemRow.append(" ".repeat(rowSize - itemRow.length() + 1)).append("|\n");
+            view.append(itemRow);
             curHeight++;
         }
 

@@ -16,15 +16,17 @@ import utils.Pair;
 import utils.Selector;
 
 public class ShopController<T extends HasShopView> {
-    private Shop<T> shop;
-    private Player player;
-    private int refreshCost = 2;
-    private int levelUpCost;
+    protected Shop<T> shop;
+    protected Player player;
+    protected int refreshCost = 2;
+    protected int levelUpCost;
+    protected CreaturePool creaturePool;
 
-    public ShopController(Shop<T> shop, Player player) {
+    public ShopController(Shop<T> shop, Player player, CreaturePool creaturePool) {
         this.shop = shop;
         this.player = player;
         this.levelUpCost = generateLevelUpCost(player.getBoard().getMaxSize());
+        this.creaturePool = creaturePool;
     }
 
     public void shopProcessing() {
@@ -79,7 +81,7 @@ public class ShopController<T extends HasShopView> {
         shop.refreshLine();
     }
 
-    private boolean tryToBuyItemFromLine(int position) {
+    protected boolean tryToBuyItemFromLine(int position) {
         int lineLength = shop.getCurrentLine().items.size();
         if (position >= lineLength) {
             return false;
@@ -88,7 +90,7 @@ public class ShopController<T extends HasShopView> {
         }
     }
 
-    private boolean tryToBuyItem(ShopItem<T> shopItem) {
+    protected boolean tryToBuyItem(ShopItem<T> shopItem) {
         int cost = shopItem.getCost();
         if (player.hasMoney(cost)) {
             if (!shopItem.getItem().getName().equals("Продано") && !shopItem.getItem().getName().equals("Sold")) {
@@ -113,16 +115,16 @@ public class ShopController<T extends HasShopView> {
         return false;
     }
 
-    private boolean buyItem(ShopItem<T> shopItem) {
+    protected boolean buyItem(ShopItem<T> shopItem) {
         if (shopItem.getItem() instanceof Creature) {
             return buyCreature((ShopItem<Creature>) shopItem);
         }
         return false;
     }
 
-    private boolean buyCreature(ShopItem<Creature> shopItem) {
+    protected boolean buyCreature(ShopItem<Creature> shopItem) {
         if (player.getBoardController().addCreature(shopItem.getItem())) {
-            CreaturePool.removeCreature(shopItem.getItem());
+            creaturePool.removeCreature(shopItem.getItem());
             int index = shop.currentLine.items.indexOf(shopItem);
             shop.changeItemToDummy(index);
             return true;
@@ -149,7 +151,7 @@ public class ShopController<T extends HasShopView> {
             player.getBoardController().getCreatureCounter().clear(creature.getName());
             creature.clearAllChangesFromAllSources();
             for (int i = 0; i < creature.getLevel(); i++) {
-                CreaturePool.addCreature(CreatureFactory.creatureByName(creature.getName()));
+                creaturePool.addCreature(CreatureFactory.creatureByName(creature.getName()));
             }
             player.addMoney(creature.getSellingCost());
         }
@@ -160,13 +162,14 @@ public class ShopController<T extends HasShopView> {
         this.levelUpCost = Math.max(0, levelUpCost - amount);
     }
 
-    private void levelUp() {
+    protected void levelUp() {
         shop.incrementShopLevel();
         player.incrementShopLevel();
-        this.levelUpCost = generateLevelUpCost(player.getBoard().getMaxSize());
+        this.levelUpCost = generateLevelUpCost(player.getShopLevel());
+        MessageController.print(player.getName() + " leveled up shop to level " + player.getShopLevel());
     }
 
-    private int generateLevelUpCost(int level) {
-        return 2 + 3 * level;
+    protected int generateLevelUpCost(int level) {
+        return 2 + 3 * level + Math.max(0, 3 - level * 2);
     }
 }

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import core.controllers.utils.MessageController;
 import core.creature.Creature;
+import core.creature.CreaturePool;
 import core.viewers.BoardViewer;
 import core.player.Player;
 import core.player.PlayerState;
@@ -18,16 +19,16 @@ import utils.Option;
 import utils.Selector;
 
 public class PlayerController {
-    private Player player;
-    private ShopController<Creature> creatureShopController;
+    protected Player player;
+    protected ShopController<Creature> creatureShopController;
 
-    private PlayerController(Player player, ShopController<Creature> creatureShopController) {
+    protected PlayerController(Player player, ShopController<Creature> creatureShopController) {
         this.player = player;
         this.creatureShopController = creatureShopController;
     }
 
-    public static PlayerController defaultController(Player player) {
-        return new PlayerController(player, new ShopController<>(CreatureShop.defaultCreatureShop(player), player));
+    public static PlayerController defaultController(Player player, CreaturePool creaturePool) {
+        return new PlayerController(player, new ShopController<>(CreatureShop.defaultCreatureShop(player, creaturePool), player, creaturePool));
     }
 
     public void processTurnPhase() {
@@ -45,7 +46,7 @@ public class PlayerController {
         creatureShopController.reduceLevelUpCost(2);
     }
 
-    private void resolveTurnOption(TurnOption turnOption) {
+    protected void resolveTurnOption(TurnOption turnOption) {
         switch (turnOption) {
             case OPEN_SHOP:
                 player.setState(PlayerState.IN_SHOP);
@@ -72,15 +73,15 @@ public class PlayerController {
         }
     }
 
-    private void endTurn() {
+    protected void endTurn() {
         player.setState(PlayerState.READY_FOR_BATTLE);
     }
 
-    private void processShoppingPhase() {
+    protected void processShoppingPhase() {
         creatureShopController.shopProcessing();
     }
 
-    private void processViewBoard() {
+    protected void processViewBoard() {
         int selectedNumber = -1;
         while (true) {
             BoardViewer.showBoardView(player.getBoard(), player.getBench(), player.getBoard().getMaxSize());
@@ -99,7 +100,7 @@ public class PlayerController {
         }
     }
 
-    private Creature selectCreature() {
+    protected Creature selectCreature() {
         int selectedNumber = -1;
         Creature selectedCreature = null;
         while (selectedNumber != 0) {
@@ -126,7 +127,7 @@ public class PlayerController {
         return selectedCreature;
     }
 
-    private void processMoveToBoard() {
+    protected void processMoveToBoard() {
         Creature creature = selectCreature(player.getBench().getCreaturesWithDummys());
         if (creature == null) {
             return;
@@ -169,7 +170,7 @@ public class PlayerController {
         }
     }
 
-    private Creature selectCreature(List<Creature> creatures) {
+    protected Creature selectCreature(List<Creature> creatures) {
         int selectedNumber = -1;
         Creature selectedCreature = null;
         while (selectedNumber != 0) {
@@ -187,7 +188,7 @@ public class PlayerController {
         return selectedCreature;
     }
 
-    private void processSelling() {
+    protected void processSelling() {
         Creature creature = selectCreature();
         if (creature != null) {
             if (creatureShopController.sellCreature(creature)) {

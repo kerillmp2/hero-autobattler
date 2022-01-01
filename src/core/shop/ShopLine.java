@@ -13,4 +13,16 @@ public class ShopLine<T extends HasShopView> {
     public ShopLine() {
         this(new ArrayList<>());
     }
+
+    public boolean isEmpty() {
+        for (ShopItem<T> item : items) {
+            if (!item.getItem().getName().equals("Empty")
+                    && !item.getItem().getName().equals("Пусто")
+                    && !item.getItem().getName().equals("Продано")
+                    && !item.getItem().getName().equals("Sold")) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

@@ -1,6 +1,5 @@
 package core.creature;
 
-import core.controllers.utils.RandomController;
 import core.creature.skills.CreatureSkillFactory;
 import core.traits.Trait;
 
@@ -60,7 +59,7 @@ public class CreatureFactory {
     }
 
     public static Creature dummy() {
-        return Creature.withStats("Dummy" + RandomController.randomInt(1, 100), 100, 0, 1, 0, 0, 100, 100, 2)
+        return Creature.withStats("Dummy", 100, 0, 1, 0, 0, 100, 100, 2)
                 .wrapSkill(CreatureSkillFactory.miraSkill());
     }
 

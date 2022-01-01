@@ -3,7 +3,10 @@ package core.player;
 import java.util.HashMap;
 import java.util.Map;
 
+import core.controllers.LevelController;
+import core.controllers.utils.MessageController;
 import core.creature.Creature;
+import core.viewers.CreatureShopViewer;
 
 public class CreatureCounter {
     Map<String, Integer> counter;
@@ -26,7 +29,7 @@ public class CreatureCounter {
         return count(creature.getName());
     }
 
-    public void increment(Creature creature) {
+    public void increment(Creature creature, boolean forAI) {
         int oldValue = count(creature);
         int newValue = oldValue + 1;
         if (!initialCreatures.containsKey(creature.getName())) {
@@ -35,6 +38,7 @@ public class CreatureCounter {
         Creature initialCreature = initialCreatures.get(creature.getName());
         if (newValue > initialCreature.getLevel()) {
             initialCreature.setLevel(newValue);
+            LevelController.levelUpCreature(initialCreature, newValue, forAI);
         }
         counter.put(creature.getName(), newValue);
     }

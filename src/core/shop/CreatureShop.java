@@ -6,21 +6,27 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.swing.CellRendererPane;
+
 import core.creature.Creature;
 import core.creature.CreaturePool;
 import core.player.Player;
 import core.controllers.utils.RandomController;
 
 public class CreatureShop extends Shop<Creature> {
-    private CreatureShop(List<ShopItem<Creature>> itemPool, int shopLineLength, int shopLevel) {
+    CreaturePool creaturePool;
+
+    private CreatureShop(List<ShopItem<Creature>> itemPool, int shopLineLength, int shopLevel, CreaturePool creaturePool) {
         super(itemPool, shopLineLength, shopLevel);
+        this.creaturePool = creaturePool;
     }
 
-    public static CreatureShop defaultCreatureShop(Player player) {
+    public static CreatureShop defaultCreatureShop(Player player, CreaturePool creaturePool) {
         return new CreatureShop(
-                CreaturePool.toShopItems(),
+                creaturePool.toShopItems(),
                 5,
-                player.getBoard().getMaxSize()
+                player.getShopLevel(),
+                creaturePool
         );
     }
 
@@ -70,7 +76,7 @@ public class CreatureShop extends Shop<Creature> {
 
     @Override
     public void regenerate() {
-        this.itemPool = CreaturePool.toShopItems();
+        this.itemPool = creaturePool.toShopItems();
     }
 
     @Override

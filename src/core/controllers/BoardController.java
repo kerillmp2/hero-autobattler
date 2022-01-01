@@ -6,11 +6,11 @@ import core.player.Board;
 import core.player.CreatureCounter;
 
 public class BoardController {
-    private Board board;
-    private Bench bench;
-    private CreatureCounter creatureCounter;
+    protected Board board;
+    protected Bench bench;
+    protected CreatureCounter creatureCounter;
 
-    private BoardController(Board board, Bench bench, CreatureCounter creatureCounter) {
+    protected BoardController(Board board, Bench bench, CreatureCounter creatureCounter) {
         this.board = board;
         this.bench = bench;
         this.creatureCounter = creatureCounter;
@@ -50,16 +50,16 @@ public class BoardController {
 
     public boolean addCreature(Creature creature) {
         if (creatureCounter.count(creature) > 0) {
-            creatureCounter.increment(creature);
+            creatureCounter.increment(creature, false);
             return true;
         }
         if (canAddCreatureToBoard()) {
-            creatureCounter.increment(creature);
+            creatureCounter.increment(creature, false);
             addCreatureToBoard(creature);
             return true;
         }
         if (canAddCreatureToBench()) {
-            creatureCounter.increment(creature);
+            creatureCounter.increment(creature, false);
             addCreatureToBench(creature);
             return true;
         }

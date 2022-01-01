@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import AI.AI;
+import AI.AIController;
 import core.battle.BattleStatus;
 import core.controllers.utils.MessageController;
 import core.creature.CreaturePool;
@@ -23,8 +25,16 @@ public class GameController {
     }
 
     public static GameController forPlayers(Player... players) {
-        CreaturePool.init();
-        return new GameController(Arrays.stream(players).map(PlayerController::defaultController).collect(Collectors.toList()), 1);
+        CreaturePool defaultCreaturePoolForPlayers = CreaturePool.forPlayer();
+        List<PlayerController> playerControllers = new ArrayList<>();
+        for (Player player : players) {
+            if (player instanceof AI) {
+                playerControllers.add(AIController.defaultController(player, defaultCreaturePoolForPlayers));
+            } else {
+                playerControllers.add(PlayerController.defaultController(player, defaultCreaturePoolForPlayers));
+            }
+        }
+        return new GameController(playerControllers, 1);
     }
 
     public void startGame() {
@@ -82,7 +92,6 @@ public class GameController {
                             battlePair.first.getName() + " won versus " + battlePair.second.getName()
                     );
                     dealDamageToPlayer(battlePair.second, 2);
-                    addMoneyToPlayer(battlePair.first, 1);
                     break;
                 case SECOND_PLAYER_WIN:
                     MessageController.print(
@@ -90,7 +99,6 @@ public class GameController {
                             battlePair.second.getName() + " won versus " + battlePair.first.getName()
                     );
                     dealDamageToPlayer(battlePair.first, 2);
-                    addMoneyToPlayer(battlePair.second, 1);
                     break;
                 case TURN_LIMIT_REACHED:
                     MessageController.print(
@@ -103,6 +111,8 @@ public class GameController {
                             "Draw in battle between " + battlePair.second.getName() + " and " + battlePair.first.getName()
                     );
             }
+            addMoneyToPlayer(battlePair.first, 1 + battlePair.first.getShopLevel());
+            addMoneyToPlayer(battlePair.second, 1 + battlePair.second.getShopLevel());
         }
 
         MessageController.print(
