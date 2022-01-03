@@ -6,6 +6,6 @@ public class Test {
 
         Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 0;
         BattleTester.testCreaturesWithCost(1);
-        BattleTester.testPairsWithCost(1, 1, 5);
+        BattleTester.testPairsWithCost(1, 1, 4);
     }
 }

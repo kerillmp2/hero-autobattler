@@ -123,7 +123,9 @@ public class BattleTester {
         List<Creature> secondCostCreatures = CreaturePool.getPlayerCreaturesWithCost(secondCost);
         for (Creature firstCreature : firstCostCreatures) {
             for (Creature secondCreature : secondCostCreatures) {
-                testPair(firstCreature, secondCreature, times);
+                if (!firstCreature.getName().equals(secondCreature.getName())) {
+                    testPair(firstCreature, secondCreature, times);
+                }
             }
         }
     }

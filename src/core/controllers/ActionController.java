@@ -44,7 +44,7 @@ public class ActionController {
 
     public static String resolve(Action action) {
         BattlefieldCreature performer = action.getActionInfo().performer;
-        BattlefieldCreature target = action.getActionInfo().target;
+        BattlefieldCreature target;
         String message = "";
 
         if (!performer.hasStatus(ObjectStatus.ALIVE) || performer.hasStatus(ObjectStatus.DEAD)) {
@@ -96,6 +96,10 @@ public class ActionController {
 
         if (action.getActionInfo().hasTag(APPLY_POISON_DAMAGE)) {
             message += resolveApplyPoissonDamageAction(action);
+        }
+
+        if (action.getActionInfo().hasTag(APPLY_BURN_DAMAGE)) {
+            message += resolveApplyBurnDamageAction(action);
         }
 
         if (action.getActionInfo().hasTag(DEAL_PHYSICAL_DAMAGE_TO_RANDOM_ENEMY)) {
@@ -337,6 +341,16 @@ public class ActionController {
         int dealedDamage = Calculator.calculateMagicDamage(poisonDamage, target);
         target.setCurrentHp(targetHp - dealedDamage);
         return target.getBattleName() + " takes " + dealedDamage + " damage from poison\n";
+    }
+
+    private static String resolveApplyBurnDamageAction(Action action) {
+        BattlefieldCreature target = action.getActionInfo().target;
+
+        int targetHp = target.getCurrentHp();
+        int burnDamage = action.getActionInfo().getTagValue(APPLY_BURN_DAMAGE);
+        int dealedDamage = Calculator.calculateMagicDamage(burnDamage, target);
+        target.setCurrentHp(targetHp - dealedDamage);
+        return target.getBattleName() + " takes " + dealedDamage + " damage from burn\n";
     }
 
     private static String resolveBasicAttackAction(Action action) {

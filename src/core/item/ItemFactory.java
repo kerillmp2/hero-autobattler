@@ -69,8 +69,8 @@ public class ItemFactory {
 
     public static Item ironArmor() {
         return ItemTemplate.empty().withName("Iron armor").withRarity(Rarity.COMMON)
-                .withStatChange(HP, randomInt(20, 28, true), false)
-                .withStatChange(PHYSICAL_ARMOR, randomInt(1, 3, true), false)
+                .withStatChange(HP, randomInt(14, 18, true), false)
+                .withStatChange(PHYSICAL_ARMOR, randomInt(1, 2, true), false)
                 .withStatChange(SPEED, (-1) * randomInt(10, 15, true), true)
                 .withRandomStatChange(1)
                 .build();
@@ -78,8 +78,8 @@ public class ItemFactory {
 
     public static Item ironShield() {
         return ItemTemplate.empty().withName("Iron shield").withRarity(Rarity.COMMON)
-                .withStatChange(Stat.HP, RandomController.randomInt(17, 24, true), false)
-                .withStatChange(Stat.PHYSICAL_ARMOR, RandomController.randomInt(1, 2, true), false)
+                .withStatChange(Stat.HP, RandomController.randomInt(14, 18, true), false)
+                .withStatChange(Stat.PHYSICAL_ARMOR, RandomController.randomInt(1, true), false)
                 .withRandomStatChange(1)
                 .build();
     }
@@ -95,7 +95,7 @@ public class ItemFactory {
     public static Item leatherCloak() {
         return ItemTemplate.empty().withName("Leather cloak").withRarity(Rarity.COMMON)
                 .withStatChange(Stat.HP, 15, 21, false)
-                .withStatChange(Stat.MAGIC_ARMOR, 2, 3, false)
+                .withStatChange(Stat.MAGIC_ARMOR, 1, 2, false)
                 .withRandomStatChange(1)
                 .build();
     }
@@ -112,7 +112,7 @@ public class ItemFactory {
 
     public static Item emeraldAmulet() {
         return ItemTemplate.empty().withName("Emerald amulet").withRarity(Rarity.UNCOMMON)
-                .withStatChange(Stat.HP, RandomController.randomInt(12, 16, true), true)
+                .withStatChange(Stat.HP, RandomController.randomInt(14, 16, true), true)
                 .withRandomStatChange(2)
                 .build();
     }
@@ -156,20 +156,20 @@ public class ItemFactory {
 
     public static Item backpack() {
         return ItemTemplate.empty().withName("Backpack").withRarity(Rarity.RARE)
-                .withStatChange(HP, 15, 20, false)
+                .withStatChange(HP, 8, 10, false)
                 .withStatChange(ATTACK, 1, 2, false)
-                .withStatChange(SPELL_POWER, 2, 3, false)
+                .withStatChange(SPELL_POWER, 1, 3, false)
                 .withStatChange(PHYSICAL_ARMOR, 1, 2, false)
-                .withStatChange(MAGIC_ARMOR, 1, 3, false)
+                .withStatChange(MAGIC_ARMOR, 1, 2, false)
                 .withStatChange(SPEED, 5, 10, false)
-                .withRandomStatChange(4)
+                .withRandomStatChange(3)
                 .build();
     }
 
     public static Item poisonBlade() {
         int poisonAmount = randomInt(2, 3, true);
         return ItemTemplate.empty().withName("Poison blade").withRarity(Rarity.RARE)
-                .withStatChange(ATTACK, randomInt(19, 25), true)
+                .withStatChange(ATTACK, randomInt(12, 15), true)
                 .withStatChange(SPEED, randomInt(10, 15), true)
                 .addDescription("+%d Poison").addValue(poisonAmount)
                 .buildWithAction(c -> c.addTagValue(CreatureTag.POISONOUS, poisonAmount));
@@ -210,8 +210,8 @@ public class ItemFactory {
     }
 
     public static Item heatModule() {
-        int damageAmount = 20;
-        int addAttack = randomInt(3, 5);
+        int damageAmount = 15;
+        int addAttack = randomInt(4, 5);
         int addSpeed = randomInt(7, 10);
         return ItemTemplate.empty().withName("Heat module").withRarity(Rarity.EPIC)
                 .withRandomStatChange(3)
@@ -227,11 +227,11 @@ public class ItemFactory {
     }
 
     public static Item throwingDagger() {
-        int throwingDamagePercent = randomInt(30, 35, true);
-        int throwingNumber = randomInt(2, 3, true);
+        int throwingDamagePercent = randomInt(25, 33, true);
+        int throwingNumber = 2;
         ItemTemplate itemTemplate = ItemTemplate.empty().withName("Throwing daggers").withRarity(Rarity.EPIC)
-                .withStatChange(ATTACK, randomInt(15, 20), true)
-                .withStatChange(SPEED, randomInt(10, 15), true)
+                .withStatChange(ATTACK, randomInt(16, 20), true)
+                .withStatChange(SPEED, randomInt(12, 15), true)
                 .addDescription("After attack throws %d daggers, each dagger deals %d%% damage to random enemy")
                 .addValue(throwingNumber).addValue(throwingDamagePercent);
         for (int i = 0; i < throwingNumber; i++) {
@@ -246,10 +246,11 @@ public class ItemFactory {
     }
 
     public static Item dragonRay() {
-        int damage = RandomController.randomInt(30, 50, true);
+        int damage = RandomController.randomInt(6, 8, true);
         return ItemTemplate.empty().withName("Dragon ray").withRarity(Rarity.LEGENDARY)
                 .addDescription("Deals %d magic damage to each enemy after attack").addValue(damage)
                 .withAction(ActionFactory.dealDamageToAllEnemiesAction(null, damage, ResolveTime.AFTER_ATTACK))
+                .withRandomStatChange(5)
                 .build();
     }
 

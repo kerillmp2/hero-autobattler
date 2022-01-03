@@ -24,7 +24,7 @@ public class CreatureShop extends Shop<Creature> {
     public static CreatureShop defaultCreatureShop(Player player, CreaturePool creaturePool) {
         return new CreatureShop(
                 creaturePool.toShopItems(),
-                5,
+                4,
                 player.getShopLevel(),
                 creaturePool
         );

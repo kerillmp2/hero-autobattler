@@ -13,7 +13,6 @@ public enum CreatureTag implements Tag {
     ADD_TEMP_PARM_BEFORE_BATTLE("ADD_TEMP_PARM_BEFORE_BATTLE", 7),
     ADD_TEMP_MARM_BEFORE_BATTLE("ADD_TEMP_MARM_BEFORE_BATTLE", 8),
     ADD_MANA_AFTER_ALLY_USED_SKILL("ADD_MANA_AFTER_ALLY_USED_SKILL", 9);
-
     private String name;
     private int id;
 

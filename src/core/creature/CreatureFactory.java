@@ -22,7 +22,7 @@ public class CreatureFactory {
     }
 
     public static Creature salvira() {
-        Creature salvira = Creature.withStats("Salvira", 78, 12, 0, 1, 1, 120, 80, 1)
+        Creature salvira = Creature.withStats("Salvira", 77, 11, 1, 1, 1, 120, 80, 1)
                 .wrapTrait(Trait.ASSASSIN)
                 .wrapTrait(Trait.POISONOUS)
                 .wrapSkill(CreatureSkillFactory.salviraSkill());
@@ -31,31 +31,45 @@ public class CreatureFactory {
     }
 
     public static Creature ignar() {
-        return Creature.withStats("Ignar", 114, 14, 1, 4, 1, 80, 100, 1)
+        return Creature.withStats("Ignar", 114, 13, 1, 4, 1, 80, 100, 1)
                 .wrapTrait(Trait.DEMON)
                 .wrapTrait(Trait.EATER)
                 .wrapSkill(CreatureSkillFactory.ignarSkill());
     }
 
     public static Creature warbot() {
-        return Creature.withStats("Warbot", 93, 15, 3, 0, 1, 90, 90, 1)
+        return Creature.withStats("Warbot", 90, 13, 3, 0, 1, 90, 100, 1)
                 .wrapTrait(Trait.ROBOT)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapSkill(CreatureSkillFactory.warbotSkill());
     }
 
     public static Creature kodji() {
-        return Creature.withStats("Kodji", 83, 14, 2, 4, 7, 105, 30, 1)
+        return Creature.withStats("Kodji", 83, 13, 2, 4, 7, 105, 32, 1)
                 .wrapTrait(Trait.FROSTBORN)
                 .wrapTrait(Trait.MAGE)
                 .wrapSkill(CreatureSkillFactory.kodjiSkill());
     }
 
     public static Creature mira() {
-        return Creature.withStats("Mira", 78, 14, 1, 3, 4, 108, 65, 1)
+        return Creature.withStats("Mira", 79, 13, 1, 3, 4, 108, 65, 1)
                 .wrapTrait(Trait.ALCHEMIST)
                 .wrapTrait(Trait.STUDENT)
                 .wrapSkill(CreatureSkillFactory.miraSkill());
+    }
+
+    public static Creature obby() {
+        return Creature.withStats("Obby", 82, 13, 3, 1, 2, 110, 100, 1)
+                .wrapTrait(Trait.FIREBORN)
+                .wrapTrait(Trait.BEAST)
+                .wrapSkill(CreatureSkillFactory.obbySkill());
+    }
+
+    public static Creature leto() {
+        return Creature.withStats("Leto", 72, 16, 0, 2, 2,125, 100, 1)
+                .wrapTrait(Trait.SPIRIT)
+                .wrapTrait(Trait.ARCHER)
+                .wrapSkill(CreatureSkillFactory.letoSkill());
     }
 
     public static Creature dummy() {
@@ -82,6 +96,12 @@ public class CreatureFactory {
             }
             case "Mira": {
                 return mira();
+            }
+            case "Obby": {
+                return obby();
+            }
+            case "Leto": {
+                return leto();
             }
             case "Dummy": {
                 return dummy();

@@ -54,11 +54,12 @@ public class TurnController {
     }
 
     public String nextTurn() {
-        this.regenerateTurnOrder(this.turnOrderCounter);
+        this.regenerateTurnOrder();
         if (this.turnOrderCounter >= turnOrder.size()) {
             MessageController.print(this.turnCounter + ": ");
             this.turnOrderCounter = 0;
             this.turnCounter += 1;
+            this.regenerateTurnOrder();
         }
         String message = "";
         if (!this.turnOrder.isEmpty()) {

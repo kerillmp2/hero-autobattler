@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import core.shop.ShopItem;
 
 public class CreaturePool {
-    private List<Creature> creaturePool = new ArrayList<>();
+    private final List<Creature> creaturePool;
 
     private CreaturePool(List<Creature> creaturePool) {
         this.creaturePool = creaturePool;
@@ -63,9 +63,11 @@ public class CreaturePool {
             creatures.add(CreatureFactory.warbot());
             creatures.add(CreatureFactory.kodji());
             creatures.add(CreatureFactory.mira());
+            creatures.add(CreatureFactory.obby());
+            creatures.add(CreatureFactory.leto());
         }
         if (cost == 2) {
-            creatures.add(CreatureFactory.dummy());
+           // creatures.add(CreatureFactory.dummy());
         }
         return creatures;
     }

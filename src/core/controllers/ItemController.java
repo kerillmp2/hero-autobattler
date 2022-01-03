@@ -34,8 +34,6 @@ public class ItemController {
             pool.add(ironShield());
             pool.add(ironArmor());
             pool.add(ironLance());
-            pool.add(oldBook());
-            pool.add(ironStaff());
             pool.add(rubyAmulet());
             pool.add(topazAmulet());
             pool.add(sapphireAmulet());
@@ -76,6 +74,7 @@ public class ItemController {
 
             case MAGE: {
                 if (level == 3) {
+                    pool.add(ironStaff());
                 }
                 break;
             }
@@ -106,7 +105,7 @@ public class ItemController {
                 break;
             }
             case DEMON: {
-
+                break;
             }
             case ROBOT: {
                 if (level == 3) {
@@ -117,12 +116,14 @@ public class ItemController {
                     pool.add(mindModule());
                     pool.add(heatModule());
                 }
+                break;
             }
             case FROSTBORN: {
-
+                break;
             }
             case STUDENT: {
-
+                pool.add(oldBook());
+                break;
             }
         }
         return pool;

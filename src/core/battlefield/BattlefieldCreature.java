@@ -17,7 +17,6 @@ import core.creature.stat.StatChangeSource;
 import core.creature.stat.StatsContainer;
 import core.creature.stat.WithStats;
 import core.viewers.CreatureBattleViewer;
-import utils.Constants;
 
 public class BattlefieldCreature extends BattlefieldObject implements WithStats, HasBattleView {
     private Creature creature;
