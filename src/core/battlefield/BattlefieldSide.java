@@ -48,6 +48,7 @@ public class BattlefieldSide {
 
     public void addCreature(BattlefieldCreature creature) {
         this.creatures.add(creature);
+        creature.setBattlefieldSide(this);
     }
 
     public List<BattlefieldCreature> getCreatures() {

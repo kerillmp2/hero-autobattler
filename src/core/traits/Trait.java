@@ -15,6 +15,8 @@ public enum Trait implements Tag {
     STUDENT("Student", 7, "Students gains [5 / 11 / 23] mana when an ally uses ability", 2, 3, 5),
     BEAST("Beast", 8, "???", 2, 4, 6),
     SPIRIT("Spirit", 9, "???", 1, 2, 3),
+    PIRATE("Pirate", 10, "???", 2, 4, 5),
+    CULTIST("Cultist", 11, "???", 3, 4, 5),
 
     WARRIOR("Warrior", 12, "Warriors gains [+1 / +2 / +3] attack and [+1 / +2 / +3] physical defends", 2, 3, 4),
     ASSASSIN("Assassin", 13, "Assassins gains [+2 / +3 / +4] attack and [+10 / +20 / +40] speed", 2, 3, 4),
@@ -23,7 +25,9 @@ public enum Trait implements Tag {
     EATER("Eater", 16, "Eaters permanently gains [+4 / +6 / +10] health before each battle", 2, 4, 5),
     ALCHEMIST("Alchemist", 17, "???", 1, 2, 3),
     FIREBORN("Fireborn", 18, "???", 2, 3, 4),
-    ARCHER("Archer", 19, "???", 2, 4, 5);
+    ARCHER("Archer", 19, "???", 2, 4, 5),
+    DUELIST("Duelist", 20, "???", 2, 3, 5),
+    SUMMONER("Summoner", 21, "???", 2, 3, 4);
 
     private String name;
     private int id;

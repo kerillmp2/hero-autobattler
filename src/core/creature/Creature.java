@@ -7,7 +7,6 @@ import java.util.List;
 import core.action.Action;
 import core.action.ActionFactory;
 import core.battle.HasBattleView;
-import core.controllers.LevelController;
 import core.creature.skills.CreatureSkill;
 import core.creature.skills.CreatureSkillFactory;
 import core.creature.stat.Stat;

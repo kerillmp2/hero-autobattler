@@ -24,7 +24,7 @@ public class Player implements HasName {
     }
 
     public static Player newPlayerWithName(String name) {
-        return new Player(name, PlayerState.NOT_READY_FOR_BATTLE, 1, 20, BoardController.empty(1, Constants.BENCH_SIZE.value));
+        return new Player(name, PlayerState.NOT_READY_FOR_BATTLE, 100, 20, BoardController.empty(1, Constants.BENCH_SIZE.value));
     }
 
     public List<Option<TurnOption>> getTurnOptions() {

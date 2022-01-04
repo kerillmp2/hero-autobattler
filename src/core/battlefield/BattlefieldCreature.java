@@ -49,6 +49,10 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         this(creature, creature.getName(), new StatsContainer(), statusSet);
     }
 
+    public static BattlefieldCreature fromCreature(Creature creature) {
+        return new BattlefieldCreature(creature, ObjectStatus.ALIVE);
+    }
+
     private void beforeBattleStart() {
         addStatus(ObjectStatus.CREATURE);
 

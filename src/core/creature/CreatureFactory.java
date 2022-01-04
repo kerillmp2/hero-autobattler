@@ -72,6 +72,27 @@ public class CreatureFactory {
                 .wrapSkill(CreatureSkillFactory.letoSkill());
     }
 
+    public static Creature annie() {
+        return Creature.withStats("Annie", 83, 15, 2, 0, 2, 115, 75, 1)
+                .wrapTrait(Trait.PIRATE)
+                .wrapTrait(Trait.DUELIST)
+                .wrapSkill(CreatureSkillFactory.annieSkill());
+    }
+
+    public static Creature bolver() {
+        return Creature.withStats("Bolver", 99, 13, 2, 3, 2, 85, 100, 1)
+                .wrapTrait(Trait.CULTIST)
+                .wrapTrait(Trait.EATER)
+                .wrapSkill(CreatureSkillFactory.bolverSkill());
+    }
+
+    public static Creature shaya() {
+        return Creature.withStats("Shaya", 79, 13, 1, 3, 5, 105, 100, 1)
+                .wrapTrait(Trait.STUDENT)
+                .wrapTrait(Trait.SUMMONER)
+                .wrapSkill(CreatureSkillFactory.shayaSkill());
+    }
+
     public static Creature dummy() {
         return Creature.withStats("Dummy", 100, 0, 1, 0, 0, 100, 100, 2)
                 .wrapSkill(CreatureSkillFactory.miraSkill());
@@ -102,6 +123,15 @@ public class CreatureFactory {
             }
             case "Leto": {
                 return leto();
+            }
+            case "Annie": {
+                return annie();
+            }
+            case "Bolver": {
+                return bolver();
+            }
+            case "Shaya": {
+                return shaya();
             }
             case "Dummy": {
                 return dummy();

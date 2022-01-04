@@ -1,3 +1,4 @@
+import AI.AI;
 import core.controllers.GameController;
 import core.player.Player;
 import utils.Constants;
@@ -8,7 +9,10 @@ public class Main {
         Player kirill = Player.newPlayerWithName("Player 1");
         Player valera = Player.newPlayerWithName("Player 2");
 
-        GameController gameController = GameController.forPlayers(kirill, valera);
+        Player bot = AI.newAIWithName("Bot");
+        Player bot2 = AI.newAIWithName("Bot 2");
+
+        GameController gameController = GameController.forPlayers(bot, bot2);
         gameController.startGame();
     }
 }

@@ -65,6 +65,9 @@ public class CreaturePool {
             creatures.add(CreatureFactory.mira());
             creatures.add(CreatureFactory.obby());
             creatures.add(CreatureFactory.leto());
+            creatures.add(CreatureFactory.annie());
+            creatures.add(CreatureFactory.bolver());
+            creatures.add(CreatureFactory.shaya());
         }
         if (cost == 2) {
            // creatures.add(CreatureFactory.dummy());

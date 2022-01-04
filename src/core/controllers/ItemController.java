@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import core.controllers.utils.MessageController;
 import core.creature.Creature;
 import core.item.Item;
 import core.traits.Trait;
@@ -122,7 +121,9 @@ public class ItemController {
                 break;
             }
             case STUDENT: {
-                pool.add(oldBook());
+                if (level == 3) {
+                    pool.add(oldBook());
+                }
                 break;
             }
         }
