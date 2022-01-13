@@ -146,6 +146,11 @@ public class StatsContainer extends TagContainer<Stat> {
         private final int amount;
         private final boolean isPercentage;
 
+        @Override
+        public String toString() {
+            return stat.getName() + " " + source.toString() + " " + amount + " " + isPercentage;
+        }
+
         public StatChange(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
             this.stat = stat;
             this.source = source;

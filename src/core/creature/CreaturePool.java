@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.swing.JColorChooser;
+
 import core.shop.ShopItem;
 
 public class CreaturePool {
@@ -70,6 +72,9 @@ public class CreaturePool {
             creatures.add(CreatureFactory.shaya());
         }
         if (cost == 2) {
+            creatures.add(CreatureFactory.rover());
+            creatures.add(CreatureFactory.cathyra());
+            creatures.add(CreatureFactory.coldy());
            // creatures.add(CreatureFactory.dummy());
         }
         return creatures;

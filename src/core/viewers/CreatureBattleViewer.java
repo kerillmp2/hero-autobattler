@@ -3,17 +3,20 @@ package core.viewers;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import core.creature.CreatureTag;
 import core.item.Item;
 import core.traits.Trait;
 import utils.Constants;
+import utils.Pair;
 import utils.TagContainer;
 
 public class CreatureBattleViewer extends Viewer {
 
-    public static List<String> getCreatureView(String name, int attack, int hp, List<Item> items, TagContainer<CreatureTag> creatureTags) {
+    public static List<String> getCreatureView(String name, int attack, int hp,
+                                               List<Item> items, TagContainer<CreatureTag> creatureTags, List<Pair<String, String>> additionalParams) {
         int rowSize = Constants.BATTLE_VIEW_LENGTH.value;
         int height = Constants.BATTLE_VIEW_HEIGHT.value;
         int offset = Constants.BATTLE_VIEW_OFFSET.value;
@@ -63,6 +66,14 @@ public class CreatureBattleViewer extends Viewer {
 
         view.append("+").append("-".repeat(rowSize)).append("+\n");
 
+        for (Item item : items) {
+            StringBuilder itemRow = new StringBuilder();
+            itemRow.append("|").append(" ".repeat(offset)).append(item.getName());
+            itemRow.append(" ".repeat(rowSize - itemRow.length() + 1)).append("|\n");
+            view.append(itemRow);
+            curHeight++;
+        }
+
         if (creatureTags.getTagValue(CreatureTag.POISONOUS) > 0) {
             StringBuilder poisonRow = new StringBuilder();
             poisonRow.append("|").append(" ".repeat(offset)).append("Poison: ").append(creatureTags.getTagValue(CreatureTag.POISONOUS));
@@ -71,11 +82,14 @@ public class CreatureBattleViewer extends Viewer {
             curHeight++;
         }
 
-        for (Item item : items) {
-            StringBuilder itemRow = new StringBuilder();
-            itemRow.append("|").append(" ".repeat(offset)).append(item.getName());
-            itemRow.append(" ".repeat(rowSize - itemRow.length() + 1)).append("|\n");
-            view.append(itemRow);
+        for (Pair<String, String> param : additionalParams) {
+            if ((height - 4) - curHeight < 0) {
+                break;
+            }
+            StringBuilder paramRow = new StringBuilder();
+            paramRow.append("|").append(" ".repeat(offset)).append(param.first).append(": ").append(param.second);
+            paramRow.append(" ".repeat(rowSize - paramRow.length() + 1)).append("|\n");
+            view.append(paramRow);
             curHeight++;
         }
 

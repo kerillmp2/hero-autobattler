@@ -93,7 +93,7 @@ public class BattlefieldSide {
     }
 
     public BattlefieldCreature getCreatureWithLowest(Stat stat) {
-        List<BattlefieldCreature> allCreatures = getCreatures();
+        List<BattlefieldCreature> allCreatures = getCreatures().stream().filter(c -> c.hasStatuses(ObjectStatus.ALIVE)).collect(Collectors.toList());
         if (allCreatures.isEmpty()) {
             return null;
         }

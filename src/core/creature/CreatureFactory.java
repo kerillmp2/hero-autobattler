@@ -1,5 +1,7 @@
 package core.creature;
 
+import core.action.ActionFactory;
+import core.action.ResolveTime;
 import core.creature.skills.CreatureSkillFactory;
 import core.traits.Trait;
 
@@ -15,7 +17,7 @@ public class CreatureFactory {
      */
 
     public static Creature dunkan() {
-        return Creature.withStats("Dunkan", 81, 14, 4, 0, 0, 100, 100, 1)
+        return Creature.withStats("Dunkan", 81, 13, 4, 0, 0, 100, 100, 1)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapTrait(Trait.DEFENDER)
                 .wrapSkill(CreatureSkillFactory.dunkanSkill());
@@ -31,14 +33,14 @@ public class CreatureFactory {
     }
 
     public static Creature ignar() {
-        return Creature.withStats("Ignar", 114, 13, 1, 4, 1, 80, 100, 1)
+        return Creature.withStats("Ignar", 112, 13, 1, 3, 1, 80, 100, 1)
                 .wrapTrait(Trait.DEMON)
                 .wrapTrait(Trait.EATER)
                 .wrapSkill(CreatureSkillFactory.ignarSkill());
     }
 
     public static Creature warbot() {
-        return Creature.withStats("Warbot", 90, 13, 3, 0, 1, 90, 100, 1)
+        return Creature.withStats("Warbot", 89, 13, 3, 0, 1, 90, 100, 1)
                 .wrapTrait(Trait.ROBOT)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapSkill(CreatureSkillFactory.warbotSkill());
@@ -73,7 +75,7 @@ public class CreatureFactory {
     }
 
     public static Creature annie() {
-        return Creature.withStats("Annie", 83, 15, 2, 0, 2, 115, 75, 1)
+        return Creature.withStats("Annie", 79, 15, 2, 0, 1, 115, 100, 1)
                 .wrapTrait(Trait.PIRATE)
                 .wrapTrait(Trait.DUELIST)
                 .wrapSkill(CreatureSkillFactory.annieSkill());
@@ -87,10 +89,32 @@ public class CreatureFactory {
     }
 
     public static Creature shaya() {
-        return Creature.withStats("Shaya", 79, 13, 1, 3, 5, 105, 100, 1)
+        return Creature.withStats("Shaya", 77, 12, 1, 3, 6, 105, 100, 1)
                 .wrapTrait(Trait.STUDENT)
                 .wrapTrait(Trait.SUMMONER)
                 .wrapSkill(CreatureSkillFactory.shayaSkill());
+    }
+
+    public static Creature rover() {
+        return Creature.withStats("Rover", 134, 14, 3, 3, 4, 110, 100, 2)
+                .wrapTrait(Trait.ROBOT)
+                .wrapTrait(Trait.DEFENDER)
+                .wrapSkill(CreatureSkillFactory.roverSkill());
+    }
+
+    public static Creature cathyra() {
+        return Creature.withStats("Cathyra", 120, 17, 1, 1, 3, 130, 100, 2)
+                .wrapTrait(Trait.FIREBORN)
+                .wrapTrait(Trait.ASSASSIN)
+                .wrapSkill(CreatureSkillFactory.cathyraSkill());
+    }
+
+    public static Creature coldy() {
+        return Creature.withStats("Coldy", 129, 16, 5, 1, 2, 95, 100, 2)
+                .wrapTrait(Trait.FROSTBORN)
+                .wrapTrait(Trait.UNDEAD)
+                .wrapTrait(Trait.WARRIOR)
+                .wrapSkill(CreatureSkillFactory.coldySkill());
     }
 
     public static Creature dummy() {
@@ -132,6 +156,15 @@ public class CreatureFactory {
             }
             case "Shaya": {
                 return shaya();
+            }
+            case "Rover": {
+                return rover();
+            }
+            case "Cathyra": {
+                return cathyra();
+            }
+            case "Coldy": {
+                return coldy();
             }
             case "Dummy": {
                 return dummy();

@@ -1,5 +1,7 @@
 package core.creature.skills;
 
+import java.util.List;
+
 import core.action.Action;
 import core.action.ActionFactory;
 import core.action.ActionTag;
@@ -60,7 +62,7 @@ public class CreatureSkillFactory {
           String message;
           BattlefieldCreature target = warbot.getBattlefieldSide().getRandomOppositeSideAliveCreature();
           int buffAmount = warbot.getCurrentSpellPower() + warbot.getCreature().getLevel();
-          message = warbot.getBattleName() + " casts \"Cold steel\"!\n";
+          message = warbot.getBattleName() + " casts \"Attack command\"!\n";
           message += resolve(ActionFactory.addStatAction(warbot, Stat.ATTACK, buffAmount, ResolveTime.UNDEFINED));
           message += resolve(ActionFactory.attackAction(warbot, target));
           return message;
@@ -107,19 +109,8 @@ public class CreatureSkillFactory {
 
             message = obby.getBattleName() + " casts \"Fire spit\" on " + target.getBattleName() + "\n";
             message += dealMagicDamage(obby, target, damage);
+            message += applyBurn(target, burn);
 
-            if (!target.hasActionWithTags(ActionTag.APPLY_BURN_DAMAGE)) {
-                target.addAction(ActionFactory.ActionBuilder.empty().to(target).from(target).wrapTag(ActionTag.APPLY_BURN_DAMAGE, burn).wrapTag(ActionTag.DELETE_AFTER_RESOLVE).withTime(ResolveTime.ON_START_TURN).build());
-            } else {
-                target.getActionByTags(ActionTag.APPLY_BURN_DAMAGE).getActionInfo()
-                        .wrapTag(ActionTag.APPLY_BURN_DAMAGE, burn);
-            }
-
-            int currentBurn = target.getActionByTags(ActionTag.APPLY_BURN_DAMAGE).getActionInfo().getTagValue(ActionTag.APPLY_BURN_DAMAGE);
-
-            message += target.getBattleName() + " takes " + burn + " burn stacks! (" + currentBurn + " total)\n";
-
-            battleController.getTurnController().regenerateTurnOrder();
             return message;
         };
     }
@@ -150,7 +141,7 @@ public class CreatureSkillFactory {
         return (battleController, annie) -> {
             int coeff = annie.getCurrentSpeed() / 100;
             int damage = (annie.getCurrentAttack()) * coeff;
-            int speedBoost = annie.getCreature().getLevel() * 2 + annie.getCurrentSpellPower() * 2;
+            int speedBoost = annie.getCreature().getLevel() + annie.getCurrentSpellPower() * 2;
             BattlefieldCreature target = annie.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message;
             message = annie.getBattleName() + " casts \"Blade swing\" on " + target.getBattleName() + "!\n";
@@ -180,13 +171,13 @@ public class CreatureSkillFactory {
             String message = shaya.getBattleName() + " casts \"Frog summon\"!\n";;
             int sp = shaya.getCurrentSpellPower();
             int level = shaya.getCreature().getLevel();
-            int frogHP = (2 + level) * sp;
+            int frogHP = (int) (2.5 + level) * sp;
             int frogAttack = level * 2 + sp;
             int frogPhysArmor = sp / 2 + level;
             int frogMagArmor = (level + sp) / 2;
-            int frogSP = (level + sp) / 2;
-            int frogSpeed = 80 + sp * (1 + level);
-            Creature frog = Creature.withStats("Frog", frogHP, frogAttack, frogPhysArmor, frogMagArmor, frogSP, frogSpeed, 80, 1)
+            int frogSP = level + sp / 2;
+            int frogSpeed = 80 + sp * (3 + level);
+            Creature frog = Creature.withStats("Frog", frogHP, frogAttack, frogPhysArmor, frogMagArmor, frogSP, frogSpeed, 40, 1)
                     .wrapSkill(frogSkill());
             BattlefieldCreature battleFrog = BattlefieldCreature.fromCreature(frog);
             shaya.getBattlefieldSide().addCreature(battleFrog);
@@ -201,7 +192,69 @@ public class CreatureSkillFactory {
         return (battleController, frog) -> {
             BattlefieldCreature target = frog.getBattlefieldSide().getOppositeSide().getCreatureWithLowest(Stat.HP);
             String message = frog.getBattleName() + " casts \"Tongue hit\" on " + target.getBattleName() + "!\n";
-            message += dealPhysicalDamage(frog, target, frog.getCurrentAttack() + frog.getCurrentSpellPower());
+            message += dealPhysicalDamage(frog, target, frog.getCurrentAttack() + frog.getCurrentSpellPower() + 2);
+            return message;
+        };
+    }
+
+    public static CreatureSkill roverSkill() {
+        return (battleController, rover) -> {
+            int level = rover.getCreature().getLevel();
+            double coeff = level >= 9 ? 0.75 : level >= 6 ? 0.5 : level >= 3 ? 0.33 : 0.25;
+            int parm = (int) ((rover.getCurrentPhysicalArmor() * coeff + rover.getCurrentSpellPower() / 2) * coeff);
+            int marm = (int) ((rover.getCurrentMagicArmor() + rover.getCurrentSpellPower() / 2) * coeff);
+            BattlefieldCreature target = rover.getBattlefieldSide().getCreatureWithLowest(Stat.PHYSICAL_ARMOR);
+            String message;
+            message = rover.getBattleName() + " casts \"Protect command\" on " + target.getBattleName() + "!\n";
+            target.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.UNTIL_BATTLE_END, parm);
+            target.applyBuff(Stat.MAGIC_ARMOR, StatChangeSource.UNTIL_BATTLE_END, marm);
+            message += target.getBattleName() + " gains " + parm + " physical armor! [" + target.getCurrentPhysicalArmor() + "]\n";
+            message += target.getBattleName() + " gains " + marm + " magic armor! [" + target.getCurrentMagicArmor() + "]\n";
+            return message;
+        };
+    }
+
+    public static CreatureSkill cathyraSkill() {
+        return (battleController, cathyra) -> {
+            String message;
+            BattlefieldCreature first_target = cathyra.getBattlefieldSide().getRandomOppositeSideAliveCreature();
+            BattlefieldCreature second_target = cathyra.getBattlefieldSide().getRandomOppositeSideAliveCreature();
+
+            int damage = cathyra.getCurrentAttack() / 3 + cathyra.getCurrentSpeed() / 40 + cathyra.getCreature().getLevel() * 2;
+            int burn = cathyra.getCurrentSpeed() / 40 + (cathyra.getCurrentSpellPower() + cathyra.getLevel()) * 2;
+
+            if (first_target == second_target) {
+                message = cathyra.getBattleName() + " casts \"Burning knives\" on " + first_target.getBattleName() + "\n";
+            } else {
+                message = cathyra.getBattleName() + " casts \"Burning knives\" on " + first_target.getBattleName() + " and " + second_target.getBattleName() + "\n";
+            }
+
+            message += dealPhysicalDamage(cathyra, first_target, damage);
+            message += applyBurn(first_target, burn);
+            message += dealPhysicalDamage(cathyra, second_target, damage);
+            message += applyBurn(second_target, burn);
+
+            return message;
+        };
+    }
+
+    public static CreatureSkill coldySkill() {
+        return (battleController, coldy) -> {
+            BattlefieldCreature target = coldy.getBattlefieldSide().getOppositeSide().getCreatureWithHighest(Stat.PHYSICAL_ARMOR);
+            String message;
+            int level = coldy.getLevel();
+            int armorSteal = (level >= 9 ? 50 : level >= 6 ? 40 : level >= 3 ? 30 : 20) + coldy.getCurrentSpellPower() * 3;
+            int slow = (level >= 9 ? 25 : level >= 6 ? 16 : level >= 3 ? 10 : 6) + coldy.getCurrentSpellPower() / 2;
+            message = coldy.getBattleName() + " casts \"Freezing steel\" on " + target.getBattleName() + "\n";
+            int stealAmount = (int) (target.getCurrentPhysicalArmor() / 100.0 * armorSteal);
+            stealAmount = Math.max(stealAmount, level);
+            int slowAmount = (int) (target.getCurrentSpeed() / 100.0 * slow);
+            target.applyDebuff(Stat.PHYSICAL_ARMOR, StatChangeSource.UNTIL_BATTLE_END, stealAmount);
+            target.applyDebuff(Stat.SPEED, StatChangeSource.UNTIL_BATTLE_END, slowAmount);
+            message += target.getBattleName() + " loses " + stealAmount + " physical armor! [" + target.getCurrentPhysicalArmor() + "]\n";
+            message += target.getBattleName() + " slows by " + slowAmount + "! [" + target.getCurrentSpeed() + "]\n";
+            message += coldy.getBattleName() + " gets " + stealAmount + " physical armor! [" + coldy.getCurrentPhysicalArmor() + "]\n";
+            battleController.getTurnController().regenerateTurnOrder();
             return message;
         };
     }
@@ -241,5 +294,18 @@ public class CreatureSkillFactory {
             message += dealPhysicalDamage(user, target, amount);
             return message;
         };
+    }
+
+    public static String applyBurn(BattlefieldCreature target, int amount) {
+        if (!target.hasActionWithTags(ActionTag.APPLY_BURN_DAMAGE)) {
+            target.addAction(ActionFactory.ActionBuilder.empty().to(target).from(target).wrapTag(ActionTag.APPLY_BURN_DAMAGE, amount).wrapTag(ActionTag.DELETE_AFTER_RESOLVE).withTime(ResolveTime.ON_START_TURN).build());
+        } else {
+            target.getActionByTags(ActionTag.APPLY_BURN_DAMAGE).getActionInfo()
+                    .wrapTag(ActionTag.APPLY_BURN_DAMAGE, amount);
+        }
+
+        int currentBurn = target.getActionByTags(ActionTag.APPLY_BURN_DAMAGE).getActionInfo().getTagValue(ActionTag.APPLY_BURN_DAMAGE);
+
+        return target.getBattleName() + " takes " + amount + " burn stacks! (" + currentBurn + " total)\n";
     }
 }

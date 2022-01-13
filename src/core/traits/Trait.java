@@ -8,26 +8,27 @@ import utils.Tag;
 public enum Trait implements Tag {
     UNDEFINED("UNDEFINED", 0, "UNDEFINED"),
     KNIGHT("Knight", 1, "All creatures gains [+2 / +3 / +5] attack", 2, 4, 6),
-    POISONOUS("Poisonous", 2, "Poisonous gains [+1 / +2 / +4] poison", 2, 3, 4),
+    POISONOUS("Poisonous", 2, "Poisonous gains [+1 / +2 / +5] poison", 2, 3, 4),
     DEMON("Demon", 3, "???", 2, 4, 6),
-    ROBOT("Bot", 4, "At the beginning of the battle Bots gets random buffs [1 / 3 / 7] times from following:\n+8 health, +2 attack, +1 physical and magic armor", 1, 2, 3),
+    ROBOT("Bot", 4, "At the beginning of the battle Bots gets random buffs [1 / 3 / 7] times from following:\n+7% health, +9% attack, +1 physical and magic armor", 1, 2, 3),
     FROSTBORN("Frostborn", 5, "???", 2, 3, 5),
-    STUDENT("Student", 7, "Students gains [5 / 11 / 23] mana when an ally uses ability", 2, 3, 5),
+    STUDENT("Student", 7, "Students gains [8 / 17 / 25] mana when an ally uses ability", 2, 3, 5),
     BEAST("Beast", 8, "???", 2, 4, 6),
     SPIRIT("Spirit", 9, "???", 1, 2, 3),
     PIRATE("Pirate", 10, "???", 2, 4, 5),
     CULTIST("Cultist", 11, "???", 3, 4, 5),
+    UNDEAD("Undead", 12, "???", 2, 4),
 
-    WARRIOR("Warrior", 12, "Warriors gains [+1 / +2 / +3] attack and [+1 / +2 / +3] physical defends", 2, 3, 4),
-    ASSASSIN("Assassin", 13, "Assassins gains [+2 / +3 / +4] attack and [+10 / +20 / +40] speed", 2, 3, 4),
-    DEFENDER("Guardian", 14, "All creatures gains [+2 / +4 / +6] physical armor", 2, 3, 4),
-    MAGE("Mage", 15, "Mages gains [+4 / +7 / +10] spell power", 2, 3, 4),
-    EATER("Eater", 16, "Eaters permanently gains [+4 / +6 / +10] health before each battle", 2, 4, 5),
-    ALCHEMIST("Alchemist", 17, "???", 1, 2, 3),
-    FIREBORN("Fireborn", 18, "???", 2, 3, 4),
-    ARCHER("Archer", 19, "???", 2, 4, 5),
-    DUELIST("Duelist", 20, "???", 2, 3, 5),
-    SUMMONER("Summoner", 21, "???", 2, 3, 4);
+    WARRIOR("Warrior", 100, "Warriors gains [+15% / +20% / +30%] attack and [+2 / +3 / +5] physical armor", 2, 3, 4),
+    ASSASSIN("Assassin", 101, "Assassins gains [+20% / +30% / +40%] attack and [+15% / +25% / +50%] speed", 2, 3, 4),
+    DEFENDER("Defender", 102, "All creatures gains [+2 / +4 / +8] physical and magic armor", 2, 3, 4),
+    MAGE("Mage", 103, "Mages gains [+2 / +4 / +7] and [+20% / +45% / +75%] spell power", 2, 3, 4),
+    EATER("Eater", 104, "Eaters permanently gains [+3% / +6% / +10%] health before each battle", 2, 4, 5),
+    ALCHEMIST("Alchemist", 105, "???", 1, 2, 3),
+    FIREBORN("Fireborn", 106, "???", 2, 3, 4),
+    ARCHER("Archer", 107, "???", 2, 4, 5),
+    DUELIST("Duelist", 108, "???", 2, 3, 5),
+    SUMMONER("Summoner", 109, "???", 2, 3, 4);
 
     private String name;
     private int id;

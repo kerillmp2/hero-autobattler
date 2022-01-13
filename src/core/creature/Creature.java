@@ -157,6 +157,14 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         statsContainer.clearAllChangesFromSource(source);
     }
 
+    public void clearAllChangesFromTraits() {
+        for (StatChangeSource source : StatChangeSource.values()) {
+            if (source.isTrait()) {
+                clearAllChangesFromSource(source);
+            }
+        }
+    }
+
     public void clearAllChangesFromAllSources() {
         for (StatChangeSource source : StatChangeSource.values()) {
             clearAllChangesFromSource(source);
@@ -169,6 +177,11 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     public Creature wrapSkill(CreatureSkill skill) {
         this.skill = skill;
+        return this;
+    }
+
+    public Creature wrapAction(Action action) {
+        this.addAction(action);
         return this;
     }
 
@@ -225,6 +238,6 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     @Override
     public List<String> getBattleView() {
-        return CreatureBattleViewer.getCreatureView(getNameLevel(), getAttack(), getHp(), getItems(), this);
+        return CreatureBattleViewer.getCreatureView(getNameLevel(), getAttack(), getHp(), getItems(), this, new ArrayList<>());
     }
 }

@@ -1,5 +1,6 @@
 package core.battlefield;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 
 import core.action.Action;
 import core.action.ActionFactory;
+import core.action.ActionTag;
 import core.action.ResolveTime;
 import core.battle.HasBattleView;
 import core.controllers.utils.MessageController;
@@ -17,6 +19,7 @@ import core.creature.stat.StatChangeSource;
 import core.creature.stat.StatsContainer;
 import core.creature.stat.WithStats;
 import core.viewers.CreatureBattleViewer;
+import utils.Pair;
 
 public class BattlefieldCreature extends BattlefieldObject implements WithStats, HasBattleView {
     private Creature creature;
@@ -62,51 +65,39 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         }
 
         //EATER TRAIT
-        int additionalHP = creature.getTagValue(CreatureTag.ADD_PERMANENT_HP_BEFORE_BATTLE);
-        if (additionalHP > 0) {
+        int percentageOfAdditionalHP = creature.getTagValue(CreatureTag.ADD_PERMANENT_PERCENTAGE_HP_BEFORE_BATTLE);
+        if (percentageOfAdditionalHP > 0) {
+            int additionalHP = (int) (creature.getHp() * percentageOfAdditionalHP / 100.0);
             creature.applyBuff(Stat.HP, StatChangeSource.PERMANENT, additionalHP);
-            MessageController.print(
-                    creature.getName() + " навсегда получает " + additionalHP + " HP",
-                    creature.getName() + " gains " + additionalHP + " HP"
-            );
+            MessageController.print(creature.getName() + " gains " + additionalHP + " HP");
         }
 
         //ROBOT TRAIT
-        if (creature.getTagValue(CreatureTag.ADD_TEMP_HP_BEFORE_BATTLE) > 0) {
+        if (creature.getTagValue(CreatureTag.ADD_TEMP_PERCENTAGE_HP_BEFORE_BATTLE) > 0) {
             Stat stat = Stat.HP;
-            int amount = creature.getTagValue(CreatureTag.ADD_TEMP_HP_BEFORE_BATTLE);
+            int percentage = creature.getTagValue(CreatureTag.ADD_TEMP_PERCENTAGE_HP_BEFORE_BATTLE);
+            int amount = (int) (creature.getHp() * percentage / 100.0);
             creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
-            MessageController.print(
-                    String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()),
-                    String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName())
-            );
+            MessageController.print(String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName()));
         }
-        if (creature.getTagValue(CreatureTag.ADD_TEMP_ATTACK_BEFORE_BATTLE) > 0) {
+        if (creature.getTagValue(CreatureTag.ADD_TEMP_PERCENTAGE_ATTACK_BEFORE_BATTLE) > 0) {
             Stat stat = Stat.ATTACK;
-            int amount = creature.getTagValue(CreatureTag.ADD_TEMP_ATTACK_BEFORE_BATTLE);
+            int percentage = creature.getTagValue(CreatureTag.ADD_TEMP_PERCENTAGE_ATTACK_BEFORE_BATTLE);
+            int amount = (int) (creature.getAttack() * percentage / 100.0);
             creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
-            MessageController.print(
-                    String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()),
-                    String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName())
-            );
+            MessageController.print(String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName()));
         }
         if (creature.getTagValue(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE) > 0) {
             Stat stat = Stat.PHYSICAL_ARMOR;
             int amount = creature.getTagValue(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE);
             creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
-            MessageController.print(
-                    String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()),
-                    String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName())
-            );
+            MessageController.print(String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName()));
         }
         if (creature.getTagValue(CreatureTag.ADD_TEMP_MARM_BEFORE_BATTLE) > 0) {
             Stat stat = Stat.MAGIC_ARMOR;
             int amount = creature.getTagValue(CreatureTag.ADD_TEMP_MARM_BEFORE_BATTLE);
             creature.applyBuff(stat, StatChangeSource.UNTIL_BATTLE_END, amount);
-            MessageController.print(
-                    String.format("%s получает %d %s до конца боя", creature.getName(), amount, stat.getName()),
-                    String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName())
-            );
+            MessageController.print(String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName()));
         }
 
         //STUDENT TRAIT
@@ -268,6 +259,10 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         return creature;
     }
 
+    public int getLevel() {
+        return this.creature.getLevel();
+    }
+
     public void setCreature(Creature creature) {
         this.creature = creature;
     }
@@ -295,6 +290,17 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     @Override
     public List<String> getBattleView() {
-        return CreatureBattleViewer.getCreatureView(creature.getNameLevel(), getCurrentAttack(), getCurrentHp(), creature.getItems(), creature);
+        return CreatureBattleViewer.getCreatureView(creature.getNameLevel(), getCurrentAttack(), getCurrentHp(),
+                creature.getItems(), creature, getAdditionalViewInfo());
+    }
+
+    private List<Pair<String, String>> getAdditionalViewInfo() {
+        List<Pair<String, String>> additionalInfo = new ArrayList<>();
+        Action burnAction = this.getActionByTags(ActionTag.APPLY_BURN_DAMAGE);
+        if (!burnAction.getActionInfo().hasTag(ActionTag.UNDEFINED)) {
+            int burnAmount = burnAction.getActionInfo().getTagValue(ActionTag.APPLY_BURN_DAMAGE);
+            additionalInfo.add(new Pair<>("Burn", String.valueOf(burnAmount)));
+        }
+        return additionalInfo;
     }
 }

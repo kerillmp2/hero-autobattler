@@ -42,6 +42,7 @@ public class Board {
             }
         }
         updateTraitBuffs();
+        creature.clearAllChangesFromTraits();
     }
 
     public List<Creature> getCreatures() {
