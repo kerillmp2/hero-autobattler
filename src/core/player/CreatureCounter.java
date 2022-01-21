@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import core.controllers.LevelController;
-import core.controllers.utils.MessageController;
 import core.creature.Creature;
-import core.viewers.CreatureShopViewer;
 
 public class CreatureCounter {
     Map<String, Integer> counter;

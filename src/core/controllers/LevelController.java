@@ -9,7 +9,6 @@ import core.creature.CreatureFactory;
 import core.creature.stat.Stat;
 import core.creature.stat.StatChangeSource;
 import core.item.Item;
-import core.viewers.CreatureShopViewer;
 import core.viewers.ItemChoiceViewer;
 import utils.Selector;
 
@@ -60,7 +59,7 @@ public class LevelController {
         }
     }
 
-    private static void selectItem(Creature creature) {
+    public static void selectItem(Creature creature) {
         int selectedNumber = -1;
         List<Item> items = ItemController.getItemsFor(creature, 5);
         while (selectedNumber == -1) {
@@ -71,10 +70,12 @@ public class LevelController {
         selectedItem.equipOn(creature);
     }
 
-    private static void selectItemForAI(Creature creature) {
+    public static void selectItemForAI(Creature creature) {
         List<Item> items = ItemController.getItemsFor(creature, 5);
         items.sort(Comparator.comparingInt(Item::getValue));
-        Item selectedItem = items.get(items.size() - 1);
-        selectedItem.equipOn(creature);
+        if (items.size() > 0) {
+            Item selectedItem = items.get(items.size() - 1);
+            selectedItem.equipOn(creature);
+        }
     }
 }

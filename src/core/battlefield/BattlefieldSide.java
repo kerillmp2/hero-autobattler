@@ -100,6 +100,22 @@ public class BattlefieldSide {
         return allCreatures.stream().min(Comparator.comparingInt(o -> o.getStat(stat))).get();
     }
 
+    public BattlefieldCreature getCreatureWithHighestBy(Comparator<BattlefieldCreature> comparator) {
+        List<BattlefieldCreature> allCreatures = getCreatures().stream().filter(c -> c.hasStatuses(ObjectStatus.ALIVE)).sorted(comparator).collect(Collectors.toList());
+        if (allCreatures.isEmpty()) {
+            return null;
+        }
+        return allCreatures.get(0);
+    }
+
+    public BattlefieldCreature getCreatureWithLowestBy(Comparator<BattlefieldCreature> comparator) {
+        List<BattlefieldCreature> allCreatures = getCreatures().stream().filter(c -> c.hasStatuses(ObjectStatus.ALIVE)).sorted(comparator).collect(Collectors.toList());
+        if (allCreatures.isEmpty()) {
+            return null;
+        }
+        return allCreatures.get(allCreatures.size() - 1);
+    }
+
     public void setOppositeSide(BattlefieldSide oppositeSide) {
         this.oppositeSide = oppositeSide;
     }

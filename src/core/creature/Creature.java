@@ -224,7 +224,7 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
     }
 
     public String getShopView(boolean showLevel, boolean showCost, boolean showTraits, boolean showStats) {
-        return CreatureShopViewer.getShopViewFor(this, showLevel, showCost, showTraits, showStats);
+        return CreatureShopViewer.getShopViewFor(this, statsContainer, showLevel, showCost, showTraits, showStats);
     }
 
     @Override

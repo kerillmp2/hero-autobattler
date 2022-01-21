@@ -10,7 +10,9 @@ import core.action.Action;
 import core.action.ActionFactory;
 import core.action.ActionTag;
 import core.action.ResolveTime;
+import core.controllers.LevelController;
 import core.controllers.utils.RandomController;
+import core.creature.Creature;
 import core.creature.CreatureTag;
 import core.creature.stat.Stat;
 import core.creature.stat.StatChangeSource;
@@ -69,8 +71,8 @@ public class ItemFactory {
 
     public static Item ironArmor() {
         return ItemTemplate.empty().withName("Iron armor").withRarity(Rarity.COMMON)
-                .withStatChange(HP, randomInt(14, 18, true), false)
-                .withStatChange(PHYSICAL_ARMOR, randomInt(1, 2, true), false)
+                .withStatChange(HP, randomInt(18, 22, true), false)
+                .withStatChange(PHYSICAL_ARMOR, randomInt(1, 3, true), false)
                 .withStatChange(SPEED, (-1) * randomInt(10, 15, true), true)
                 .withRandomStatChange(1)
                 .build();
@@ -79,7 +81,7 @@ public class ItemFactory {
     public static Item ironShield() {
         return ItemTemplate.empty().withName("Iron shield").withRarity(Rarity.COMMON)
                 .withStatChange(Stat.HP, RandomController.randomInt(14, 18, true), false)
-                .withStatChange(Stat.PHYSICAL_ARMOR, RandomController.randomInt(1, true), false)
+                .withStatChange(Stat.PHYSICAL_ARMOR, RandomController.randomInt(1, 2, true), false)
                 .withRandomStatChange(1)
                 .build();
     }
@@ -144,14 +146,33 @@ public class ItemFactory {
     }
 
     public static Item repairKit() {
-        int hpRegen = randomInt(8, 11, true);
+        int hpRegen = randomInt(3, 6, true);
         return ItemTemplate.empty().withName("Repair kit").withRarity(Rarity.UNCOMMON)
-                .withStatChange(HP, randomInt(10, 12), true)
+                .withStatChange(HP, randomInt(10, 12, true), true)
                 .withRandomStatChange(1)
                 .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.ON_START_TURN)
                 .wrapTag(ActionTag.HEAL_PERCENT_OF_MISSING, hpRegen).build())
                 .addDescription("Heals %d%% of missing health at the start of the turn").addValue(hpRegen)
                 .build();
+    }
+
+    public static Item fireShard() {
+        int burnBuff = randomInt(5, 6);
+        return ItemTemplate.empty().withName("Fire shard").withRarity(Rarity.UNCOMMON)
+                .withStatChange(SPELL_POWER, randomInt(12, 16, true), true)
+                .withStatChange(ATTACK, randomInt(10, 15, true), true)
+                .withRandomStatChange(1)
+                .addDescription("Skills applies +%d Burn on targets").addValue(burnBuff)
+                .buildWithAction(c -> c.addTagValue(CreatureTag.BURN_BUFF, burnBuff));
+    }
+
+    public static Item poisonBlade() {
+        int poisonAmount = randomInt(1, 2, true);
+        return ItemTemplate.empty().withName("Poison blade").withRarity(Rarity.UNCOMMON)
+                .withStatChange(ATTACK, randomInt(10, 15), true)
+                .withStatChange(SPEED, randomInt(10, 15), true)
+                .addDescription("+%d Poison").addValue(poisonAmount)
+                .buildWithAction(c -> c.addTagValue(CreatureTag.POISONOUS, poisonAmount));
     }
 
     public static Item backpack() {
@@ -166,19 +187,10 @@ public class ItemFactory {
                 .build();
     }
 
-    public static Item poisonBlade() {
-        int poisonAmount = randomInt(2, 3, true);
-        return ItemTemplate.empty().withName("Poison blade").withRarity(Rarity.RARE)
-                .withStatChange(ATTACK, randomInt(12, 15), true)
-                .withStatChange(SPEED, randomInt(10, 15), true)
-                .addDescription("+%d Poison").addValue(poisonAmount)
-                .buildWithAction(c -> c.addTagValue(CreatureTag.POISONOUS, poisonAmount));
-    }
-
     public static Item ironHeart() {
-        int armorGain = randomInt(1, 2, true);
+        int armorGain = 1;
         return ItemTemplate.empty().withName("Iron heart").withRarity(Rarity.EPIC)
-                .withStatChange(PHYSICAL_ARMOR, randomInt(1, 3, true), false)
+                .withStatChange(PHYSICAL_ARMOR, randomInt(3, 4, true), false)
                 .withStatChange(MAGIC_ARMOR, randomInt(2, 4, true), false)
                 .addDescription("+%d physical armor after taking physical damage").addValue(armorGain)
                 .withAction(ActionFactory.addStatAction(null, PHYSICAL_ARMOR, armorGain, ResolveTime.AFTER_TAKING_PHYSICAL_DAMAGE))
@@ -188,7 +200,7 @@ public class ItemFactory {
     public static Item rageModule() {
         int attackGain = randomInt(7, 12, true);
         return ItemTemplate.empty().withName("Rage module").withRarity(Rarity.EPIC)
-                .withStatChange(ATTACK, 15, 18, true)
+                .withStatChange(ATTACK, 10, 15, true)
                 .withStatChange(HP, 10, 15, true)
                 .withRandomStatChange(2)
                 .withAction(ActionFactory.addStatAction(null, ATTACK, attackGain, ResolveTime.AFTER_DEALING_DAMAGE, true))
@@ -200,7 +212,7 @@ public class ItemFactory {
         int manaOnAttack = RandomController.randomInt(4, 8, true);
         int manaOnDamage = RandomController.randomInt(3, 6, true);
         return ItemTemplate.empty().withName("Mind module").withRarity(Rarity.EPIC)
-                .withRandomStatChange(3)
+                .withRandomStatChange(4)
                 .withStatChange(Stat.MANA, (-1) * RandomController.randomInt(24, 27, true), true)
                 .addDescription("+%d Mana after attack").addValue(manaOnAttack)
                 .withAction(ActionFactory.addManaAction(null, manaOnAttack, ResolveTime.AFTER_ATTACK))
@@ -210,27 +222,27 @@ public class ItemFactory {
     }
 
     public static Item heatModule() {
-        int damageAmount = 15;
-        int addAttack = randomInt(4, 5);
-        int addSpeed = randomInt(7, 10);
+        int damageAmount = randomInt(20, 25);
+        int addAttack = randomInt(10, 14);
+        int addSpeed = randomInt(10, 14);
         return ItemTemplate.empty().withName("Heat module").withRarity(Rarity.EPIC)
-                .withRandomStatChange(3)
+                .withRandomStatChange(2)
                 .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.ON_START_TURN)
-                        .wrapTag(ActionTag.TAKE_BASIC_DAMAGE, damageAmount).build())
+                        .wrapTag(ActionTag.TAKE_TRUE_DAMAGE, damageAmount).build())
                 .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.ON_START_TURN)
-                        .wrapTag(ActionTag.ATTACK, addAttack).wrapTag(ActionTag.ADD_FLOAT_STAT).build())
+                        .wrapTag(ActionTag.ATTACK, addAttack).wrapTag(ActionTag.ADD_PERCENTAGE_STAT).build())
                 .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.ON_START_TURN)
                         .wrapTag(ActionTag.SPEED, addSpeed).wrapTag(ActionTag.ADD_FLOAT_STAT).build())
-                .addDescription("When turn starts take %d damage, gain %d attack and %d speed")
+                .addDescription("When turn starts lose %d hp, gain %d%% attack and %d%% speed")
                 .addValue(damageAmount).addValue(addAttack).addValue(addSpeed)
                 .build();
     }
 
     public static Item throwingDagger() {
-        int throwingDamagePercent = randomInt(25, 33, true);
+        int throwingDamagePercent = randomInt(33, 44, true);
         int throwingNumber = 2;
-        ItemTemplate itemTemplate = ItemTemplate.empty().withName("Throwing daggers").withRarity(Rarity.EPIC)
-                .withStatChange(ATTACK, randomInt(16, 20), true)
+        ItemTemplate itemTemplate = ItemTemplate.empty().withName("Throwing daggers").withRarity(Rarity.COMMON)
+                .withStatChange(ATTACK, randomInt(12, 15), true)
                 .withStatChange(SPEED, randomInt(12, 15), true)
                 .addDescription("After attack throws %d daggers, each dagger deals %d%% damage to random enemy")
                 .addValue(throwingNumber).addValue(throwingDamagePercent);
@@ -246,12 +258,20 @@ public class ItemFactory {
     }
 
     public static Item dragonRay() {
-        int damage = RandomController.randomInt(6, 8, true);
+        int damage = RandomController.randomInt(13, 15, true);
         return ItemTemplate.empty().withName("Dragon ray").withRarity(Rarity.LEGENDARY)
                 .addDescription("Deals %d magic damage to each enemy after attack").addValue(damage)
                 .withAction(ActionFactory.dealDamageToAllEnemiesAction(null, damage, ResolveTime.AFTER_ATTACK))
-                .withRandomStatChange(5)
+                .withRandomStatChange(6)
                 .build();
+    }
+
+    public static Item bottomlessBag() {
+        int buffs = randomInt(2, 4, true);
+        return ItemTemplate.empty().withName("Bottomless Bag").withRarity(Rarity.LEGENDARY)
+                .addDescription("Take another artifact!")
+                .withRandomStatChange(buffs)
+                .buildWithAction(LevelController::selectItem);
     }
 
 

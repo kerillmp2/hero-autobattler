@@ -16,27 +16,25 @@ public class ActionFactory {
                 .overrideTagMax(ActionTag.TURNS_LEFT, turnsLeft));
     }
 
-    public static Action attackAction(BattlefieldCreature attacker, BattlefieldCreature defender) {
-        return new Action(ActionInfo.empty().from(attacker).to(defender).withTime(ResolveTime.ON_MAIN_PHASE).wrapTag(ActionTag.BASIC_ATTACK).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
+    public static Action attackAction(BattlefieldCreature attacker) {
+        return new Action(ActionInfo.empty().from(attacker).withTime(ResolveTime.ON_MAIN_PHASE).wrapTag(ActionTag.BASIC_ATTACK).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
     }
 
-    public static Action takeBasicAtackDamageAction(BattlefieldCreature target, BattlefieldCreature dealer) {
-        int damage = Calculator.calculateBasicAttackDamage(target, dealer);
-        return new Action(ActionInfo.empty().to(target).from(dealer).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_BASIC_DAMAGE, damage).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
+    public static Action takeBasicAttackDamageAction(BattlefieldCreature dealer, BattlefieldCreature target) {
+        int damage = dealer.getCurrentAttack();
+        return new Action(ActionInfo.empty().to(dealer).from(target).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_PHYSICAL_DAMAGE, damage).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
     }
 
     public static Action takePhysicalDamageAction(BattlefieldCreature target, int amount) {
-        int damage = Calculator.calculatePhysicalDamage(amount, target, false);
-        return new Action(ActionInfo.empty().to(target).from(target).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_BASIC_DAMAGE, damage).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
+        return new Action(ActionInfo.empty().to(target).from(target).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_PHYSICAL_DAMAGE, amount).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
     }
 
     public static Action takeMagicDamageAction(BattlefieldCreature target, int amount) {
-        int damage = Calculator.calculateMagicDamage(amount, target, false);
-        return new Action(ActionInfo.empty().to(target).from(target).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_BASIC_DAMAGE, damage).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
+        return new Action(ActionInfo.empty().to(target).from(target).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_MAGIC_DAMAGE, amount).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
     }
 
     public static Action takeTrueDamageAction(BattlefieldCreature target, int amount) {
-        return new Action(ActionInfo.empty().to(target).from(target).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_BASIC_DAMAGE, amount).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
+        return new Action(ActionInfo.empty().to(target).from(target).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_TRUE_DAMAGE, amount).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
     }
 
     public static Action addManaAction(BattlefieldCreature target, int amount, ResolveTime time) {

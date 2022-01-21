@@ -17,108 +17,121 @@ public class CreatureFactory {
      */
 
     public static Creature dunkan() {
-        return Creature.withStats("Dunkan", 81, 13, 4, 0, 0, 100, 100, 1)
+        return Creature.withStats("Dunkan", 84, 12, 3, 1, 1, 100, 100, 1)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapTrait(Trait.DEFENDER)
                 .wrapSkill(CreatureSkillFactory.dunkanSkill());
     }
 
     public static Creature salvira() {
-        Creature salvira = Creature.withStats("Salvira", 77, 11, 1, 1, 1, 120, 80, 1)
+        return Creature.withStats("Salvira", 72, 13, 1, 0, 2, 120, 80, 1)
                 .wrapTrait(Trait.ASSASSIN)
                 .wrapTrait(Trait.POISONOUS)
                 .wrapSkill(CreatureSkillFactory.salviraSkill());
-        salvira.addTagValue(CreatureTag.POISONOUS, 1);
-        return salvira;
     }
 
     public static Creature ignar() {
-        return Creature.withStats("Ignar", 112, 13, 1, 3, 1, 80, 100, 1)
+        return Creature.withStats("Ignar", 110, 12, 1, 3, 1, 80, 100, 1)
                 .wrapTrait(Trait.DEMON)
                 .wrapTrait(Trait.EATER)
                 .wrapSkill(CreatureSkillFactory.ignarSkill());
     }
 
     public static Creature warbot() {
-        return Creature.withStats("Warbot", 89, 13, 3, 0, 1, 90, 100, 1)
+        return Creature.withStats("Warbot", 85, 12, 2, 0, 2, 90, 100, 1)
                 .wrapTrait(Trait.ROBOT)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapSkill(CreatureSkillFactory.warbotSkill());
     }
 
     public static Creature kodji() {
-        return Creature.withStats("Kodji", 83, 13, 2, 4, 7, 105, 32, 1)
+        return Creature.withStats("Kodji", 78, 11, 1, 3, 7, 105, 40, 1)
                 .wrapTrait(Trait.FROSTBORN)
                 .wrapTrait(Trait.MAGE)
                 .wrapSkill(CreatureSkillFactory.kodjiSkill());
     }
 
     public static Creature mira() {
-        return Creature.withStats("Mira", 79, 13, 1, 3, 4, 108, 65, 1)
+        return Creature.withStats("Mira", 79, 12, 1, 3, 7, 108, 80, 1)
                 .wrapTrait(Trait.ALCHEMIST)
                 .wrapTrait(Trait.STUDENT)
+                .wrapTrait(Trait.HEALER)
                 .wrapSkill(CreatureSkillFactory.miraSkill());
     }
 
     public static Creature obby() {
-        return Creature.withStats("Obby", 82, 13, 3, 1, 2, 110, 100, 1)
+        return Creature.withStats("Obby", 78, 13, 3, 0, 3, 110, 100, 1)
                 .wrapTrait(Trait.FIREBORN)
                 .wrapTrait(Trait.BEAST)
                 .wrapSkill(CreatureSkillFactory.obbySkill());
     }
 
     public static Creature leto() {
-        return Creature.withStats("Leto", 72, 16, 0, 2, 2,125, 100, 1)
+        return Creature.withStats("Leto", 69, 15, 0, 2, 2,125, 100, 1)
                 .wrapTrait(Trait.SPIRIT)
                 .wrapTrait(Trait.ARCHER)
                 .wrapSkill(CreatureSkillFactory.letoSkill());
     }
 
     public static Creature annie() {
-        return Creature.withStats("Annie", 79, 15, 2, 0, 1, 115, 100, 1)
+        return Creature.withStats("Annie", 75, 14, 2, 0, 0, 115, 100, 1)
                 .wrapTrait(Trait.PIRATE)
                 .wrapTrait(Trait.DUELIST)
                 .wrapSkill(CreatureSkillFactory.annieSkill());
     }
 
     public static Creature bolver() {
-        return Creature.withStats("Bolver", 99, 13, 2, 3, 2, 85, 100, 1)
+        return Creature.withStats("Bolver", 101, 12, 2, 3, 2, 85, 100, 1)
                 .wrapTrait(Trait.CULTIST)
                 .wrapTrait(Trait.EATER)
                 .wrapSkill(CreatureSkillFactory.bolverSkill());
     }
 
     public static Creature shaya() {
-        return Creature.withStats("Shaya", 77, 12, 1, 3, 6, 105, 100, 1)
+        return Creature.withStats("Shaya", 82, 11, 0, 3, 6, 105, 100, 1)
                 .wrapTrait(Trait.STUDENT)
                 .wrapTrait(Trait.SUMMONER)
                 .wrapSkill(CreatureSkillFactory.shayaSkill());
     }
 
     public static Creature rover() {
-        return Creature.withStats("Rover", 134, 14, 3, 3, 4, 110, 100, 2)
+        return Creature.withStats("Rover", 134, 16, 3, 3, 4, 100, 100, 2)
                 .wrapTrait(Trait.ROBOT)
                 .wrapTrait(Trait.DEFENDER)
                 .wrapSkill(CreatureSkillFactory.roverSkill());
     }
 
     public static Creature cathyra() {
-        return Creature.withStats("Cathyra", 120, 17, 1, 1, 3, 130, 100, 2)
+        return Creature.withStats("Cathyra", 110, 14, 2, 1, 3, 130, 100, 2)
                 .wrapTrait(Trait.FIREBORN)
                 .wrapTrait(Trait.ASSASSIN)
                 .wrapSkill(CreatureSkillFactory.cathyraSkill());
     }
 
     public static Creature coldy() {
-        return Creature.withStats("Coldy", 129, 16, 5, 1, 2, 95, 100, 2)
+        return Creature.withStats("Coldy", 125, 15, 4, 2, 2, 95, 100, 2)
                 .wrapTrait(Trait.FROSTBORN)
                 .wrapTrait(Trait.UNDEAD)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapSkill(CreatureSkillFactory.coldySkill());
     }
 
+    public static Creature jack() {
+        return Creature.withStats("Jack", 100, 14, 2, 3, 7, 115, 150, 2)
+                .wrapTrait(Trait.PIRATE)
+                .wrapTrait(Trait.SUMMONER)
+                .wrapSkill(CreatureSkillFactory.jackSkill());
+    }
+
+    public static Creature aralis() {
+        return Creature.withStats("Aralis", 92, 17, 1, 3, 4, 120, 100, 2)
+                .wrapTrait(Trait.DEMON)
+                .wrapTrait(Trait.ARCHER)
+                .wrapSkill(CreatureSkillFactory.aralisSkill());
+    }
+
     public static Creature dummy() {
-        return Creature.withStats("Dummy", 100, 0, 1, 0, 0, 100, 100, 2)
+        return Creature.withStats("Dummy", 100, 0, 1, 0, 0, 100, 100, 1)
                 .wrapSkill(CreatureSkillFactory.miraSkill());
     }
 
@@ -165,6 +178,12 @@ public class CreatureFactory {
             }
             case "Coldy": {
                 return coldy();
+            }
+            case "Jack": {
+                return jack();
+            }
+            case "Aralis": {
+                return aralis();
             }
             case "Dummy": {
                 return dummy();

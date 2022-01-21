@@ -9,7 +9,7 @@ public enum Trait implements Tag {
     UNDEFINED("UNDEFINED", 0, "UNDEFINED"),
     KNIGHT("Knight", 1, "All creatures gains [+2 / +3 / +5] attack", 2, 4, 6),
     POISONOUS("Poisonous", 2, "Poisonous gains [+1 / +2 / +5] poison", 2, 3, 4),
-    DEMON("Demon", 3, "???", 2, 4, 6),
+    DEMON("Demon", 3, "After attacking demons burn [12% / 25% / 40%] or target's max mana", 2, 4, 6),
     ROBOT("Bot", 4, "At the beginning of the battle Bots gets random buffs [1 / 3 / 7] times from following:\n+7% health, +9% attack, +1 physical and magic armor", 1, 2, 3),
     FROSTBORN("Frostborn", 5, "???", 2, 3, 5),
     STUDENT("Student", 7, "Students gains [8 / 17 / 25] mana when an ally uses ability", 2, 3, 5),
@@ -28,7 +28,8 @@ public enum Trait implements Tag {
     FIREBORN("Fireborn", 106, "???", 2, 3, 4),
     ARCHER("Archer", 107, "???", 2, 4, 5),
     DUELIST("Duelist", 108, "???", 2, 3, 5),
-    SUMMONER("Summoner", 109, "???", 2, 3, 4);
+    SUMMONER("Summoner", 109, "???", 2, 3, 4),
+    HEALER("Healer", 110, "???", 2, 4, 5);
 
     private String name;
     private int id;

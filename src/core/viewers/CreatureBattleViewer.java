@@ -1,14 +1,11 @@
 package core.viewers;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import core.creature.CreatureTag;
 import core.item.Item;
-import core.traits.Trait;
 import utils.Constants;
 import utils.Pair;
 import utils.TagContainer;
@@ -67,11 +64,13 @@ public class CreatureBattleViewer extends Viewer {
         view.append("+").append("-".repeat(rowSize)).append("+\n");
 
         for (Item item : items) {
-            StringBuilder itemRow = new StringBuilder();
-            itemRow.append("|").append(" ".repeat(offset)).append(item.getName());
-            itemRow.append(" ".repeat(rowSize - itemRow.length() + 1)).append("|\n");
-            view.append(itemRow);
-            curHeight++;
+            if (!item.getName().equals("Bottomless Bag")) {
+                StringBuilder itemRow = new StringBuilder();
+                itemRow.append("|").append(" ".repeat(offset)).append(item.getName());
+                itemRow.append(" ".repeat(rowSize - itemRow.length() + 1)).append("|\n");
+                view.append(itemRow);
+                curHeight++;
+            }
         }
 
         if (creatureTags.getTagValue(CreatureTag.POISONOUS) > 0) {

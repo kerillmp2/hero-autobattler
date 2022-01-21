@@ -12,6 +12,7 @@ import core.battlefield.Battlefield;
 import core.battlefield.BattlefieldCreature;
 import core.battlefield.ObjectStatus;
 import core.controllers.utils.MessageController;
+import utils.Constants;
 
 public class TurnController {
     private int turnCounter;
@@ -67,7 +68,7 @@ public class TurnController {
             if (nextCreature.hasStatus(ObjectStatus.ALIVE) && !nextCreature.hasStatus(ObjectStatus.DEAD)) {
                 message = makeTurn(nextCreature);
                 if (!nextCreature.hasStatus(ObjectStatus.ALIVE) || nextCreature.hasStatus(ObjectStatus.DEAD)) {
-                    message += nextCreature.getCreature().getName() + " умирает!\n";
+                    message += nextCreature.getCreature().getName() + " dies!\n";
                 }
             }
         }
@@ -80,7 +81,10 @@ public class TurnController {
         if (!creature.hasStatus(ObjectStatus.ALIVE) || creature.hasStatus(ObjectStatus.DEAD)) {
             return "";
         }
-        String message = creature.getBattleName() + " начинает ход\n";
+        String message = creature.getBattleName() + " starts turn\n";
+        if (Constants.PRINT_CREATURE_STATS_IN_BATTLE.value > 0) {
+            message += creature.getShopView() + "\n";
+        }
         message += ActionController.resolve(
                 creature,
                 ResolveTime.ON_START_TURN,
@@ -89,7 +93,10 @@ public class TurnController {
                 ResolveTime.AFTER_MAIN_PHASE,
                 ResolveTime.ON_END_TURN
         );
-        message += creature.getBattleName() + " заканчивает ход\n";
+        if (Constants.PRINT_CREATURE_STATS_IN_BATTLE.value > 0) {
+            message += creature.getShopView() + "\n";
+        }
+        message += creature.getBattleName() + " ends turn\n";
         return message;
     }
 

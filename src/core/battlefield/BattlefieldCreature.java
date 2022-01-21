@@ -19,6 +19,11 @@ import core.creature.stat.StatChangeSource;
 import core.creature.stat.StatsContainer;
 import core.creature.stat.WithStats;
 import core.viewers.CreatureBattleViewer;
+import core.viewers.CreatureShopViewer;
+import statistics.Metric;
+import statistics.StatisticCollector;
+import utils.Calculator;
+import utils.Constants;
 import utils.Pair;
 
 public class BattlefieldCreature extends BattlefieldObject implements WithStats, HasBattleView {
@@ -100,6 +105,12 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
             MessageController.print(String.format("%s gains %d %s until battle end", creature.getName(), amount, stat.getName()));
         }
 
+        // Demon Trait
+        int burnMana = creature.getTagValue(CreatureTag.BURN_PERCENTAGE_MANA_ON_ATTACK);
+        if (burnMana > 0) {
+            this.addAction(ActionFactory.ActionBuilder.empty().from(this).withTime(ResolveTime.AFTER_ATTACK).wrapTag(ActionTag.BASIC_ATTACK_BUFF).wrapTag(ActionTag.REDUCE_PERCENTAGE_STAT).wrapTag(ActionTag.MANA, burnMana).build());
+        }
+
         //STUDENT TRAIT
         int manaAmount = creature.getTagValue(CreatureTag.ADD_MANA_AFTER_ALLY_USED_SKILL);
         if (manaAmount > 0) {
@@ -128,33 +139,34 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         return creature.getHp();
     }
 
-    public void apply(StatsContainer.StatChange statChange) {
-        apply(statChange.getStat(), statChange.getSource(), statChange.getAmount(), statChange.isPercentage());
-    }
-
-    public void apply(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
+    private void apply(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
+        int oldValue = this.getStat(stat);
         if (amount > 0) {
-            applyBuff(stat, source, amount, isPercentage);
+            statsContainer.addBuff(stat, source, amount, isPercentage);
         }
         if (amount < 0) {
-            applyDebuff(stat, source, -amount, isPercentage);
+            statsContainer.addDebuff(stat, source, (-1) * amount, isPercentage);
+        }
+        int newValue = this.getStat(stat);
+        if (Constants.COLLECT_STATISTIC.value != 0) {
+            StatisticCollector.updateCreatureStatistic(this.getCreature().getName(), stat, oldValue, newValue);
         }
     }
 
     public void applyBuff(Stat stat, StatChangeSource source, int amount) {
-        statsContainer.addBuff(stat, source, amount, false);
+        apply(stat, source, amount, false);
     }
 
     public void applyBuff(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
-        statsContainer.addBuff(stat, source, amount, isPercentage);
+        apply(stat, source, amount, isPercentage);
     }
 
     public void applyDebuff(Stat stat, StatChangeSource source, int amount) {
-        statsContainer.addDebuff(stat, source, amount, false);
+        apply(stat, source, (-1) * amount, false);
     }
 
     public void applyDebuff(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
-        statsContainer.addDebuff(stat, source, amount, isPercentage);
+        apply(stat, source, (-1) * amount, isPercentage);
     }
 
     public void applyCreatureTagChange(CreatureTag creatureTag, StatChangeSource source, int amount) {
@@ -173,6 +185,65 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
             this.removeStatus(ObjectStatus.ALIVE);
             this.addStatus(ObjectStatus.DEAD);
         }
+    }
+
+    public int takeMagicDamage(int amount) {
+        int currentHp = getCurrentHp();
+        int damage = Calculator.calculateMagicDamage(amount, this, true);
+        setCurrentHp(currentHp - damage);
+        if (Constants.COLLECT_STATISTIC.value > 0) {
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.MAGIC_DAMAGE_TAKEN, damage);
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.TOTAL_DAMAGE_TAKEN, damage);
+        }
+        return damage;
+    }
+
+    public int takePhysicalDamage(int amount) {
+        int currentHp = getCurrentHp();
+        int damage = Calculator.calculatePhysicalDamage(amount, this, true);
+        setCurrentHp(currentHp - damage);
+        if (Constants.COLLECT_STATISTIC.value > 0) {
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.PHYSICAL_DAMAGE_TAKEN, damage);
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.TOTAL_DAMAGE_TAKEN, damage);
+        }
+        return damage;
+    }
+
+    public int takeTrueDamage(int amount) {
+        int currentHp = getCurrentHp();
+        setCurrentHp(currentHp - amount);
+        if (Constants.COLLECT_STATISTIC.value > 0) {
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.TRUE_DAMAGE_DEALT, amount);
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.TOTAL_DAMAGE_TAKEN, amount);
+        }
+        return amount;
+    }
+
+    public int takeMagicDamage(int amount, String source) {
+        int damage = takeMagicDamage(amount);
+        if (Constants.COLLECT_STATISTIC.value > 0) {
+            StatisticCollector.updateCreatureMetric(source, Metric.MAGIC_DAMAGE_DEALT, amount);
+            StatisticCollector.updateCreatureMetric(source, Metric.TOTAL_DAMAGE_DEALT, amount);
+        }
+        return damage;
+    }
+
+    public int takePhysicalDamage(int amount, String source) {
+        int damage = takePhysicalDamage(amount);
+        if (Constants.COLLECT_STATISTIC.value > 0) {
+            StatisticCollector.updateCreatureMetric(source, Metric.PHYSICAL_DAMAGE_DEALT, amount);
+            StatisticCollector.updateCreatureMetric(source, Metric.TOTAL_DAMAGE_DEALT, amount);
+        }
+        return damage;
+    }
+
+    public int takeTrueDamage(int amount, String source) {
+        int damage = takeTrueDamage(amount);
+        if (Constants.COLLECT_STATISTIC.value > 0) {
+            StatisticCollector.updateCreatureMetric(source, Metric.TRUE_DAMAGE_DEALT, amount);
+            StatisticCollector.updateCreatureMetric(source, Metric.TOTAL_DAMAGE_DEALT, amount);
+        }
+        return damage;
     }
 
     @Override
@@ -294,12 +365,25 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
                 creature.getItems(), creature, getAdditionalViewInfo());
     }
 
+    public String getShopView() {
+        return getShopView(false, true, true, true);
+    }
+
+    public String getShopView(boolean showLevel, boolean showCost, boolean showTraits, boolean showStats) {
+        return CreatureShopViewer.getShopViewFor(creature, statsContainer, showLevel, showCost, showTraits, showStats);
+    }
+
     private List<Pair<String, String>> getAdditionalViewInfo() {
         List<Pair<String, String>> additionalInfo = new ArrayList<>();
         Action burnAction = this.getActionByTags(ActionTag.APPLY_BURN_DAMAGE);
         if (!burnAction.getActionInfo().hasTag(ActionTag.UNDEFINED)) {
             int burnAmount = burnAction.getActionInfo().getTagValue(ActionTag.APPLY_BURN_DAMAGE);
             additionalInfo.add(new Pair<>("Burn", String.valueOf(burnAmount)));
+        }
+        Action poisonedAction = this.getActionByTags(ActionTag.APPLY_POISON_DAMAGE);
+        if (!poisonedAction.getActionInfo().hasTag(ActionTag.UNDEFINED)) {
+            int poisonedAmount = poisonedAction.getActionInfo().getTagValue(ActionTag.APPLY_POISON_DAMAGE);
+            additionalInfo.add(new Pair<>("Poisoned", String.valueOf(poisonedAmount)));
         }
         return additionalInfo;
     }

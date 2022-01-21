@@ -11,7 +11,8 @@ public enum StatChangeSource {
     WARRIOR_TRAIT(true),
     ASSASSIN_TRAIT(true),
     STUDENT_TRAIT(true),
-    DEFENDER_TRAIT(true);
+    DEFENDER_TRAIT(true),
+    DEMON_TRAIT(true);
 
     private boolean isTrait = false;
 

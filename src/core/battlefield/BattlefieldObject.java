@@ -103,6 +103,18 @@ public class BattlefieldObject {
         return ActionFactory.undefinedAction();
     }
 
+    public List<Action> getActionsByTags(ActionTag... actionTags) {
+        List<Action> actions = new ArrayList<>();
+        for (ResolveTime resolveTime : ResolveTime.values()) {
+            for (Action action : getActions(resolveTime)) {
+                if (action.getActionInfo().hasTags(actionTags)) {
+                    actions.add(action);
+                }
+            }
+        }
+        return actions;
+    }
+
     public boolean hasActionWithTags(ActionTag... actionTags) {
         Action action = getActionByTags(actionTags);
         return !action.getActionInfo().hasTag(ActionTag.UNDEFINED);

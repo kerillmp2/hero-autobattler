@@ -11,6 +11,10 @@ public class Calculator {
         return Math.max(amount - target.getCurrentPhysicalArmor(), canBeZero ? 0 : 1);
     }
 
+    public static int calculatePhysicalDamage(int amount, WithStats target) {
+        return calculatePhysicalDamage(amount, target, false);
+    }
+
     public static int calculateMagicDamage(int amount, WithStats target) {
         return calculateMagicDamage(amount, target, false);
     }

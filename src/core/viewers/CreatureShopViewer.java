@@ -5,12 +5,14 @@ import java.util.List;
 
 import core.creature.Creature;
 import core.creature.CreatureTag;
+import core.creature.stat.Stat;
+import core.creature.stat.StatsContainer;
 import core.traits.Trait;
 import utils.Constants;
 
 public class CreatureShopViewer extends Viewer {
 
-    public static String getShopViewFor(Creature creature, boolean showLevel, boolean showCost, boolean showTraits, boolean showStats) {
+    public static String getShopViewFor(Creature creature, StatsContainer statsContainer, boolean showLevel, boolean showCost, boolean showTraits, boolean showStats) {
         String name = creature.getName();
         int level = creature.getLevel();
         if (name.equals("Продано") || name.equals("Пусто") || name.equals("Sold") || name.equals("Empty")) {
@@ -54,13 +56,13 @@ public class CreatureShopViewer extends Viewer {
         StringBuilder statsView = new StringBuilder();
 
         if (showStats) {
-            statsView.append("[AD: ").append(creature.getAttack()).append(", ").append("HP: ").append(creature.getHp()).append("]");
+            statsView.append("[AD: ").append(statsContainer.getTagValue(Stat.ATTACK)).append(", ").append("HP: ").append(statsContainer.getTagValue(Stat.HP)).append("]");
             statsView.append(" ".repeat(Constants.AD_HP_LEN.value - statsView.length()));
             statsView.append("<")
-                    .append("PhysArm: ").append(creature.getPhysicalArmor()).append(", ")
-                    .append("MagArm: ").append(creature.getMagicArmor()).append(", ")
-                    .append("SP: ").append(creature.getSpellPower()).append(", ")
-                    .append("Speed: ").append(creature.getSpeed()).append(">");
+                    .append("PhysArm: ").append(statsContainer.getTagValue(Stat.PHYSICAL_ARMOR)).append(", ")
+                    .append("MagArm: ").append(statsContainer.getTagValue(Stat.MAGIC_ARMOR)).append(", ")
+                    .append("SP: ").append(statsContainer.getTagValue(Stat.SPELL_POWER)).append(", ")
+                    .append("Speed: ").append(statsContainer.getTagValue(Stat.SPEED)).append(">");
             view.append(statsView);
             List<String> tagsView = new ArrayList<>();
             if (creature.hasTag(CreatureTag.POISONOUS)) {

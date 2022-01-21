@@ -33,6 +33,7 @@ public class TraitsController {
         updateAssassinBuff(allCreatures);
         updateStudentsBuff(allCreatures);
         updateDefenderBuff(allCreatures);
+        updateDemonBuff(allCreatures);
     }
 
     public void updateDefenderBuff(List<Creature> allCreatures) {
@@ -96,6 +97,21 @@ public class TraitsController {
         }
         if (poisonousNum >= Trait.POISONOUS.getLevels().get(2)) {
             poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 5));
+        }
+    }
+
+    private void updateDemonBuff(List<Creature> allCreatures) {
+        // "After attacking demons burn [12% / 25% / 40%] or target's max mana"
+        int deomnsNum = getTraitValue(Trait.DEMON);
+        List<Creature> demonCreatures = getCreaturesByTrait(allCreatures, Trait.DEMON);
+        if (deomnsNum >= Trait.DEMON.getLevels().get(0) && deomnsNum < Trait.DEMON.getLevels().get(1)) {
+            demonCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.BURN_PERCENTAGE_MANA_ON_ATTACK, StatChangeSource.DEMON_TRAIT, 12));
+        }
+        if (deomnsNum >= Trait.DEMON.getLevels().get(1) && deomnsNum < Trait.DEMON.getLevels().get(2)) {
+            demonCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.BURN_PERCENTAGE_MANA_ON_ATTACK, StatChangeSource.DEMON_TRAIT, 25));
+        }
+        if (deomnsNum >= Trait.DEMON.getLevels().get(2)) {
+            demonCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.BURN_PERCENTAGE_MANA_ON_ATTACK, StatChangeSource.DEMON_TRAIT, 40));
         }
     }
 

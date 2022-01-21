@@ -15,7 +15,7 @@ public class ItemChoiceViewer extends Viewer {
     private static final int ITEM_HEIGHT = Constants.ITEM_VIEW_HEIGHT.value;
 
     public static String getItemChoiceView(List<Item> items, Creature creature) {
-        Window window = new Window();
+        Viewer.Window window = new Window();
         window.lineWithAngles();
         window.line(creature.getName() + " has reached level " + creature.getLevel() + "! Choose one item to equip!");
         window.lineWithAngles();

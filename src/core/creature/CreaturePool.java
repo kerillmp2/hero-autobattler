@@ -75,6 +75,8 @@ public class CreaturePool {
             creatures.add(CreatureFactory.rover());
             creatures.add(CreatureFactory.cathyra());
             creatures.add(CreatureFactory.coldy());
+            creatures.add(CreatureFactory.jack());
+            creatures.add(CreatureFactory.aralis());
            // creatures.add(CreatureFactory.dummy());
         }
         return creatures;

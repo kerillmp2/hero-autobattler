@@ -32,12 +32,12 @@ public class BattleTester {
         return testBattleWithCreatures(creatures, opponents);
     }
 
-    public static void testCreature(Creature creature) {
-        List<Creature> opponents = CreaturePool.getPlayerCreaturesWithCost(creature.getCost());
+    public static void testCreatureSolo(Creature creature) {
         int wins = 0;
         int loses = 0;
         int draws = 0;
         int turn_limits = 0;
+        List<Creature> opponents = CreaturePool.getPlayerCreaturesWithCost(creature.getCost());
         for (Creature opponent : opponents) {
             BattleStatus battleStatus = testBattleWithCreatures(creature, opponent);
             switch (battleStatus) {
@@ -65,7 +65,7 @@ public class BattleTester {
     public static void testCreaturesWithCost(int cost) {
         List<Creature> creatures = CreaturePool.getPlayerCreaturesWithCost(cost);
         for (Creature creature : creatures) {
-            testCreature(creature);
+            testCreatureSolo(creature);
         }
     }
 
@@ -125,6 +125,20 @@ public class BattleTester {
             for (Creature secondCreature : secondCostCreatures) {
                 if (!firstCreature.getName().equals(secondCreature.getName())) {
                     testPair(firstCreature, secondCreature, times);
+                }
+            }
+        }
+    }
+
+    public static void testCreature(Creature creature) {
+        List<Creature> firstCostCreatures = new ArrayList<>();
+        testCreatureSolo(creature);
+        firstCostCreatures.add(creature);
+        List<Creature> secondCostCreatures = CreaturePool.getPlayerCreaturesWithCost(creature.getCost());
+        for (Creature firstCreature : firstCostCreatures) {
+            for (Creature secondCreature : secondCostCreatures) {
+                if (!firstCreature.getName().equals(secondCreature.getName())) {
+                    testPair(firstCreature, secondCreature, 2);
                 }
             }
         }
