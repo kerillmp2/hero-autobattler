@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.swing.JColorChooser;
-
 import core.shop.ShopItem;
 
 public class CreaturePool {
@@ -64,12 +62,13 @@ public class CreaturePool {
             creatures.add(CreatureFactory.ignar());
             creatures.add(CreatureFactory.warbot());
             creatures.add(CreatureFactory.kodji());
-            creatures.add(CreatureFactory.mira());
             creatures.add(CreatureFactory.obby());
             creatures.add(CreatureFactory.leto());
             creatures.add(CreatureFactory.annie());
             creatures.add(CreatureFactory.bolver());
             creatures.add(CreatureFactory.shaya());
+            creatures.add(CreatureFactory.mira());
+            //creatures.add(CreatureFactory.dummy());
         }
         if (cost == 2) {
             creatures.add(CreatureFactory.rover());
@@ -77,7 +76,8 @@ public class CreaturePool {
             creatures.add(CreatureFactory.coldy());
             creatures.add(CreatureFactory.jack());
             creatures.add(CreatureFactory.aralis());
-           // creatures.add(CreatureFactory.dummy());
+            creatures.add(CreatureFactory.weiss());
+            creatures.add(CreatureFactory.aramis());
         }
         return creatures;
     }

@@ -25,6 +25,7 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
     private int cost;
     private int level;
     private CreatureSkill skill = CreatureSkillFactory.emptySkill();
+    private CreatureSkill bouncingSkill = CreatureSkillFactory.emptySkill();
     private TraitContainer traitContainer;
     private StatsContainer statsContainer;
     private List<Action> actions;
@@ -68,6 +69,12 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         return Math.max(defaultValue + change, 0);
     }
 
+    @Override
+    public boolean hasTag(CreatureTag tag) {
+        boolean hasTag = super.hasTag(tag);
+        return this.getTagValue(tag) > 0 || hasTag;
+    }
+
     public String getName() {
         return name;
     }
@@ -106,6 +113,15 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
 
     public int getStat(Stat stat) {
         return statsContainer.getTagValue(stat);
+    }
+
+    public CreatureSkill getBouncingSkill() {
+        return bouncingSkill;
+    }
+
+    public Creature wrapBouncingSkill(CreatureSkill skill) {
+        this.bouncingSkill = skill;
+        return this;
     }
 
     public Creature wrapTrait(Trait trait) {

@@ -5,6 +5,7 @@ import java.util.List;
 import core.battle.HasBattleView;
 import core.battlefield.Battlefield;
 import core.battlefield.BattlefieldCreature;
+import core.battlefield.ObjectStatus;
 import utils.Constants;
 
 public class BattlefieldViewer extends Viewer {
@@ -21,12 +22,12 @@ public class BattlefieldViewer extends Viewer {
 
         List<BattlefieldCreature> creatures;
 
-        creatures = battlefield.getSecondSide().getCreatures();
+        creatures = battlefield.getSecondSide().getCreatures(ObjectStatus.ALIVE);
         view.append(getCreaturesRow(creatures));
 
         view.append(line("=", "|", "|", true));
 
-        creatures = battlefield.getFirstSide().getCreatures();
+        creatures = battlefield.getFirstSide().getCreatures(ObjectStatus.ALIVE);
         view.append(getCreaturesRow(creatures));
 
         view.append(lineWithAngles());

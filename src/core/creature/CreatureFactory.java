@@ -1,7 +1,5 @@
 package core.creature;
 
-import core.action.ActionFactory;
-import core.action.ResolveTime;
 import core.creature.skills.CreatureSkillFactory;
 import core.traits.Trait;
 
@@ -17,7 +15,7 @@ public class CreatureFactory {
      */
 
     public static Creature dunkan() {
-        return Creature.withStats("Dunkan", 84, 12, 3, 1, 1, 100, 100, 1)
+        return Creature.withStats("Dunkan", 79, 12, 3, 0, 1, 100, 100, 1)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapTrait(Trait.DEFENDER)
                 .wrapSkill(CreatureSkillFactory.dunkanSkill());
@@ -31,14 +29,14 @@ public class CreatureFactory {
     }
 
     public static Creature ignar() {
-        return Creature.withStats("Ignar", 110, 12, 1, 3, 1, 80, 100, 1)
+        return Creature.withStats("Ignar", 108, 12, 1, 3, 1, 80, 100, 1)
                 .wrapTrait(Trait.DEMON)
                 .wrapTrait(Trait.EATER)
                 .wrapSkill(CreatureSkillFactory.ignarSkill());
     }
 
     public static Creature warbot() {
-        return Creature.withStats("Warbot", 85, 12, 2, 0, 2, 90, 100, 1)
+        return Creature.withStats("Warbot", 81, 12, 2, 0, 2, 90, 100, 1)
                 .wrapTrait(Trait.ROBOT)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapSkill(CreatureSkillFactory.warbotSkill());
@@ -52,11 +50,12 @@ public class CreatureFactory {
     }
 
     public static Creature mira() {
-        return Creature.withStats("Mira", 79, 12, 1, 3, 7, 108, 80, 1)
+        return Creature.withStats("Mira", 79, 12, 1, 4, 6, 108, 90, 1)
                 .wrapTrait(Trait.ALCHEMIST)
                 .wrapTrait(Trait.STUDENT)
-                .wrapTrait(Trait.HEALER)
-                .wrapSkill(CreatureSkillFactory.miraSkill());
+                .wrapTrait(Trait.SUPPORT)
+                .wrapSkill(CreatureSkillFactory.miraSkill())
+                .wrapBouncingSkill(CreatureSkillFactory.miraBouncingSkill());
     }
 
     public static Creature obby() {
@@ -74,7 +73,7 @@ public class CreatureFactory {
     }
 
     public static Creature annie() {
-        return Creature.withStats("Annie", 75, 14, 2, 0, 0, 115, 100, 1)
+        return Creature.withStats("Annie", 75, 14, 2, 0, 1, 115, 100, 1)
                 .wrapTrait(Trait.PIRATE)
                 .wrapTrait(Trait.DUELIST)
                 .wrapSkill(CreatureSkillFactory.annieSkill());
@@ -109,7 +108,7 @@ public class CreatureFactory {
     }
 
     public static Creature coldy() {
-        return Creature.withStats("Coldy", 125, 15, 4, 2, 2, 95, 100, 2)
+        return Creature.withStats("Coldy", 125, 15, 4, 2, 6, 95, 100, 2)
                 .wrapTrait(Trait.FROSTBORN)
                 .wrapTrait(Trait.UNDEAD)
                 .wrapTrait(Trait.WARRIOR)
@@ -124,15 +123,29 @@ public class CreatureFactory {
     }
 
     public static Creature aralis() {
-        return Creature.withStats("Aralis", 92, 17, 1, 3, 4, 120, 100, 2)
+        return Creature.withStats("Aralis", 102, 17, 1, 3, 3, 120, 100, 2)
                 .wrapTrait(Trait.DEMON)
                 .wrapTrait(Trait.ARCHER)
                 .wrapSkill(CreatureSkillFactory.aralisSkill());
     }
 
+    public static Creature weiss() {
+        return Creature.withStats("Weiss", 113, 16, 2, 5, 10, 110, 90, 2)
+                .wrapTrait(Trait.CULTIST)
+                .wrapTrait(Trait.ALCHEMIST)
+                .wrapSkill(CreatureSkillFactory.weissSkill())
+                .wrapBouncingSkill(CreatureSkillFactory.weissBouncingSkill());
+    }
+
+    public static Creature aramis() {
+        return Creature.withStats("Aramis", 115, 17, 2, 3, 2, 117, 100, 2)
+                .wrapTrait(Trait.KNIGHT)
+                .wrapTrait(Trait.DUELIST)
+                .wrapSkill(CreatureSkillFactory.aramisSkill());
+    }
+    
     public static Creature dummy() {
-        return Creature.withStats("Dummy", 100, 0, 1, 0, 0, 100, 100, 1)
-                .wrapSkill(CreatureSkillFactory.miraSkill());
+        return Creature.withStats("Dummy", 100, 1, 1, 0, 0, 100, 80, 1);
     }
 
     public static Creature creatureByName(String name) {
@@ -184,6 +197,12 @@ public class CreatureFactory {
             }
             case "Aralis": {
                 return aralis();
+            }
+            case "Weiss": {
+                return weiss();
+            }
+            case "Aramis": {
+                return aramis();
             }
             case "Dummy": {
                 return dummy();

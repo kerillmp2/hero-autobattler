@@ -11,8 +11,9 @@ public class Test {
 
         Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 0;
         StatisticCollector.init();
-        BattleTester.testCreaturesWithCost(2);
-        //BattleTester.testPairsWithCost(1, 2, 2);
+        //BattleTester.testCreaturesWithCost(2);
+        //BattleTester.testPairsWithCost(1, 1, 2);
+        BattleTester.testPair(CreatureFactory.coldy(), CreatureFactory.warbot(), 3);
         MessageController.forcedPrint(StatisticViewer.getStatisticView(Metric.PHYSICAL_DAMAGE_DEALT, Metric.MAGIC_DAMAGE_DEALT, Metric.TOTAL_DAMAGE_DEALT, Metric.DAMAGE_FROM_SKILL));
 
         //BattleTester.testCreature(CreatureFactory.mira());

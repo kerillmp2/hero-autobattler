@@ -10,7 +10,7 @@ public class ActionInfo extends TagContainer<ActionTag> {
     public String prefix = "";
     public String postfix = "";
 
-    public ActionInfo(BattlefieldCreature performer, BattlefieldCreature target, ResolveTime resolveTime, String prefix, String postfix) {
+    private ActionInfo(BattlefieldCreature performer, BattlefieldCreature target, ResolveTime resolveTime, String prefix, String postfix) {
         super();
         this.performer = performer;
         this.target = target;

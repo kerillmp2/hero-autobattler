@@ -21,7 +21,6 @@ public enum ActionTag implements Tag {
     HEAL_PERCENT_OF_MAX("HEAL_PERCENT_OF_MAX", 13),
     HEAL_PERCENT_OF_MISSING("HEAL_PERCENT_OF_MISSING", 14),
     DEAL_DAMAGE_TO_ALL_ENEMIES("DEAL_DAMAGE_TO_ALL_ENEMIES", 15),
-    ADD_MANA("ADD_MANA", 16),
     ADD_FLOAT_STAT("ADD_STAT", 17),
     ADD_PERCENTAGE_STAT("ADD_PERCENTAGE_STAT", 18),
     REDUCE_FLOAT_STAT("REDUCE_FLOAT_STAT", 19),
@@ -36,7 +35,12 @@ public enum ActionTag implements Tag {
     MANA("Mana", 105),
     DEAL_MAGIC_DAMAGE("DEAL_MAGIC_DAMAGE", 106),
     BASIC_ATTACK_BUFF("BASIC_ATTACK_BUFF", 107),
-    PERCENTAGE("PERCENTAGE", 200);
+    USE_BOUNCING_SKILL("USE_BOUNCING_SKILL", 108),
+    DEAL_PHYSICAL_DAMAGE("DEAL_PHYSICAL_DAMAGE", 109),
+    BASIC_ATTACK_RESPONSE("BASIC_ATTACK_RESPONSE", 110),
+    PARRY("PARRY", 111),
+    PERCENTAGE("PERCENTAGE", 200),
+    CHANCE("CHANCE", 201);
 
     private String name;
     private int id;
@@ -58,6 +62,12 @@ public enum ActionTag implements Tag {
         }
         if (stat == Stat.SPEED) {
             return SPEED;
+        }
+        if (stat == Stat.MANA) {
+            return MANA;
+        }
+        if (stat == Stat.SPELL_POWER) {
+            return SPELL_POWER;
         }
         return UNDEFINED;
     }

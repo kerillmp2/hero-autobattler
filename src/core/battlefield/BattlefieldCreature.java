@@ -14,6 +14,7 @@ import core.battle.HasBattleView;
 import core.controllers.utils.MessageController;
 import core.creature.Creature;
 import core.creature.CreatureTag;
+import core.creature.skills.CreatureSkill;
 import core.creature.stat.Stat;
 import core.creature.stat.StatChangeSource;
 import core.creature.stat.StatsContainer;
@@ -116,6 +117,34 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         if (manaAmount > 0) {
             this.addAction(ActionFactory.addManaAction(this, manaAmount, ResolveTime.AFTER_ALLY_USING_SKILL));
         }
+
+        // Duelist Trait
+        int counterAttackChance = creature.getTagValue(CreatureTag.COUNTERATTACK_CHANCE);
+        int counterAttackDamage = creature.getTagValue(CreatureTag.COUNTERATTACK_DAMAGE);
+        if (counterAttackChance > 0 && counterAttackDamage > 0) {
+            this.addAction(ActionFactory.ActionBuilder.empty().from(this).withTime(ResolveTime.AFTER_ATTACKED)
+                    .wrapTag(ActionTag.CHANCE, counterAttackChance)
+                    .wrapTag(ActionTag.DEAL_PHYSICAL_DAMAGE)
+                    .wrapTag(ActionTag.PERCENTAGE, counterAttackDamage)
+                    .wrapTag(ActionTag.BASIC_ATTACK_RESPONSE)
+                    .withPrefix("%s counterattacks %s!").build());
+        }
+
+        // Frostborn Trait
+        int additionalMagicDamageOnAttack = creature.getTagValue(CreatureTag.ADDITIONAL_MAGIC_DAMAGE_ON_ATTACK);
+        int slowOnAttack = creature.getTagValue(CreatureTag.PERCENTAGE_SLOW_ON_ATTACK);
+        if (additionalMagicDamageOnAttack > 0 && slowOnAttack > 0) {
+            this.addAction(ActionFactory.ActionBuilder.empty().from(this).withTime(ResolveTime.AFTER_ATTACK)
+                    .wrapTag(ActionTag.DEAL_MAGIC_DAMAGE)
+                    .wrapTag(ActionTag.PERCENTAGE, additionalMagicDamageOnAttack)
+                    .wrapTag(ActionTag.BASIC_ATTACK_BUFF)
+                    .build());
+            this.addAction(ActionFactory.ActionBuilder.empty().from(this).withTime(ResolveTime.AFTER_ATTACK)
+                    .wrapTag(ActionTag.SPEED, slowOnAttack)
+                    .wrapTag(ActionTag.REDUCE_PERCENTAGE_STAT)
+                    .wrapTag(ActionTag.BASIC_ATTACK_BUFF)
+                    .build());
+        }
     }
 
     public int getStat(Stat stat) {
@@ -128,7 +157,15 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
 
     public String useSkill() {
         this.setCurrentMana(0);
-        return this.creature.getSkill().cast(battlefield.getBattleController(), this);
+        return useSkill(this.creature.getSkill());
+    }
+
+    public String useBouncingSkill() {
+        return useSkill(this.creature.getBouncingSkill());
+    }
+
+    public String useSkill(CreatureSkill skill) {
+        return skill.cast(battlefield.getBattleController(), this);
     }
 
     public boolean hasEnoughManaForSkill() {
@@ -170,7 +207,7 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
     }
 
     public void applyCreatureTagChange(CreatureTag creatureTag, StatChangeSource source, int amount) {
-        statsContainer.addTagChange(creatureTag, source, amount);
+        this.getCreature().applyCreatureTagChange(creatureTag, source, amount);
     }
 
     @Override

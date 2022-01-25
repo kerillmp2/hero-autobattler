@@ -71,8 +71,7 @@ public class GameController {
     private void turnsProcessing() {
         MessageController.print("Turn " + currentTurn + " has began!");
 
-        for(int i = 0; i < playerControllers.size(); i++) {
-            PlayerController currentPlayerController = playerControllers.get(i);
+        for (PlayerController currentPlayerController : playerControllers) {
             if (currentPlayerController.getPlayer().getState() != PlayerState.DEAD
                     && currentPlayerController.getPlayer().getState() != PlayerState.READY_FOR_BATTLE) {
                 MessageController.print("Turn of the player " + currentPlayerController.getPlayer().getName());
@@ -101,10 +100,10 @@ public class GameController {
                     MessageController.print("Draw in battle between " + battlePair.second.getName() + " and " + battlePair.first.getName());
             }
             if (Constants.EACH_BATTLE_STATISTIC.value > 0) {
-                MessageController.print(StatisticViewer.getStatisticView(Metric.values()));
+                MessageController.forcedPrint(StatisticViewer.getStatisticView(Metric.values()));
             }
-            addMoneyToPlayer(battlePair.first, 1 + battlePair.first.getShopLevel());
-            addMoneyToPlayer(battlePair.second, 1 + battlePair.second.getShopLevel());
+            addMoneyToPlayer(battlePair.first, 1 + battlePair.first.getMoney() / 10);
+            addMoneyToPlayer(battlePair.second, 1 + battlePair.second.getMoney() / 10);
         }
 
         MessageController.print("Turn " + currentTurn + " is over!");

@@ -148,22 +148,12 @@ public class ItemFactory {
     public static Item repairKit() {
         int hpRegen = randomInt(3, 6, true);
         return ItemTemplate.empty().withName("Repair kit").withRarity(Rarity.UNCOMMON)
-                .withStatChange(HP, randomInt(10, 12, true), true)
+                .withStatChange(HP, randomInt(6, 10, true), true)
                 .withRandomStatChange(1)
                 .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.ON_START_TURN)
                 .wrapTag(ActionTag.HEAL_PERCENT_OF_MISSING, hpRegen).build())
                 .addDescription("Heals %d%% of missing health at the start of the turn").addValue(hpRegen)
                 .build();
-    }
-
-    public static Item fireShard() {
-        int burnBuff = randomInt(5, 6);
-        return ItemTemplate.empty().withName("Fire shard").withRarity(Rarity.UNCOMMON)
-                .withStatChange(SPELL_POWER, randomInt(12, 16, true), true)
-                .withStatChange(ATTACK, randomInt(10, 15, true), true)
-                .withRandomStatChange(1)
-                .addDescription("Skills applies +%d Burn on targets").addValue(burnBuff)
-                .buildWithAction(c -> c.addTagValue(CreatureTag.BURN_BUFF, burnBuff));
     }
 
     public static Item poisonBlade() {
@@ -173,6 +163,25 @@ public class ItemFactory {
                 .withStatChange(SPEED, randomInt(10, 15), true)
                 .addDescription("+%d Poison").addValue(poisonAmount)
                 .buildWithAction(c -> c.addTagValue(CreatureTag.POISONOUS, poisonAmount));
+    }
+
+    public static Item potionKit() {
+        int bouncesAmount = 1;
+        return ItemTemplate.empty().withName("Potion kit").withRarity(Rarity.UNCOMMON)
+                .withStatChange(SPELL_POWER, randomInt(10, 12), true)
+                .withRandomStatChange(1)
+                .addDescription("+%d Skill bounces").addValue(bouncesAmount)
+                .buildWithAction(c -> c.addTagValue(CreatureTag.BOUNCING_SKILL, bouncesAmount));
+    }
+
+    public static Item fireShard() {
+        int burnBuff = randomInt(3, 4);
+        return ItemTemplate.empty().withName("Fire shard").withRarity(Rarity.UNCOMMON)
+                .withStatChange(SPELL_POWER, randomInt(8, 12, true), true)
+                .withStatChange(ATTACK, randomInt(7, 10, true), true)
+                .withRandomStatChange(1)
+                .addDescription("Skills applies +%d Burn on targets").addValue(burnBuff)
+                .buildWithAction(c -> c.addTagValue(CreatureTag.BURN_BUFF, burnBuff));
     }
 
     public static Item backpack() {

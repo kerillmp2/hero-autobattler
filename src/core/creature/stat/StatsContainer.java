@@ -42,7 +42,7 @@ public class StatsContainer extends TagContainer<Stat> {
     }
 
     public int getTagValue(CreatureTag tag) {
-        return tagChanges.stream().filter(c -> c.creatureTag == tag).mapToInt(c -> c.amount).sum();
+        return tagChanges.stream().filter(c -> c.creatureTag.getId() == tag.getId()).mapToInt(c -> c.amount).sum();
     }
 
     private int calculateFloatBuffsForStat(Stat stat) {
@@ -99,7 +99,8 @@ public class StatsContainer extends TagContainer<Stat> {
     }
 
     public void addTagChange(CreatureTag creatureTag, StatChangeSource source, int amount) {
-        tagChanges.add(new CreatureTagChange(creatureTag, source, amount));
+        CreatureTagChange creatureTagChange = new CreatureTagChange(creatureTag, source, amount);
+        tagChanges.add(creatureTagChange);
     }
 
     public void addBuff(Stat stat, StatChangeSource source, int amount, boolean isPercentage) {
@@ -179,6 +180,11 @@ public class StatsContainer extends TagContainer<Stat> {
         private final CreatureTag creatureTag;
         private final StatChangeSource source;
         private final int amount;
+
+        @Override
+        public String toString() {
+            return creatureTag.getName() + " " + source.toString() + " " + amount;
+        }
 
         public CreatureTagChange(CreatureTag creatureTag, StatChangeSource source, int amount) {
             this.creatureTag = creatureTag;

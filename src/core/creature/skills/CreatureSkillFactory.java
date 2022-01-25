@@ -97,8 +97,24 @@ public class CreatureSkillFactory {
                 return firstMissing - secondMissing;
             });
             String message;
-            int healingAmount = (target.getMaxHp() / 100 * 8) + mira.getCurrentSpellPower() * 3;
+            int healingAmount = (target.getMaxHp() / 100 * 9) + mira.getCurrentSpellPower() * 3;
             message = mira.getBattleName() + " casts \"Healing potion\" on " + target.getBattleName() + "\n";
+            message += resolve(ActionFactory.healingAction(target, healingAmount));
+
+            return message;
+        };
+    }
+
+    public static CreatureSkill miraBouncingSkill() {
+        return (battleController, mira) -> {
+            BattlefieldCreature target = mira.getBattlefieldSide().getCreatureWithHighestBy((o1, o2) -> {
+                int firstMissing = o1.getMaxHp() - o1.getCurrentHp();
+                int secondMissing = o2.getMaxHp() - o1.getCurrentHp();
+                return firstMissing - secondMissing;
+            });
+            String message;
+            int healingAmount = ((target.getMaxHp() / 100 * 9) + mira.getCurrentSpellPower() * 3) / 2;
+            message = mira.getBattleName() + " \"Healing potion\" bounces on " + target.getBattleName() + "!\n";
             message += resolve(ActionFactory.healingAction(target, healingAmount));
 
             return message;
@@ -146,8 +162,8 @@ public class CreatureSkillFactory {
     public static CreatureSkill annieSkill() {
         return (battleController, annie) -> {
             int coeff = annie.getCurrentSpeed() / 100;
-            int damage = (annie.getCurrentAttack()) * coeff + annie.getCreature().getLevel();
-            int speedBoost = annie.getCreature().getLevel() * 2 + annie.getCurrentSpellPower();
+            int damage = (annie.getCurrentAttack()) * coeff + annie.getCreature().getLevel() + annie.getCurrentSpellPower();
+            int speedBoost = annie.getCreature().getLevel() * 2 + annie.getCurrentSpellPower() * 4;
             BattlefieldCreature target = annie.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message;
             message = annie.getBattleName() + " casts \"Blade swing\" on " + target.getBattleName() + "!\n";
@@ -254,8 +270,8 @@ public class CreatureSkillFactory {
             BattlefieldCreature target = coldy.getBattlefieldSide().getOppositeSide().getCreatureWithHighest(Stat.PHYSICAL_ARMOR);
             String message;
             int level = coldy.getLevel();
-            int armorSteal = (level >= 9 ? 70 : level >= 6 ? 55 : level >= 3 ? 40 : 30) + coldy.getCurrentSpellPower() * 2;
-            int slow = (level >= 9 ? 25 : level >= 6 ? 16 : level >= 3 ? 10 : 6) + coldy.getCurrentSpellPower() / 2;
+            int armorSteal = (level >= 9 ? 70 : level >= 6 ? 55 : level >= 3 ? 40 : 30) + coldy.getCurrentSpellPower();
+            int slow = (level >= 9 ? 25 : level >= 6 ? 16 : level >= 3 ? 10 : 6) + coldy.getCurrentSpellPower() / 4;
             message = coldy.getBattleName() + " casts \"Freezing steel\" on " + target.getBattleName() + "\n";
             int stealAmount = (int) (target.getCurrentPhysicalArmor() / 100.0 * armorSteal);
             stealAmount = Math.max(stealAmount, level);
@@ -315,6 +331,48 @@ public class CreatureSkillFactory {
             return message;
         };
     }
+
+    public static CreatureSkill weissSkill() {
+        return (battleController, weiss) -> {
+            BattlefieldCreature target = weiss.getBattlefieldSide().getRandomOppositeSideCreature(ObjectStatus.ALIVE);
+            String message = weiss.getBattleName() + " casts \"Curse potion\" on " + target.getBattleName() + "!\n";
+            int debuffCoeff = (int) (weiss.getLevel() * 3.5 + weiss.getCurrentSpellPower() * 2);
+            int damage = weiss.getCurrentSpellPower() + weiss.getLevel() * 4;
+            message += dealMagicDamage(weiss, target, damage);
+            target.applyCreatureTagChange(CreatureTag.TAKE_MORE_DAMAGE, StatChangeSource.UNTIL_BATTLE_END, debuffCoeff);
+            message += target.getBattleName() + " cursed and takes " + debuffCoeff + "% more damage!\n";
+            return message;
+        };
+    }
+
+    public static CreatureSkill weissBouncingSkill() {
+        return (battleController, weiss) -> {
+            BattlefieldCreature target = weiss.getBattlefieldSide().getRandomOppositeSideCreature(ObjectStatus.ALIVE);
+            String message = "\"Curse potion\" bounces on " + target.getBattleName() + "!\n";
+            int debuffCoeff = (int) (weiss.getLevel() * 3.5 + weiss.getCurrentSpellPower() * 2) / 2;
+            int damage = (weiss.getCurrentSpellPower() + weiss.getLevel()) / 2;
+            message += dealMagicDamage(weiss, target, damage);
+            target.applyCreatureTagChange(CreatureTag.TAKE_MORE_DAMAGE, StatChangeSource.UNTIL_BATTLE_END, debuffCoeff);
+            message += target.getBattleName() + " cursed and takes " + debuffCoeff + "% more damage!\n";
+            return message;
+        };
+    }
+
+    public static CreatureSkill aramisSkill() {
+        return (battleController, aramis) -> {
+            int parryAmount = aramis.getLevel() / 3 + 1;
+            String message = aramis.getBattleName() + " casts \"Parry stance\"! He will parry next " + parryAmount + " attacks!\n";
+            int coeff = aramis.getLevel() * 10 + 10;
+            int reflectDamage = (int) (aramis.getCurrentAttack() / 100.0 * coeff);
+            aramis.addAction(ActionFactory.ActionBuilder.empty().from(aramis)
+                    .wrapTag(ActionTag.PARRY)
+                    .wrapTag(ActionTag.DEAL_PHYSICAL_DAMAGE, reflectDamage)
+                    .wrapTag(ActionTag.TURNS_LEFT, parryAmount)
+                    .withPrefix("%s parries %s attack!").build());
+            return message;
+        };
+    }
+
 
     public static String dealMagicDamage(BattlefieldCreature dealer, BattlefieldCreature target, int amount) {
         String message;

@@ -9,6 +9,7 @@ import core.action.ActionTag;
 import core.action.ResolveTime;
 import core.battlefield.BattlefieldCreature;
 import core.battlefield.ObjectStatus;
+import core.controllers.utils.RandomController;
 import core.creature.CreatureTag;
 import core.creature.stat.Stat;
 import core.creature.stat.StatChangeSource;
@@ -44,87 +45,111 @@ public class ActionController {
     public static String resolve(Action action) {
         BattlefieldCreature performer = action.getActionInfo().performer;
         BattlefieldCreature target;
-        String message = "";
+        StringBuilder message = new StringBuilder();
 
         if (!performer.hasStatus(ObjectStatus.ALIVE) || performer.hasStatus(ObjectStatus.DEAD)) {
             performer.getBattlefield().getBattleController().getTurnController().removeCreatureFromTurnOrder(performer);
-            return message;
+            return message.toString();
+        }
+
+        if (!performer.getBattlefieldSide().hasAliveCreature()) {
+            return message.toString();
+        }
+
+        if (!performer.getBattlefieldSide().getOppositeSide().hasAliveCreature()) {
+            return message.toString();
+        }
+
+        if (action.getActionInfo().hasTag(CHANCE)) {
+            int chance = action.getActionInfo().getTagValue(CHANCE);
+            int random = RandomController.randomInt(1, 100, true);
+            if (chance < random) {
+                return "";
+            }
         }
 
         if (action.getActionInfo().hasTag(CHOOSE_MAIN_ACTION)) {
             if (performer.hasEnoughManaForSkill()) {
-                message += resolveUseSkillAction(ActionFactory.useSkillAction(performer));
+                message.append(resolveUseSkillAction(ActionFactory.useSkillAction(performer)));
+                int bouncingTimes = performer.getTagValue(CreatureTag.BOUNCING_SKILL);
+                for (int i = 0; i < bouncingTimes; i++) {
+                    if (performer.getBattlefieldSide().getOppositeSide().hasAliveCreature()) {
+                        message.append(resolveUseBouncingSkillAction(ActionFactory.useBouncingSkillAction(performer)));
+                    } else {
+                        return message.toString();
+                    }
+                }
             } else {
                 if (performer.hasTag(CreatureTag.HAVE_BASIC_ATTACK)) {
-                    message += resolveBasicAttackAction(ActionFactory.attackAction(performer));
+                    message.append(resolveBasicAttackAction(ActionFactory.attackAction(performer)));
                 } else {
-                    message += performer.getBattleName() + " skips turn!";
+                    message.append(performer.getBattleName()).append(" skips turn!");
                 }
             }
         }
 
         if (action.getActionInfo().hasTag(BASIC_ATTACK)) {
-            message += resolveBasicAttackAction(action);
+            message.append(resolveBasicAttackAction(action));
         }
 
         if (action.getActionInfo().hasTag(ADD_FLOAT_STAT)) {
-            message += resolveAddFloatStatAction(action);
+            message.append(resolveAddFloatStatAction(action));
         }
 
         if (action.getActionInfo().hasTag(ADD_PERCENTAGE_STAT)) {
-            message += resolveAddPercentageStatAction(action);
+            message.append(resolveAddPercentageStatAction(action));
         }
 
         if (action.getActionInfo().hasTag(REDUCE_FLOAT_STAT)) {
-            message += resolveReduceFloatStatAction(action);
+            message.append(resolveReduceFloatStatAction(action));
         }
 
         if (action.getActionInfo().hasTag(REDUCE_PERCENTAGE_STAT)) {
-            message += resolveReducePercentageStatAction(action);
-        }
-
-        if (action.getActionInfo().hasTag(ADD_MANA)) {
-            message += resolveGetManaAction(action);
+            message.append(resolveReducePercentageStatAction(action));
         }
 
         if (action.getActionInfo().hasTag(HEAL_FLOAT)) {
-            message += resolveFloatHealingAction(action);
+            message.append(resolveFloatHealingAction(action));
         }
 
         if (action.getActionInfo().hasTag(HEAL_PERCENT_OF_MAX)) {
-            message += resolvePercentHealingAction(action, true);
+            message.append(resolvePercentHealingAction(action, true));
         }
 
         if (action.getActionInfo().hasTag(HEAL_PERCENT_OF_MISSING)) {
-            message += resolvePercentHealingAction(action, false);
+            message.append(resolvePercentHealingAction(action, false));
         }
 
         if (action.getActionInfo().hasTag(APPLY_POISON_DAMAGE)) {
-            message += resolveApplyPoissonDamageAction(action);
+            message.append(resolveApplyPoissonDamageAction(action));
         }
 
         if (action.getActionInfo().hasTag(APPLY_BURN_DAMAGE)) {
-            message += resolveApplyBurnDamageAction(action);
+            message.append(resolveApplyBurnDamageAction(action));
         }
 
         if (action.getActionInfo().hasTag(DEAL_PHYSICAL_DAMAGE_TO_RANDOM_ENEMY)) {
-            message += resolveDealPhysicalDamageToRandomEnemy(action);
+            message.append(resolveDealPhysicalDamageToRandomEnemy(action));
         }
 
         if (action.getActionInfo().hasTag(DEAL_DAMAGE_TO_ALL_ENEMIES)) {
-            message += resolveDealDamageToAllEnemies(action);
+            message.append(resolveDealDamageToAllEnemies(action));
         }
 
         if (action.getActionInfo().hasTag(TAKE_PHYSICAL_DAMAGE)) {
-            message += resolveTakePhysicalDamageAction(action);
+            message.append(resolveTakePhysicalDamageAction(action));
         }
 
         if (action.getActionInfo().hasTag(TAKE_MAGIC_DAMAGE)) {
-            message += resolveTakeMagicDamageAction(action);
+            message.append(resolveTakeMagicDamageAction(action));
         }
 
         if (action.getActionInfo().hasTag(DEAL_MAGIC_DAMAGE)) {
-            message += resolveDealMagicDamageAction(action);
+            message.append(resolveDealMagicDamageAction(action));
+        }
+
+        if (action.getActionInfo().hasTag(DEAL_PHYSICAL_DAMAGE)) {
+            message.append(resolveDealPhysicalDamageAction(action));
         }
 
         if (action.getActionInfo().hasTag(TURNS_LEFT)) {
@@ -140,17 +165,17 @@ public class ActionController {
 
         if (!action.getActionInfo().prefix.equals("")) {
             if (action.getActionInfo().target != null) {
-                message = String.format(action.getActionInfo().prefix, performer.getBattleName(), target.getBattleName()) + "\n" + message;
+                message.insert(0, String.format(action.getActionInfo().prefix, performer.getBattleName(), target.getBattleName()) + "\n");
             } else {
-                message += String.format(action.getActionInfo().prefix, performer.getBattleName()) + "\n" + message;
+                message.append(String.format(action.getActionInfo().prefix, performer.getBattleName())).append("\n").append(message);
             }
         }
 
         if (!action.getActionInfo().postfix.equals("")) {
-            message += "\n" + action.getActionInfo().postfix;
+            message.append("\n").append(action.getActionInfo().postfix);
         }
 
-        return message;
+        return message.toString();
     }
 
     private static String resolveAddFloatStatAction(Action action) {
@@ -384,14 +409,6 @@ public class ActionController {
                 + "[" + target.getCurrentHp() + "/" + target.getMaxHp() + "]\n";
     }
 
-    private static String resolveGetManaAction(Action action) {
-        BattlefieldCreature target = action.getActionInfo().performer;
-        int amount = action.getActionInfo().getTagValue(ActionTag.ADD_MANA);
-        target.addMana(amount);
-        return target.getBattleName() + " gains " + amount + " mana! "
-                + "[" + target.getCurrentMana() + "/" + target.getMaxMana() + "]\n";
-    }
-
     private static String resolveUseSkillAction(Action action) {
         BattlefieldCreature performer = action.getActionInfo().performer;
         List<BattlefieldCreature> creatures = performer.getBattlefieldSide().getCreatures();
@@ -401,6 +418,22 @@ public class ActionController {
         }
         message.append(resolve(performer, ResolveTime.BEFORE_USING_SKILL));
         message.append(performer.useSkill());
+        message.append(resolve(performer, ResolveTime.AFTER_USING_SKILL));
+        for (BattlefieldCreature creature : creatures) {
+            message.append(resolve(creature, ResolveTime.AFTER_ALLY_USING_SKILL));
+        }
+        return message.toString();
+    }
+
+    private static String resolveUseBouncingSkillAction(Action action) {
+        BattlefieldCreature performer = action.getActionInfo().performer;
+        List<BattlefieldCreature> creatures = performer.getBattlefieldSide().getCreatures();
+        StringBuilder message = new StringBuilder();
+        for (BattlefieldCreature creature : creatures) {
+            message.append(resolve(creature, ResolveTime.BEFORE_ALLY_USING_SKILL));
+        }
+        message.append(resolve(performer, ResolveTime.BEFORE_USING_SKILL));
+        message.append(performer.useBouncingSkill());
         message.append(resolve(performer, ResolveTime.AFTER_USING_SKILL));
         for (BattlefieldCreature creature : creatures) {
             message.append(resolve(creature, ResolveTime.AFTER_ALLY_USING_SKILL));
@@ -421,7 +454,7 @@ public class ActionController {
 
         int amount = action.getActionInfo().getTagValue(TAKE_PHYSICAL_DAMAGE);
         int damage = performer.takePhysicalDamage(amount, dealer.getCreature().getName());
-        return performer.getBattleName() + " takes " + damage + " damage\n";
+        return performer.getBattleName() + " takes " + damage + " physical damage\n";
     }
 
     private static String resolveTakeMagicDamageAction(Action action) {
@@ -430,31 +463,55 @@ public class ActionController {
 
         int amount = action.getActionInfo().getTagValue(TAKE_MAGIC_DAMAGE);
         int damage = performer.takeMagicDamage(amount, dealer.getCreature().getName());
-        return performer.getBattleName() + " takes " + damage + " damage\n";
+        return performer.getBattleName() + " takes " + damage + " magic damage\n";
     }
 
     private static String resolveDealMagicDamageAction(Action action) {
         BattlefieldCreature target = action.getActionInfo().target;
+        BattlefieldCreature performer = action.getActionInfo().performer;
+        int amount;
+        if (action.getActionInfo().hasTag(PERCENTAGE)) {
+            int percent = action.getActionInfo().getTagValue(PERCENTAGE);
+            amount = (int) (performer.getCurrentSpellPower() / 100.0 * percent);
+        } else {
+            amount = action.getActionInfo().getTagValue(DEAL_MAGIC_DAMAGE);
+        }
+        int damage = target.takeMagicDamage(amount, performer.getCreature().getName());
+        return target.getBattleName() + " takes " + damage + " magic damage\n";
+    }
 
-        int amount = action.getActionInfo().getTagValue(DEAL_MAGIC_DAMAGE);
-        int damage = target.takeMagicDamage(amount, target.getCreature().getName());
-        return target.getBattleName() + " takes " + damage + " damage\n";
+    private static String resolveDealPhysicalDamageAction(Action action) {
+        BattlefieldCreature target = action.getActionInfo().target;
+        BattlefieldCreature performer = action.getActionInfo().performer;
+        int amount;
+        if (action.getActionInfo().hasTag(PERCENTAGE)) {
+            int percent = action.getActionInfo().getTagValue(PERCENTAGE);
+            amount = (int) (performer.getCurrentAttack() / 100.0 * percent);
+        } else {
+            amount = action.getActionInfo().getTagValue(DEAL_PHYSICAL_DAMAGE);
+        }
+        int damage = target.takePhysicalDamage(amount, performer.getCreature().getName());
+        return target.getBattleName() + " takes " + damage + " physical damage\n";
     }
 
     private static String resolveApplyPoissonDamageAction(Action action) {
         BattlefieldCreature target = action.getActionInfo().target;
-
+        String message = resolve(target, ResolveTime.BEFORE_TAKING_MAGIC_DAMAGE, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.ON_TAKING_MAGIC_DAMAGE, ResolveTime.ON_TAKING_DAMAGE);
         int poisonDamage = action.getActionInfo().getTagValue(ActionTag.APPLY_POISON_DAMAGE);
         int dealedDamage = target.takeMagicDamage(poisonDamage, "Poison");
-        return target.getBattleName() + " takes " + dealedDamage + " damage from poison\n";
+        message += target.getBattleName() + " takes " + dealedDamage + " magic damage from poison\n";
+        message += resolve(target, ResolveTime.AFTER_TAKING_DAMAGE, ResolveTime.AFTER_TAKING_MAGIC_DAMAGE);
+        return message;
     }
 
     private static String resolveApplyBurnDamageAction(Action action) {
         BattlefieldCreature target = action.getActionInfo().target;
-
+        String message = resolve(target, ResolveTime.BEFORE_TAKING_MAGIC_DAMAGE, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.ON_TAKING_MAGIC_DAMAGE, ResolveTime.ON_TAKING_DAMAGE);
         int burnDamage = action.getActionInfo().getTagValue(APPLY_BURN_DAMAGE);
         int dealedDamage = target.takeMagicDamage(burnDamage, "Burn");
-        return target.getBattleName() + " takes " + dealedDamage + " damage from burn\n";
+        message += target.getBattleName() + " takes " + dealedDamage + " magic damage from burn\n";
+        message += resolve(target, ResolveTime.AFTER_TAKING_DAMAGE, ResolveTime.AFTER_TAKING_MAGIC_DAMAGE);
+        return message;
     }
 
     private static String resolveBasicAttackAction(Action action) {
@@ -463,9 +520,20 @@ public class ActionController {
         action.getActionInfo().target = target;
         String message;
 
-        List<Action> updateActions = performer.getActionsByTags(BASIC_ATTACK_BUFF);
-        for (Action updateAction : updateActions) {
+        if (target.hasActionWithTags(PARRY)) {
+            Action parryAction = target.getActionByTags(PARRY);
+            parryAction.getActionInfo().target = performer;
+            return resolve(parryAction);
+        }
+
+        List<Action> updatePerformerActions = performer.getActionsByTags(BASIC_ATTACK_BUFF);
+        for (Action updateAction : updatePerformerActions) {
             updateAction.getActionInfo().target = target;
+        }
+
+        List<Action> updateTargetActions = target.getActionsByTags(BASIC_ATTACK_RESPONSE);
+        for (Action updateAction : updateTargetActions) {
+            updateAction.getActionInfo().target = performer;
         }
 
         message = resolve(performer, ResolveTime.BEFORE_ATTACK);
@@ -494,6 +562,7 @@ public class ActionController {
                     + target.getActionByTags(ActionTag.APPLY_POISON_DAMAGE).getActionInfo().getTagValue(ActionTag.TURNS_LEFT)
                     + " turns\n";
         }
+        message += resolve(target, ResolveTime.AFTER_ATTACKED);
         message += resolve(performer, ResolveTime.AFTER_ATTACK);
         message += resolve(target, ResolveTime.AFTER_TAKING_PHYSICAL_DAMAGE, ResolveTime.AFTER_TAKING_DAMAGE);
         message += resolve(performer, ResolveTime.AFTER_DEALING_PHYSICAL_DAMAGE, ResolveTime.AFTER_DEALING_DAMAGE);

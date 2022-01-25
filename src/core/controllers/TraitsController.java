@@ -34,6 +34,8 @@ public class TraitsController {
         updateStudentsBuff(allCreatures);
         updateDefenderBuff(allCreatures);
         updateDemonBuff(allCreatures);
+        updateAlchemistsBuff(allCreatures);
+        updateDuelistsBuff(allCreatures );
     }
 
     public void updateDefenderBuff(List<Creature> allCreatures) {
@@ -181,7 +183,28 @@ public class TraitsController {
     }
 
     private void updateFrostBornBuff(List<Creature> allCreatures) {
-
+        int frostbornsNum = getTraitValue(Trait.FROSTBORN);
+        //Frostborn creatures deals [50% / 80% / 120%] magic damage on attack, based on their Spell power.
+        //Attacks also applies [5% / 10% / 15%] on targets
+        List<Creature> frostborns = getCreaturesByTrait(allCreatures, Trait.FROSTBORN);
+        if (frostbornsNum >= Trait.FIREBORN.getLevels().get(0) && frostbornsNum < Trait.FIREBORN.getLevels().get(1)) {
+            frostborns.forEach(c -> {
+                c.applyCreatureTagChange(CreatureTag.ADDITIONAL_MAGIC_DAMAGE_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 50);
+                c.applyCreatureTagChange(CreatureTag.PERCENTAGE_SLOW_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 5);
+            });
+        }
+        if (frostbornsNum >= Trait.FIREBORN.getLevels().get(1) && frostbornsNum < Trait.FIREBORN.getLevels().get(2)) {
+            frostborns.forEach(c -> {
+                c.applyCreatureTagChange(CreatureTag.ADDITIONAL_MAGIC_DAMAGE_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 80);
+                c.applyCreatureTagChange(CreatureTag.PERCENTAGE_SLOW_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 10);
+            });
+        }
+        if (frostbornsNum >= Trait.FIREBORN.getLevels().get(2)) {
+            frostborns.forEach(c -> {
+                c.applyCreatureTagChange(CreatureTag.ADDITIONAL_MAGIC_DAMAGE_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 120);
+                c.applyCreatureTagChange(CreatureTag.PERCENTAGE_SLOW_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 15);
+            });
+        }
     }
 
     private void updateAssassinBuff(List<Creature> allCreatures) {
@@ -213,6 +236,38 @@ public class TraitsController {
         }
         if (studentsNum >= Trait.STUDENT.getLevels().get(2)) {
             students.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_MANA_AFTER_ALLY_USED_SKILL, StatChangeSource.STUDENT_TRAIT, 25));
+        }
+    }
+
+    private void updateAlchemistsBuff(List<Creature> allCreatures) {
+        int alchemistsNum = getTraitValue(Trait.ALCHEMIST);
+        List<Creature> alchemists = getCreaturesByTrait(allCreatures, Trait.ALCHEMIST);
+        if (alchemistsNum >= Trait.ALCHEMIST.getLevels().get(0) && alchemistsNum < Trait.ALCHEMIST.getLevels().get(1)) {
+            alchemists.forEach(c -> c.applyCreatureTagChange(CreatureTag.BOUNCING_SKILL, StatChangeSource.ALCHEMIST_TRAIT, 1));
+        }
+        if (alchemistsNum >= Trait.ALCHEMIST.getLevels().get(1) && alchemistsNum < Trait.ALCHEMIST.getLevels().get(2)) {
+            alchemists.forEach(c -> c.applyCreatureTagChange(CreatureTag.BOUNCING_SKILL, StatChangeSource.ALCHEMIST_TRAIT, 2));
+        }
+        if (alchemistsNum >= Trait.ALCHEMIST.getLevels().get(2)) {
+            alchemists.forEach(c -> c.applyCreatureTagChange(CreatureTag.BOUNCING_SKILL, StatChangeSource.ALCHEMIST_TRAIT, 4));
+        }
+    }
+
+    private void updateDuelistsBuff(List<Creature> allCreatures) {
+        //Duelists have [25% / 40% / 60%] chance to counterattack with [50% / 65% / 80%] attack damage
+        int duelistsNum = getTraitValue(Trait.DUELIST);
+        List<Creature> duelists = getCreaturesByTrait(allCreatures, Trait.DUELIST);
+        if (duelistsNum >= Trait.DUELIST.getLevels().get(0) && duelistsNum < Trait.DUELIST.getLevels().get(1)) {
+            duelists.forEach(c -> c.applyCreatureTagChange(CreatureTag.COUNTERATTACK_CHANCE, StatChangeSource.DUELISTS_TRAIT, 25));
+            duelists.forEach(c -> c.applyCreatureTagChange(CreatureTag.COUNTERATTACK_DAMAGE, StatChangeSource.DUELISTS_TRAIT, 50));
+        }
+        if (duelistsNum >= Trait.DUELIST.getLevels().get(1) && duelistsNum < Trait.DUELIST.getLevels().get(2)) {
+            duelists.forEach(c -> c.applyCreatureTagChange(CreatureTag.COUNTERATTACK_CHANCE, StatChangeSource.DUELISTS_TRAIT, 40));
+            duelists.forEach(c -> c.applyCreatureTagChange(CreatureTag.COUNTERATTACK_DAMAGE, StatChangeSource.DUELISTS_TRAIT, 60));
+        }
+        if (duelistsNum >= Trait.DUELIST.getLevels().get(2)) {
+            duelists.forEach(c -> c.applyCreatureTagChange(CreatureTag.COUNTERATTACK_CHANCE, StatChangeSource.DUELISTS_TRAIT, 60));
+            duelists.forEach(c -> c.applyCreatureTagChange(CreatureTag.COUNTERATTACK_DAMAGE, StatChangeSource.DUELISTS_TRAIT, 80));
         }
     }
 

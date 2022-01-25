@@ -12,7 +12,10 @@ public enum StatChangeSource {
     ASSASSIN_TRAIT(true),
     STUDENT_TRAIT(true),
     DEFENDER_TRAIT(true),
-    DEMON_TRAIT(true);
+    DEMON_TRAIT(true),
+    ALCHEMIST_TRAIT(true),
+    DUELISTS_TRAIT(true),
+    FROSTBORN_TRAIT(true);
 
     private boolean isTrait = false;
 

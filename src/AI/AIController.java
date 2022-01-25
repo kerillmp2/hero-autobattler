@@ -23,7 +23,7 @@ public class AIController extends PlayerController {
 
     @Override
     public void processTurnPhase() {
-        Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 1;
+        Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 0;
         creatureShopController.regenerateShop();
         creatureShopController.refreshShop();
         processShoppingPhase();

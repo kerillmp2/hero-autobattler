@@ -38,7 +38,7 @@ public class ActionFactory {
     }
 
     public static Action addManaAction(BattlefieldCreature target, int amount, ResolveTime time) {
-        return new Action(ActionInfo.empty().from(target).to(target).withTime(time).wrapTag(ActionTag.ADD_MANA, amount));
+        return addStatAction(target, Stat.MANA, amount, time);
     }
 
     public static Action healingAction(BattlefieldCreature target, int amount) {
@@ -51,6 +51,10 @@ public class ActionFactory {
 
     public static Action useSkillAction(BattlefieldCreature creature) {
         return new Action(ActionInfo.empty().from(creature).to(creature).withTime(ResolveTime.ON_MAIN_PHASE).wrapTag(ActionTag.USE_SKILL).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
+    }
+
+    public static Action useBouncingSkillAction(BattlefieldCreature creature) {
+        return new Action(ActionInfo.empty().from(creature).to(creature).withTime(ResolveTime.ON_MAIN_PHASE).wrapTag(ActionTag.USE_BOUNCING_SKILL).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
     }
 
     public static Action dealDamageToAllEnemiesAction(BattlefieldCreature creature, int amount, ResolveTime resolveTime) {
@@ -73,10 +77,14 @@ public class ActionFactory {
         }
     }
 
+    public static Action parryAction(BattlefieldCreature performer, BattlefieldCreature target, int amount) {
+        return new Action(ActionInfo.empty().from(performer).to(target).wrapTag(ActionTag.DEAL_PHYSICAL_DAMAGE, amount).withPrefix("%s parries attack of %s!"));
+    }
+
     public static List<Action> defaultCreatureActions() {
         List<Action> defaultActions = new ArrayList<>();
         defaultActions.add(chooseMainActionAction(null));
-        defaultActions.add(addManaAction(null, Constants.MANA_AFTER_TAKING_DAMAGE.value, ResolveTime.AFTER_TAKING_DAMAGE));
+        defaultActions.add(addManaAction(null, Constants.MANA_AFTER_TAKING_DAMAGE.value, ResolveTime.AFTER_ATTACKED));
         defaultActions.add(addManaAction(null, Constants.MANA_AFTER_DEALING_DAMAGE.value, ResolveTime.AFTER_ATTACK));
         return defaultActions;
     }

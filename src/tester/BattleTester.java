@@ -3,22 +3,26 @@ package tester;
 import java.util.ArrayList;
 import java.util.List;
 
+import AI.AI;
 import core.battle.BattleStatus;
 import core.controllers.BattleController;
 import core.controllers.utils.MessageController;
 import core.creature.Creature;
+import core.creature.CreatureFactory;
 import core.creature.CreaturePool;
 import core.player.Player;
 
 public class BattleTester {
 
     public static BattleStatus testBattleWithCreatures(List<Creature> firstSide, List<Creature> secondSide) {
-        Player p1 = Player.newPlayerWithName("Player 1");
-        Player p2 = Player.newPlayerWithName("Player 2");
+        AI p1 = AI.newAIWithName("TEST BOT 1");
+        AI p2 = AI.newAIWithName("TEST BOT 2");
         for (Creature creature : firstSide) {
+            p1.incrementShopLevel();
             p1.getBoardController().addCreature(creature);
         }
         for (Creature creature : secondSide) {
+            p2.incrementShopLevel();
             p2.getBoardController().addCreature(creature);
         }
         return BattleController.processBattleForPlayers(p1, p2);
@@ -39,6 +43,7 @@ public class BattleTester {
         int turn_limits = 0;
         List<Creature> opponents = CreaturePool.getPlayerCreaturesWithCost(creature.getCost());
         for (Creature opponent : opponents) {
+            creature = CreatureFactory.creatureByName(creature.getName());
             BattleStatus battleStatus = testBattleWithCreatures(creature, opponent);
             switch (battleStatus) {
                 case DRAW:
@@ -94,6 +99,11 @@ public class BattleTester {
         int turn_limits = 0;
         for (int i = 0; i < times; i++) {
             for (List<Creature> opponents : compositions) {
+                testSide = new ArrayList<>();
+                testSide.add(CreatureFactory.creatureByName(firstCreature.getName()));
+                testSide.add(CreatureFactory.creatureByName(secondCreature.getName()));
+                opponents.set(0, CreatureFactory.creatureByName(opponents.get(0).getName()));
+                opponents.set(1, CreatureFactory.creatureByName(opponents.get(1).getName()));
                 BattleStatus battleStatus = testBattleWithCreatures(testSide, opponents);
                 switch (battleStatus) {
                     case DRAW:

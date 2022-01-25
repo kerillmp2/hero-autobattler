@@ -47,6 +47,8 @@ public class ItemController {
         pool.add(ironShield());
         pool.add(ironArmor());
         pool.add(ironLance());
+        pool.add(ironStaff());
+        pool.add(oldBook());
         pool.add(rubyAmulet());
         pool.add(topazAmulet());
         pool.add(sapphireAmulet());
@@ -74,13 +76,13 @@ public class ItemController {
             }
 
             case MAGE: {
-                pool.add(ironStaff());
                 break;
             }
             case EATER: {
                 break;
             }
             case ALCHEMIST: {
+                pool.add(potionKit());
                 break;
             }
 
@@ -111,7 +113,6 @@ public class ItemController {
                 break;
             }
             case STUDENT: {
-                pool.add(oldBook());
                 break;
             }
         }
