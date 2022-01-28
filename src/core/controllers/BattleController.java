@@ -25,19 +25,9 @@ public class BattleController {
     public static BattleStatus processBattleForPlayers(Player firstPlayer, Player secondPLayer) {
         Battlefield battlefield = Battlefield.fromTwoBoards(firstPlayer.getBoard(), secondPLayer.getBoard());
         BattleController battleController = BattleController.forBattlefield(battlefield);
-        if (firstPlayer instanceof AI && secondPLayer instanceof AI) {
-            Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 0;
-        } else {
-            Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 1;
-        }
         battlefield.setBattleController(battleController);
         BattleStatus battleStatus = battleController.battle();
         battleController.onBattleEnd();
-        if (firstPlayer instanceof AI && secondPLayer instanceof AI) {
-            Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 0;
-        } else {
-            Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 1;
-        }
         return battleStatus;
     }
 

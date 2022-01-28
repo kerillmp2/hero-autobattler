@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import core.creature.stat.Stat;
-import utils.Calculator;
 import core.battlefield.BattlefieldCreature;
 import utils.Constants;
 
@@ -22,7 +21,7 @@ public class ActionFactory {
 
     public static Action takeBasicAttackDamageAction(BattlefieldCreature dealer, BattlefieldCreature target) {
         int damage = dealer.getCurrentAttack();
-        return new Action(ActionInfo.empty().to(dealer).from(target).withTime(ResolveTime.ON_TAKING_DAMAGE).wrapTag(ActionTag.TAKE_PHYSICAL_DAMAGE, damage).wrapTag(ActionTag.DELETE_AFTER_RESOLVE));
+        return new Action(ActionInfo.empty().to(dealer).from(target).wrapTag(ActionTag.TAKE_PHYSICAL_DAMAGE, damage));
     }
 
     public static Action takePhysicalDamageAction(BattlefieldCreature target, int amount) {
@@ -41,8 +40,8 @@ public class ActionFactory {
         return addStatAction(target, Stat.MANA, amount, time);
     }
 
-    public static Action healingAction(BattlefieldCreature target, int amount) {
-        return new Action(ActionInfo.empty().from(target).to(target).wrapTag(ActionTag.HEAL_FLOAT, amount));
+    public static Action healingAction(BattlefieldCreature healer, BattlefieldCreature target, int amount) {
+        return new Action(ActionInfo.empty().from(healer).to(target).wrapTag(ActionTag.HEAL_FLOAT, amount));
     }
 
     public static Action chooseMainActionAction(BattlefieldCreature creature) {
@@ -58,7 +57,7 @@ public class ActionFactory {
     }
 
     public static Action dealDamageToAllEnemiesAction(BattlefieldCreature creature, int amount, ResolveTime resolveTime) {
-        return new Action(ActionInfo.empty().from(creature).to(creature).withTime(resolveTime).wrapTag(ActionTag.DEAL_DAMAGE_TO_ALL_ENEMIES, amount));
+        return new Action(ActionInfo.empty().from(creature).to(creature).withTime(resolveTime).wrapTag(ActionTag.DEAL_MAGIC_DAMAGE_TO_ALL_ENEMIES, amount));
     }
 
     public static Action undefinedAction() {

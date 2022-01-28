@@ -12,7 +12,6 @@ import core.action.ActionTag;
 import core.action.ResolveTime;
 import core.controllers.LevelController;
 import core.controllers.utils.RandomController;
-import core.creature.Creature;
 import core.creature.CreatureTag;
 import core.creature.stat.Stat;
 import core.creature.stat.StatChangeSource;
@@ -145,14 +144,14 @@ public class ItemFactory {
                 .build();
     }
 
-    public static Item repairKit() {
-        int hpRegen = randomInt(3, 6, true);
-        return ItemTemplate.empty().withName("Repair kit").withRarity(Rarity.UNCOMMON)
-                .withStatChange(HP, randomInt(6, 10, true), true)
-                .withRandomStatChange(1)
-                .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.ON_START_TURN)
-                .wrapTag(ActionTag.HEAL_PERCENT_OF_MISSING, hpRegen).build())
-                .addDescription("Heals %d%% of missing health at the start of the turn").addValue(hpRegen)
+    public static Item repairModule() {
+        int hpRegen = 1;
+        return ItemTemplate.empty().withName("Repair module").withRarity(Rarity.UNCOMMON)
+                .withStatChange(HP, randomInt(15, 22, true), false)
+                .withStatChange(PHYSICAL_ARMOR, 1, false)
+                .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.AFTER_TAKING_DAMAGE)
+                .wrapTag(ActionTag.HEAL_FLOAT, hpRegen).build())
+                .addDescription("Heals for %d%% health after taking any damage").addValue(hpRegen)
                 .build();
     }
 
@@ -168,14 +167,14 @@ public class ItemFactory {
     public static Item potionKit() {
         int bouncesAmount = 1;
         return ItemTemplate.empty().withName("Potion kit").withRarity(Rarity.UNCOMMON)
-                .withStatChange(SPELL_POWER, randomInt(10, 12), true)
+                .withStatChange(SPELL_POWER, randomInt(10, 13), true)
                 .withRandomStatChange(1)
                 .addDescription("+%d Skill bounces").addValue(bouncesAmount)
                 .buildWithAction(c -> c.addTagValue(CreatureTag.BOUNCING_SKILL, bouncesAmount));
     }
 
     public static Item fireShard() {
-        int burnBuff = randomInt(3, 4);
+        int burnBuff = randomInt(3, 4, true);
         return ItemTemplate.empty().withName("Fire shard").withRarity(Rarity.UNCOMMON)
                 .withStatChange(SPELL_POWER, randomInt(8, 12, true), true)
                 .withStatChange(ATTACK, randomInt(7, 10, true), true)
@@ -184,15 +183,71 @@ public class ItemFactory {
                 .buildWithAction(c -> c.addTagValue(CreatureTag.BURN_BUFF, burnBuff));
     }
 
+    public static Item demonClaw() {
+        int manaBurn = randomInt(3, 5, true);
+        return ItemTemplate.empty().withName("Demon claw").withRarity(Rarity.UNCOMMON)
+                .withStatChange(ATTACK, randomInt(10, 12, true), true)
+                .withStatChange(SPEED, randomInt(10, 15, true), false)
+                .withRandomStatChange(1)
+                .addDescription("Attacks burns %d targets mana").addValue(manaBurn)
+                .buildWithAction(c -> c.addTagValue(CreatureTag.BURN_FLOAT_MANA_ON_ATTACK, manaBurn));
+    }
+
+    public static Item chickenLeg() {
+        int hpRegen = randomInt(4, 6);
+        return ItemTemplate.empty().withName("Chicken leg").withRarity(Rarity.UNCOMMON)
+                .withStatChange(HP, randomInt(7, 10), true)
+                .withStatChange(ATTACK, randomInt(1, 2), false)
+                .withRandomStatChange(1)
+                .addDescription("Heals %d%% of max health at the end of the turn").addValue(hpRegen)
+                .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.ON_START_TURN)
+                        .wrapTag(ActionTag.HEAL_PERCENT_OF_MAX, hpRegen).build())
+                .build();
+    }
+
+    public static Item bronzeFork() {
+        int damage = randomInt(2, 3);
+        int additionalHpBuff = randomInt(2, 4);
+        return ItemTemplate.empty().withName("Bronze fork").withRarity(Rarity.UNCOMMON)
+                .withStatChange(ATTACK, damage, false)
+                .withRandomStatChange(1)
+                .withDescription("Gains %d permanent health when battle starts").addValue(additionalHpBuff)
+                .buildWithAction(c -> c.addTagValue(CreatureTag.ADD_PERMANENT_FLOAT_HP_BEFORE_BATTLE, additionalHpBuff));
+    }
+
+    public static Item frostShard() {
+        int damage = randomInt(3, 5);
+        return ItemTemplate.empty().withName("Frost shard").withRarity(Rarity.UNCOMMON)
+                .withStatChange(SPELL_POWER, randomInt(2, 4), false)
+                .withStatChange(MAGIC_ARMOR, 1, false)
+                .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.AFTER_ATTACK)
+                        .wrapTag(ActionTag.BASIC_ATTACK_BUFF).wrapTag(ActionTag.DEAL_MAGIC_DAMAGE, damage).build())
+                .addDescription("Attacks deals +%d magic damage").addValue(damage)
+                .build();
+    }
+
+    public static Item iceShield() {
+        int physArmor = randomInt(1, 2);
+        int magicArmor = 3 - physArmor + randomInt(0, 1);
+        int slow = randomInt(5, 8);
+        return ItemTemplate.empty().withName("Ice shield").withRarity(Rarity.UNCOMMON)
+                .withStatChange(PHYSICAL_ARMOR, physArmor, false)
+                .withStatChange(MAGIC_ARMOR, magicArmor, false)
+                .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.AFTER_ATTACKED)
+                        .wrapTag(ActionTag.BASIC_ATTACK_RESPONSE).wrapTag(ActionTag.REDUCE_FLOAT_STAT).wrapTag(ActionTag.SPEED, slow).build())
+                .addDescription("When attacked, attacker slows by %d").addValue(slow)
+                .build();
+    }
+
     public static Item backpack() {
         return ItemTemplate.empty().withName("Backpack").withRarity(Rarity.RARE)
-                .withStatChange(HP, 8, 10, false)
+                .withStatChange(HP, 9, 12, false)
                 .withStatChange(ATTACK, 1, 2, false)
-                .withStatChange(SPELL_POWER, 1, 3, false)
+                .withStatChange(SPELL_POWER, 2, 3, false)
                 .withStatChange(PHYSICAL_ARMOR, 1, 2, false)
-                .withStatChange(MAGIC_ARMOR, 1, 2, false)
+                .withStatChange(MAGIC_ARMOR, 1, 3, false)
                 .withStatChange(SPEED, 5, 10, false)
-                .withRandomStatChange(3)
+                .withRandomStatChange(2)
                 .build();
     }
 
@@ -201,8 +256,8 @@ public class ItemFactory {
         return ItemTemplate.empty().withName("Iron heart").withRarity(Rarity.EPIC)
                 .withStatChange(PHYSICAL_ARMOR, randomInt(3, 4, true), false)
                 .withStatChange(MAGIC_ARMOR, randomInt(2, 4, true), false)
-                .addDescription("+%d physical armor after taking physical damage").addValue(armorGain)
-                .withAction(ActionFactory.addStatAction(null, PHYSICAL_ARMOR, armorGain, ResolveTime.AFTER_TAKING_PHYSICAL_DAMAGE))
+                .addDescription("+%d physical armor after attacked").addValue(armorGain)
+                .withAction(ActionFactory.addStatAction(null, PHYSICAL_ARMOR, armorGain, ResolveTime.AFTER_ATTACKED))
                 .build();
     }
 
@@ -247,6 +302,17 @@ public class ItemFactory {
                 .build();
     }
 
+    public static Item silverFork() {
+        int damage = randomInt(10, 13);
+        int additionalHpBuff = randomInt(5, 8);
+        int magArmor = randomInt(1, 3);
+        return ItemTemplate.empty().withName("Silver fork").withRarity(Rarity.EPIC)
+                .withStatChange(ATTACK, damage, true)
+                .withStatChange(MAGIC_ARMOR, magArmor, false)
+                .withDescription("Gains %d permanent health when battle starts").addValue(additionalHpBuff)
+                .buildWithAction(c -> c.addTagValue(CreatureTag.ADD_PERMANENT_FLOAT_HP_BEFORE_BATTLE, additionalHpBuff));
+    }
+
     public static Item throwingDagger() {
         int throwingDamagePercent = randomInt(33, 44, true);
         int throwingNumber = 2;
@@ -259,7 +325,8 @@ public class ItemFactory {
             itemTemplate
                     .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.AFTER_ATTACK)
                             .wrapTag(ActionTag.DEAL_PHYSICAL_DAMAGE_TO_RANDOM_ENEMY, throwingDamagePercent)
-                            .wrapTag(ActionTag.PERCENTAGE)
+                            .wrapTag(ActionTag.BASED_ON_STAT, throwingDamagePercent)
+                            .wrapTag(ActionTag.ATTACK)
                             .withPrefix("%s throws dagger to %s!")
                             .build());
         }
@@ -276,11 +343,29 @@ public class ItemFactory {
     }
 
     public static Item bottomlessBag() {
-        int buffs = randomInt(2, 4, true);
+        int buffs = randomInt(3, 4, true);
         return ItemTemplate.empty().withName("Bottomless Bag").withRarity(Rarity.LEGENDARY)
                 .addDescription("Take another artifact!")
                 .withRandomStatChange(buffs)
                 .buildWithAction(LevelController::selectItem);
+    }
+
+    public static Item mythrilFork() {
+        int damage = randomInt(16, 20);
+        int additionalHpBuff = randomInt(5, 7);
+        int magArmor = randomInt(3, 4);
+        int damagePercent = randomInt(2, 3);
+        return ItemTemplate.empty().withName("Mythril fork").withRarity(Rarity.LEGENDARY)
+                .withStatChange(ATTACK, damage, true)
+                .withStatChange(MAGIC_ARMOR, magArmor, false)
+                .addDescription("Gains %d%% permanent health when battle starts").addValue(additionalHpBuff)
+                .addDescription("Attacks deals %d%% of health as magic damage").addValue(damagePercent)
+                .withAction(ActionFactory.ActionBuilder.empty().withTime(ResolveTime.AFTER_ATTACK)
+                        .wrapTag(ActionTag.BASIC_ATTACK_BUFF)
+                        .wrapTag(ActionTag.DEAL_MAGIC_DAMAGE)
+                        .wrapTag(ActionTag.BASED_ON_STAT, damagePercent)
+                        .wrapTag(ActionTag.HP).build())
+                .buildWithAction(c -> c.addTagValue(CreatureTag.ADD_PERMANENT_PERCENTAGE_HP_BEFORE_BATTLE, additionalHpBuff));
     }
 
 

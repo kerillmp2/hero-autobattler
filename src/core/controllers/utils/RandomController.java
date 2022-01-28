@@ -18,18 +18,18 @@ public class RandomController {
     }
 
     public static int randomInt(int from, int to, boolean inclusive) {
-        return randomInt(from, to + (inclusive ? 1 : 0));
+        return ThreadLocalRandom.current().nextInt(from, to + (inclusive ? 1 : 0));
     }
 
     public static int randomInt(int from, int to) {
-        return ThreadLocalRandom.current().nextInt(from, to);
+        return randomInt(from, to, true);
     }
 
     public static <T> T randomElementOf(List<T> list) {
-        return list.get(randomInt(0, list.size()));
+        return list.get(randomInt(0, list.size(), false));
     }
 
     public static <T> T randomElementOf(T[] list) {
-        return list[randomInt(0, list.length)];
+        return list[randomInt(0, list.length, false)];
     }
 }

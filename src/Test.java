@@ -1,5 +1,7 @@
 import core.controllers.utils.MessageController;
+import core.creature.Creature;
 import core.creature.CreatureFactory;
+import core.item.ItemFactory;
 import core.viewers.StatisticViewer;
 import statistics.Metric;
 import statistics.StatisticCollector;
@@ -9,15 +11,17 @@ import utils.Constants;
 public class Test {
     public static void main(String[] args) {
 
-        Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 0;
+        Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 1;
         StatisticCollector.init();
+        Creature creature1 = CreatureFactory.ignar();
+        ItemFactory.mythrilFork().equipOn(creature1);
+        BattleTester.testBattleWithCreatures(creature1, CreatureFactory.dummy());
         //BattleTester.testCreaturesWithCost(2);
-        //BattleTester.testPairsWithCost(1, 1, 2);
-        BattleTester.testPair(CreatureFactory.coldy(), CreatureFactory.warbot(), 3);
-        MessageController.forcedPrint(StatisticViewer.getStatisticView(Metric.PHYSICAL_DAMAGE_DEALT, Metric.MAGIC_DAMAGE_DEALT, Metric.TOTAL_DAMAGE_DEALT, Metric.DAMAGE_FROM_SKILL));
+        //BattleTester.testPairsWithCost(2, 2, 2);
+        //BattleTester.testPair(CreatureFactory.heshi(), 2, 2);
 
         //BattleTester.testCreature(CreatureFactory.mira());
-        //Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 1;
-        //BattleTester.testBattleWithCreatures(CreatureFactory.rover(), CreatureFactory.cathyra());
+        MessageController.forcedPrint(StatisticViewer.getStatisticView(Metric.values()));
+
     }
 }

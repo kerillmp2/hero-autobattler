@@ -1,6 +1,7 @@
 package core.action;
 
 import core.battlefield.BattlefieldCreature;
+import core.creature.stat.Stat;
 import utils.TagContainer;
 
 public class ActionInfo extends TagContainer<ActionTag> {
@@ -79,5 +80,16 @@ public class ActionInfo extends TagContainer<ActionTag> {
     public ActionInfo withPostfix(String postfix) {
         this.postfix = postfix;
         return this;
+    }
+
+    public Stat getStat() {
+        for (Stat stat : Stat.values()) {
+            if (stat != Stat.UNDEFINED) {
+                if (hasTag(ActionTag.addStat(stat))) {
+                    return stat;
+                }
+            }
+        }
+        return Stat.UNDEFINED;
     }
 }

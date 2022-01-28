@@ -89,9 +89,8 @@ public class StatsContainer extends TagContainer<Stat> {
         return debuffs.stream().filter(statChange -> statChange.getStat() == stat).collect(Collectors.toList());
     }
 
-    public void setTag(CreatureTag creatureTag, StatChangeSource source, int amount) {
+    public void setTag(CreatureTag creatureTag, int amount) {
         clearAllChangesForTag(creatureTag);
-
     }
 
     public void clearAllChangesForTag(CreatureTag creatureTag) {

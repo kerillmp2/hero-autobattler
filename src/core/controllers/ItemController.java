@@ -78,7 +78,12 @@ public class ItemController {
             case MAGE: {
                 break;
             }
+
             case EATER: {
+                pool.add(chickenLeg());
+                pool.add(bronzeFork());
+                pool.add(silverFork());
+                pool.add(mythrilFork());
                 break;
             }
             case ALCHEMIST: {
@@ -96,16 +101,19 @@ public class ItemController {
                 break;
             }
             case DEMON: {
+                pool.add(demonClaw());
                 break;
             }
             case ROBOT: {
-                pool.add(repairKit());
+                pool.add(repairModule());
                 pool.add(rageModule());
                 pool.add(mindModule());
                 pool.add(heatModule());
                 break;
             }
             case FROSTBORN: {
+                pool.add(frostShard());
+                pool.add(iceShield());
                 break;
             }
             case FIREBORN: {

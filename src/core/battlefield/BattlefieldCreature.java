@@ -71,6 +71,11 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         }
 
         //EATER TRAIT
+        int floatAdditionalHP = creature.getTagValue(CreatureTag.ADD_PERMANENT_FLOAT_HP_BEFORE_BATTLE);
+        if (floatAdditionalHP > 0) {
+            creature.applyBuff(Stat.HP, StatChangeSource.PERMANENT, floatAdditionalHP);
+            MessageController.print(creature.getName() + " gains " + floatAdditionalHP + " HP");
+        }
         int percentageOfAdditionalHP = creature.getTagValue(CreatureTag.ADD_PERMANENT_PERCENTAGE_HP_BEFORE_BATTLE);
         if (percentageOfAdditionalHP > 0) {
             int additionalHP = (int) (creature.getHp() * percentageOfAdditionalHP / 100.0);
@@ -107,9 +112,13 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         }
 
         // Demon Trait
-        int burnMana = creature.getTagValue(CreatureTag.BURN_PERCENTAGE_MANA_ON_ATTACK);
-        if (burnMana > 0) {
-            this.addAction(ActionFactory.ActionBuilder.empty().from(this).withTime(ResolveTime.AFTER_ATTACK).wrapTag(ActionTag.BASIC_ATTACK_BUFF).wrapTag(ActionTag.REDUCE_PERCENTAGE_STAT).wrapTag(ActionTag.MANA, burnMana).build());
+        int burnPercentageMana = creature.getTagValue(CreatureTag.BURN_PERCENTAGE_MANA_ON_ATTACK);
+        if (burnPercentageMana > 0) {
+            this.addAction(ActionFactory.ActionBuilder.empty().from(this).withTime(ResolveTime.AFTER_ATTACK).wrapTag(ActionTag.BASIC_ATTACK_BUFF).wrapTag(ActionTag.REDUCE_PERCENTAGE_STAT).wrapTag(ActionTag.MANA, burnPercentageMana).build());
+        }
+        int burnFloatMana = creature.getTagValue(CreatureTag.BURN_FLOAT_MANA_ON_ATTACK);
+        if (burnFloatMana > 0) {
+            this.addAction(ActionFactory.ActionBuilder.empty().from(this).withTime(ResolveTime.AFTER_ATTACK).wrapTag(ActionTag.BASIC_ATTACK_BUFF).wrapTag(ActionTag.REDUCE_FLOAT_STAT).wrapTag(ActionTag.MANA, burnFloatMana).build());
         }
 
         //STUDENT TRAIT
@@ -123,10 +132,11 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         int counterAttackDamage = creature.getTagValue(CreatureTag.COUNTERATTACK_DAMAGE);
         if (counterAttackChance > 0 && counterAttackDamage > 0) {
             this.addAction(ActionFactory.ActionBuilder.empty().from(this).withTime(ResolveTime.AFTER_ATTACKED)
+                    .wrapTag(ActionTag.BASIC_ATTACK_RESPONSE)
                     .wrapTag(ActionTag.CHANCE, counterAttackChance)
                     .wrapTag(ActionTag.DEAL_PHYSICAL_DAMAGE)
-                    .wrapTag(ActionTag.PERCENTAGE, counterAttackDamage)
-                    .wrapTag(ActionTag.BASIC_ATTACK_RESPONSE)
+                    .wrapTag(ActionTag.BASED_ON_STAT, counterAttackDamage)
+                    .wrapTag(ActionTag.ATTACK)
                     .withPrefix("%s counterattacks %s!").build());
         }
 
@@ -135,14 +145,15 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         int slowOnAttack = creature.getTagValue(CreatureTag.PERCENTAGE_SLOW_ON_ATTACK);
         if (additionalMagicDamageOnAttack > 0 && slowOnAttack > 0) {
             this.addAction(ActionFactory.ActionBuilder.empty().from(this).withTime(ResolveTime.AFTER_ATTACK)
-                    .wrapTag(ActionTag.DEAL_MAGIC_DAMAGE)
-                    .wrapTag(ActionTag.PERCENTAGE, additionalMagicDamageOnAttack)
                     .wrapTag(ActionTag.BASIC_ATTACK_BUFF)
+                    .wrapTag(ActionTag.DEAL_MAGIC_DAMAGE)
+                    .wrapTag(ActionTag.BASED_ON_STAT, additionalMagicDamageOnAttack)
+                    .wrapTag(ActionTag.SPELL_POWER)
                     .build());
             this.addAction(ActionFactory.ActionBuilder.empty().from(this).withTime(ResolveTime.AFTER_ATTACK)
+                    .wrapTag(ActionTag.BASIC_ATTACK_BUFF)
                     .wrapTag(ActionTag.SPEED, slowOnAttack)
                     .wrapTag(ActionTag.REDUCE_PERCENTAGE_STAT)
-                    .wrapTag(ActionTag.BASIC_ATTACK_BUFF)
                     .build());
         }
     }
@@ -224,63 +235,103 @@ public class BattlefieldCreature extends BattlefieldObject implements WithStats,
         }
     }
 
-    public int takeMagicDamage(int amount) {
+    public String takeMagicDamage(int amount, String source) {
+        String message = "";
         int currentHp = getCurrentHp();
         int damage = Calculator.calculateMagicDamage(amount, this, true);
-        setCurrentHp(currentHp - damage);
+        int damageAfterMagicBarrier = reduceMagicBarrier(damage);
+        if (damage > damageAfterMagicBarrier) {
+            message += this.getBattleName() + " absorbed " + (damage - damageAfterMagicBarrier) + " with magic barrier! [Magic barrier left: " + this.getTagValue(CreatureTag.MAGIC_BARRIER) + "]\n";
+        }
+        int damageAfterBarrier = reduceBarrier(damageAfterMagicBarrier);
+        if (damageAfterMagicBarrier > damageAfterBarrier) {
+            message += this.getBattleName() + " absorbed " + (damageAfterMagicBarrier - damageAfterBarrier) + " with barrier! [Barrier left: " + this.getTagValue(CreatureTag.BARRIER) + "]\n";
+        }
+        setCurrentHp(currentHp - damageAfterBarrier);
         if (Constants.COLLECT_STATISTIC.value > 0) {
             StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.MAGIC_DAMAGE_TAKEN, damage);
             StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.TOTAL_DAMAGE_TAKEN, damage);
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.MAGIC_BARRIER_ABSORBED, Math.max(damage - damageAfterMagicBarrier, 0));
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.BARRIER_ABSORBED, Math.max(damageAfterMagicBarrier - damageAfterBarrier, 0));
+            StatisticCollector.updateCreatureMetric(source, Metric.MAGIC_DAMAGE_DEALT, damage);
+            StatisticCollector.updateCreatureMetric(source, Metric.TOTAL_DAMAGE_DEALT, damage);
         }
-        return damage;
+        message += this.getBattleName() + " takes " + damageAfterBarrier + " magic damage from " + source + "!\n";
+        return message;
     }
 
-    public int takePhysicalDamage(int amount) {
+    public String takePhysicalDamage(int amount, String source) {
+        String message = "";
         int currentHp = getCurrentHp();
         int damage = Calculator.calculatePhysicalDamage(amount, this, true);
-        setCurrentHp(currentHp - damage);
+        int damageAfterPhysicalBarrier = reducePhysicalBarrier(damage);
+        if (damage > damageAfterPhysicalBarrier) {
+            message += this.getBattleName() + " absorbed " + (damage - damageAfterPhysicalBarrier) + " with physical barrier! [Physical barrier left: " + this.getTagValue(CreatureTag.PHYSICAL_BARRIER) + "]\n";
+        }
+        int damageAfterBarrier = reduceBarrier(damageAfterPhysicalBarrier);
+        if (damageAfterPhysicalBarrier > damageAfterBarrier) {
+            message += this.getBattleName() + " absorbed " + (damageAfterPhysicalBarrier - damageAfterBarrier) + " with barrier! [Barrier left: " + this.getTagValue(CreatureTag.BARRIER) + "]\n";
+        }
+        setCurrentHp(currentHp - damageAfterBarrier);
         if (Constants.COLLECT_STATISTIC.value > 0) {
             StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.PHYSICAL_DAMAGE_TAKEN, damage);
             StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.TOTAL_DAMAGE_TAKEN, damage);
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.PHYSICAL_BARRIER_ABSORBED, Math.max(damage - damageAfterPhysicalBarrier, 0));
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.BARRIER_ABSORBED, Math.max(damageAfterPhysicalBarrier - damageAfterBarrier, 0));
+            StatisticCollector.updateCreatureMetric(source, Metric.PHYSICAL_DAMAGE_DEALT, damage);
+            StatisticCollector.updateCreatureMetric(source, Metric.TOTAL_DAMAGE_DEALT, damage);
         }
-        return damage;
+        message += this.getBattleName() + " takes " + damageAfterBarrier + " physical damage from " + source + "!\n";
+        return message;
     }
 
-    public int takeTrueDamage(int amount) {
+    public String takeTrueDamage(int amount, String source) {
+        String message = "";
         int currentHp = getCurrentHp();
-        setCurrentHp(currentHp - amount);
+        int damageAfterBarrier = reduceBarrier(amount);
+        if (amount - damageAfterBarrier > 0) {
+            message += this.getBattleName() + " absorbed " + (amount - damageAfterBarrier) + " with barrier! [Barrier left: " + this.getTagValue(CreatureTag.BARRIER) + "]\n";
+        }
+        setCurrentHp(currentHp - damageAfterBarrier);
         if (Constants.COLLECT_STATISTIC.value > 0) {
             StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.TRUE_DAMAGE_DEALT, amount);
             StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.TOTAL_DAMAGE_TAKEN, amount);
-        }
-        return amount;
-    }
-
-    public int takeMagicDamage(int amount, String source) {
-        int damage = takeMagicDamage(amount);
-        if (Constants.COLLECT_STATISTIC.value > 0) {
-            StatisticCollector.updateCreatureMetric(source, Metric.MAGIC_DAMAGE_DEALT, amount);
-            StatisticCollector.updateCreatureMetric(source, Metric.TOTAL_DAMAGE_DEALT, amount);
-        }
-        return damage;
-    }
-
-    public int takePhysicalDamage(int amount, String source) {
-        int damage = takePhysicalDamage(amount);
-        if (Constants.COLLECT_STATISTIC.value > 0) {
-            StatisticCollector.updateCreatureMetric(source, Metric.PHYSICAL_DAMAGE_DEALT, amount);
-            StatisticCollector.updateCreatureMetric(source, Metric.TOTAL_DAMAGE_DEALT, amount);
-        }
-        return damage;
-    }
-
-    public int takeTrueDamage(int amount, String source) {
-        int damage = takeTrueDamage(amount);
-        if (Constants.COLLECT_STATISTIC.value > 0) {
+            StatisticCollector.updateCreatureMetric(this.getCreature().getName(), Metric.BARRIER_ABSORBED, Math.max(amount - damageAfterBarrier, 0));
             StatisticCollector.updateCreatureMetric(source, Metric.TRUE_DAMAGE_DEALT, amount);
             StatisticCollector.updateCreatureMetric(source, Metric.TOTAL_DAMAGE_DEALT, amount);
         }
-        return damage;
+        message += this.getBattleName() + " takes " + amount + " true damage from " + source + "!\n";
+        return message;
+    }
+
+    public int reduceMagicBarrier(int damage) {
+        int barrier = this.getTagValue(CreatureTag.MAGIC_BARRIER);
+        if (barrier <= 0) {
+            return damage;
+        }
+        int damageAfterBarrier = Math.max(damage - barrier, 0);
+        this.creature.applyCreatureTagChange(CreatureTag.MAGIC_BARRIER, StatChangeSource.UNTIL_BATTLE_END, (-1) * Math.min(damage, barrier));
+        return damageAfterBarrier;
+    }
+
+    public int reducePhysicalBarrier(int damage) {
+        int barrier = this.getTagValue(CreatureTag.PHYSICAL_BARRIER);
+        if (barrier <= 0) {
+            return damage;
+        }
+        int damageAfterBarrier = Math.max(damage - barrier, 0);
+        this.creature.applyCreatureTagChange(CreatureTag.PHYSICAL_BARRIER, StatChangeSource.UNTIL_BATTLE_END, (-1) * Math.min(damage, barrier));
+        return damageAfterBarrier;
+    }
+
+    public int reduceBarrier(int damage) {
+        int barrier = this.getTagValue(CreatureTag.BARRIER);
+        if (barrier <= 0) {
+            return damage;
+        }
+        int damageAfterBarrier = Math.max(damage - barrier, 0);
+        this.creature.applyCreatureTagChange(CreatureTag.BARRIER, StatChangeSource.UNTIL_BATTLE_END, (-1) * Math.min(damage, barrier));
+        return damageAfterBarrier;
     }
 
     @Override

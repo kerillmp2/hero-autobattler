@@ -17,6 +17,7 @@ public class BattleTester {
     public static BattleStatus testBattleWithCreatures(List<Creature> firstSide, List<Creature> secondSide) {
         AI p1 = AI.newAIWithName("TEST BOT 1");
         AI p2 = AI.newAIWithName("TEST BOT 2");
+        //Player p3 = Player.newPlayerWithName("TEST PLAYER 3");
         for (Creature creature : firstSide) {
             p1.incrementShopLevel();
             p1.getBoardController().addCreature(creature);
@@ -24,8 +25,11 @@ public class BattleTester {
         for (Creature creature : secondSide) {
             p2.incrementShopLevel();
             p2.getBoardController().addCreature(creature);
+            //p3.incrementShopLevel();
+            //p3.getBoardController().addCreature(creature);
         }
         return BattleController.processBattleForPlayers(p1, p2);
+        //return BattleController.processBattleForPlayers(p1, p3);
     }
 
     public static BattleStatus testBattleWithCreatures(Creature creature, Creature opponent) {
@@ -71,6 +75,13 @@ public class BattleTester {
         List<Creature> creatures = CreaturePool.getPlayerCreaturesWithCost(cost);
         for (Creature creature : creatures) {
             testCreatureSolo(creature);
+        }
+    }
+
+    public static void testPair(Creature firstCreature, int secondCreatureCost, int times) {
+        List<Creature> secondCreatures = CreaturePool.getPlayerCreaturesWithCost(secondCreatureCost);
+        for (Creature secondCreature : secondCreatures) {
+            testPair(CreatureFactory.creatureByName(firstCreature.getName()), CreatureFactory.creatureByName(secondCreature.getName()), times);
         }
     }
 

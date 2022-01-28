@@ -2,6 +2,7 @@ package core.creature.stat;
 
 import java.util.Arrays;
 
+import core.action.ActionTag;
 import core.controllers.utils.RandomController;
 import utils.Tag;
 
@@ -13,7 +14,7 @@ public enum Stat implements Tag {
     MAGIC_ARMOR("Magic armor", "MArm", 4, 1.8),
     SPELL_POWER("Spell power", "AP", 5, 1.4),
     SPEED("Speed", "Speed", 6, 6),
-    MANA("Max Mana", "Mana", 7, 0);
+    MANA("Mana", "Mana", 7, 0);
 
     private String name;
     private String shortName;
@@ -40,6 +41,34 @@ public enum Stat implements Tag {
             }
         }
         return UNDEFINED;
+    }
+
+    public static Stat byTag(ActionTag tag) {
+        switch (tag) {
+            case ATTACK: {
+                return ATTACK;
+            }
+            case HP: {
+                return HP;
+            }
+            case PHYSICAL_ARMOR: {
+                return PHYSICAL_ARMOR;
+            }
+            case MAGIC_ARMOR: {
+                return MAGIC_ARMOR;
+            }
+            case MANA: {
+                return MANA;
+            }
+            case SPEED: {
+                return SPEED;
+            }
+            case SPELL_POWER: {
+                return SPELL_POWER;
+            }
+            default:
+                return UNDEFINED;
+        }
     }
 
     public static Stat byId(int id) {

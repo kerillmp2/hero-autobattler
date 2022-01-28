@@ -75,6 +75,12 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         return this.getTagValue(tag) > 0 || hasTag;
     }
 
+    @Override
+    public void setTagValue(CreatureTag tag, int value) {
+        statsContainer.clearCreatureTagChangesFromSource(tag, StatChangeSource.UNTIL_BATTLE_END);
+        tagValues.put(tag, value);
+    }
+
     public String getName() {
         return name;
     }

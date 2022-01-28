@@ -1,6 +1,5 @@
 package core.creature.skills;
 
-import java.util.Comparator;
 import java.util.List;
 
 import core.action.Action;
@@ -9,7 +8,8 @@ import core.action.ActionTag;
 import core.action.ResolveTime;
 import core.battlefield.BattlefieldCreature;
 import core.battlefield.ObjectStatus;
-import core.controllers.utils.MessageController;
+import core.controllers.ActionController;
+import core.controllers.utils.RandomController;
 import core.creature.Creature;
 import core.creature.CreatureTag;
 import core.creature.stat.Stat;
@@ -28,12 +28,12 @@ public class CreatureSkillFactory {
 
     public static CreatureSkill dunkanSkill() {
         return (battleController, dunkan) -> {
-            int armorGain = dunkan.getCurrentSpellPower() / 3 + dunkan.getLevel() / 2 + 1;
+            int armorGain = dunkan.getCurrentSpellPower() / 5 + dunkan.getLevel() / 2;
             BattlefieldCreature target = dunkan.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message;
             message = dunkan.getBattleName() + " casts \"Shield slam\" on " + target.getBattleName() + "!\n";
             message += buff(dunkan, Stat.PHYSICAL_ARMOR, armorGain);
-            int damage = dunkan.getCurrentAttack() / 4 + dunkan.getCurrentPhysicalArmor() * 2 + dunkan.getCurrentSpellPower();
+            int damage = dunkan.getCurrentAttack() / 4 + dunkan.getCurrentPhysicalArmor() * 2 + dunkan.getCurrentSpellPower() / 5;
             message += dealPhysicalDamage(dunkan, target, damage);
             return message;
         };
@@ -42,7 +42,7 @@ public class CreatureSkillFactory {
     public static CreatureSkill salviraSkill() {
         return (battleController, salvira) -> {
             String message;
-            int amount = salvira.getCurrentSpellPower() / 2 + salvira.getCreature().getLevel();
+            int amount = salvira.getCurrentSpellPower() / 5 + salvira.getCreature().getLevel();
             message = salvira.getBattleName() + " casts \"Poison daggers\" and gains +" + amount + " poison!\n";
             salvira.getCreature().applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.UNTIL_BATTLE_END, amount);
             message += resolve(ActionFactory.attackAction(salvira));
@@ -53,12 +53,13 @@ public class CreatureSkillFactory {
 
     public static CreatureSkill ignarSkill() {
         return (battleController, ignar) -> {
-            String message;
-            int level = ignar.getCreature().getLevel();
-            int coeff = level >= 9 ? 5 : level >= 6 ? 7 : level >= 3 ? 10 : 12;
-            int healingAmount = ignar.getCreature().getHp() / coeff + ignar.getCurrentSpellPower() * 4;
-            message = ignar.getBattleName() + " casts \"Tasty meal\"!\n";
-            message += resolve(ActionFactory.healingAction(ignar, healingAmount));
+            BattlefieldCreature target = ignar.getBattlefieldSide().getRandomOppositeSideAliveCreature();
+            String message = ignar.getBattleName() + " casts \"Mana leak\" on " + target.getBattleName() + "!\n";
+            int damage = ignar.getCurrentAttack() + ignar.getCurrentSpellPower() / 2;
+            int manaLeak = ignar.getCurrentSpellPower() * 2;
+            message += dealMagicDamage(ignar, target, damage);
+            message += resolve(ActionFactory.ActionBuilder.empty().from(ignar).to(target).wrapTag(ActionTag.MANA, manaLeak).wrapTag(ActionTag.REDUCE_FLOAT_STAT).build());
+            message += resolve(ActionFactory.ActionBuilder.empty().from(ignar).to(ignar).wrapTag(ActionTag.MANA, manaLeak).wrapTag(ActionTag.ADD_FLOAT_STAT).build());
             return message;
         };
     }
@@ -97,9 +98,9 @@ public class CreatureSkillFactory {
                 return firstMissing - secondMissing;
             });
             String message;
-            int healingAmount = (target.getMaxHp() / 100 * 9) + mira.getCurrentSpellPower() * 3;
+            int healingAmount = (target.getMaxHp() / 100 * 10) + mira.getCurrentSpellPower() + 10 + mira.getLevel() * 7;
             message = mira.getBattleName() + " casts \"Healing potion\" on " + target.getBattleName() + "\n";
-            message += resolve(ActionFactory.healingAction(target, healingAmount));
+            message += resolve(ActionFactory.healingAction(mira, target, healingAmount));
 
             return message;
         };
@@ -113,9 +114,9 @@ public class CreatureSkillFactory {
                 return firstMissing - secondMissing;
             });
             String message;
-            int healingAmount = ((target.getMaxHp() / 100 * 9) + mira.getCurrentSpellPower() * 3) / 2;
+            int healingAmount = ((target.getMaxHp() / 100 * 10) + mira.getCurrentSpellPower() + 10 + mira.getLevel() * 7) / 2;
             message = mira.getBattleName() + " \"Healing potion\" bounces on " + target.getBattleName() + "!\n";
-            message += resolve(ActionFactory.healingAction(target, healingAmount));
+            message += resolve(ActionFactory.healingAction(mira, target, healingAmount));
 
             return message;
         };
@@ -227,14 +228,13 @@ public class CreatureSkillFactory {
     public static CreatureSkill roverSkill() {
         return (battleController, rover) -> {
             int level = rover.getCreature().getLevel();
-            double coeff = level >= 9 ? 0.75 : level >= 6 ? 0.5 : level >= 3 ? 0.33 : 0.25;
-            int parm = (int) ((rover.getCurrentPhysicalArmor() + rover.getCurrentSpellPower() / 2) * coeff);
-            int marm = (int) ((rover.getCurrentMagicArmor() + rover.getCurrentSpellPower() / 2) * coeff);
-            BattlefieldCreature target = rover.getBattlefieldSide().getCreatureWithLowest(Stat.PHYSICAL_ARMOR);
+            double coeff = level >= 9 ? 4 : level >= 6 ? 3.2 : level >= 3 ? 2.5 : 2;
+            int barrier = (int) ((rover.getCurrentPhysicalArmor() + rover.getCurrentMagicArmor()) * coeff + rover.getCurrentSpellPower()) / 2;
+            BattlefieldCreature target = rover.getBattlefieldSide().getCreatureWithLowest(Stat.HP);
             String message;
             message = rover.getBattleName() + " casts \"Protect command\" on " + target.getBattleName() + "!\n";
-            message += buff(target, Stat.PHYSICAL_ARMOR, parm);
-            message += buff(target, Stat.MAGIC_ARMOR, parm);
+            message += addBarrier(rover, barrier, CreatureTag.BARRIER);
+            message += addBarrier(target, barrier, CreatureTag.BARRIER);
             return message;
         };
     }
@@ -270,12 +270,14 @@ public class CreatureSkillFactory {
             BattlefieldCreature target = coldy.getBattlefieldSide().getOppositeSide().getCreatureWithHighest(Stat.PHYSICAL_ARMOR);
             String message;
             int level = coldy.getLevel();
-            int armorSteal = (level >= 9 ? 70 : level >= 6 ? 55 : level >= 3 ? 40 : 30) + coldy.getCurrentSpellPower();
+            int armorSteal = (level >= 9 ? 90 : level >= 6 ? 65 : level >= 3 ? 45 : 30) + coldy.getCurrentSpellPower();
             int slow = (level >= 9 ? 25 : level >= 6 ? 16 : level >= 3 ? 10 : 6) + coldy.getCurrentSpellPower() / 4;
+            int damage = coldy.getCurrentAttack() / 2 + coldy.getCurrentPhysicalArmor();
             message = coldy.getBattleName() + " casts \"Freezing steel\" on " + target.getBattleName() + "\n";
             int stealAmount = (int) (target.getCurrentPhysicalArmor() / 100.0 * armorSteal);
             stealAmount = Math.max(stealAmount, level);
             int slowAmount = (int) (target.getCurrentSpeed() / 100.0 * slow);
+            message += dealPhysicalDamage(coldy, target, damage);
             message += debuff(target, Stat.PHYSICAL_ARMOR, stealAmount);
             message += debuff(target, Stat.SPEED, slowAmount);
             message += buff(coldy, Stat.PHYSICAL_ARMOR, stealAmount);
@@ -309,12 +311,20 @@ public class CreatureSkillFactory {
 
     private static CreatureSkill monkeySkill() {
         return (battleController, monkey) -> {
-            BattlefieldCreature target = monkey.getBattlefieldSide().getOppositeSide().getRandomOppositeSideCreature(ObjectStatus.ALIVE);
-            String message = monkey.getBattleName() + " casts \"Flying banana\" on " + target.getBattleName() + "!\n";
-            int heal = monkey.getCurrentSpellPower();
-            int damageGain = monkey.getCurrentSpellPower() / 5 + monkey.getLevel();
-            message += resolve(ActionFactory.healingAction(target, heal));
-            message += buff(target, Stat.ATTACK, damageGain);
+            String message = monkey.getBattleName() + " casts \"Bananarang\"!\n";
+            int damage = monkey.getCurrentSpellPower() + monkey.getCurrentAttack() + monkey.getLevel();
+            while (damage > 0) {
+                BattlefieldCreature target = monkey.getBattlefieldSide().getOppositeSide().getRandomOppositeSideCreature(ObjectStatus.ALIVE);
+                if (target == null) {
+                    break;
+                }
+                message += "Bananarang flies at " + target.getBattleName() + "!\n";
+                dealPhysicalDamage(monkey, target, damage);
+                damage = damage / 2;
+                if (RandomController.randomInt(1, 3, true) == 1) {
+                    break;
+                }
+            }
             return message;
         };
     }
@@ -324,7 +334,7 @@ public class CreatureSkillFactory {
             String message = aralis.getBattleName() + " casts \"Demonic arrows\"!\n";
             int level = aralis.getLevel();
             int penetrationAmount = level >= 9 ? 10 : level >= 6 ? 7 : level >= 3 ? 5 : 2;
-            int damage = aralis.getCurrentAttack() / 5 + aralis.getCurrentSpellPower();
+            int damage = aralis.getCurrentAttack() / 5 + aralis.getCurrentSpellPower() / 2;
             aralis.addAction(ActionFactory.ActionBuilder.empty().from(aralis).withTime(ResolveTime.AFTER_ATTACK).wrapTag(ActionTag.BASIC_ATTACK_BUFF).wrapTag(ActionTag.DEAL_MAGIC_DAMAGE, damage).build());
             aralis.addAction(ActionFactory.ActionBuilder.empty().from(aralis).withTime(ResolveTime.AFTER_ATTACK).wrapTag(ActionTag.BASIC_ATTACK_BUFF).wrapTag(ActionTag.REDUCE_FLOAT_STAT).wrapTag(ActionTag.PHYSICAL_ARMOR, penetrationAmount).build());
             message += resolve(ActionFactory.attackAction(aralis));
@@ -337,7 +347,7 @@ public class CreatureSkillFactory {
             BattlefieldCreature target = weiss.getBattlefieldSide().getRandomOppositeSideCreature(ObjectStatus.ALIVE);
             String message = weiss.getBattleName() + " casts \"Curse potion\" on " + target.getBattleName() + "!\n";
             int debuffCoeff = (int) (weiss.getLevel() * 3.5 + weiss.getCurrentSpellPower() * 2);
-            int damage = weiss.getCurrentSpellPower() + weiss.getLevel() * 4;
+            int damage = (int) (weiss.getCurrentSpellPower() * 1.5 + weiss.getLevel() * 4);
             message += dealMagicDamage(weiss, target, damage);
             target.applyCreatureTagChange(CreatureTag.TAKE_MORE_DAMAGE, StatChangeSource.UNTIL_BATTLE_END, debuffCoeff);
             message += target.getBattleName() + " cursed and takes " + debuffCoeff + "% more damage!\n";
@@ -350,7 +360,7 @@ public class CreatureSkillFactory {
             BattlefieldCreature target = weiss.getBattlefieldSide().getRandomOppositeSideCreature(ObjectStatus.ALIVE);
             String message = "\"Curse potion\" bounces on " + target.getBattleName() + "!\n";
             int debuffCoeff = (int) (weiss.getLevel() * 3.5 + weiss.getCurrentSpellPower() * 2) / 2;
-            int damage = (weiss.getCurrentSpellPower() + weiss.getLevel()) / 2;
+            int damage = (int) (weiss.getCurrentSpellPower() * 1.5 + weiss.getLevel()) / 2;
             message += dealMagicDamage(weiss, target, damage);
             target.applyCreatureTagChange(CreatureTag.TAKE_MORE_DAMAGE, StatChangeSource.UNTIL_BATTLE_END, debuffCoeff);
             message += target.getBattleName() + " cursed and takes " + debuffCoeff + "% more damage!\n";
@@ -362,7 +372,7 @@ public class CreatureSkillFactory {
         return (battleController, aramis) -> {
             int parryAmount = aramis.getLevel() / 3 + 1;
             String message = aramis.getBattleName() + " casts \"Parry stance\"! He will parry next " + parryAmount + " attacks!\n";
-            int coeff = aramis.getLevel() * 10 + 10;
+            int coeff = aramis.getLevel() * 10 + 20 + aramis.getCurrentSpellPower();
             int reflectDamage = (int) (aramis.getCurrentAttack() / 100.0 * coeff);
             aramis.addAction(ActionFactory.ActionBuilder.empty().from(aramis)
                     .wrapTag(ActionTag.PARRY)
@@ -373,14 +383,43 @@ public class CreatureSkillFactory {
         };
     }
 
+    public static CreatureSkill heshiSkill() {
+        return (battleController, heshi) -> {
+            String message = heshi.getBattleName() + " casts \"Frost spikes\"!\n";
+            int armorBuff = heshi.getCurrentSpellPower() / 4 + heshi.getLevel();
+            buff(heshi, Stat.PHYSICAL_ARMOR, armorBuff);
+            int returnDamage = (int) (heshi.getCurrentPhysicalArmor() / 2) + heshi.getLevel() + 3;
+            message += heshi.getBattleName() + " will deal " + returnDamage + " to all enemies when attacked!";
+            heshi.addAction(ActionFactory.ActionBuilder.empty().from(heshi)
+                    .withTime(ResolveTime.AFTER_ATTACKED)
+                    .wrapTag(ActionTag.BASIC_ATTACK_RESPONSE)
+                    .wrapTag(ActionTag.DEAL_MAGIC_DAMAGE_TO_ALL_ENEMIES, returnDamage)
+                    .build());
+            return message;
+        };
+    }
 
-    public static String dealMagicDamage(BattlefieldCreature dealer, BattlefieldCreature target, int amount) {
+    public static CreatureSkill cookSkill() {
+        return (battleController, cook) -> {
+            String message = cook.getBattleName() + " casts \"Tasty meal\"!\n";
+            List<BattlefieldCreature> creatureList = cook.getBattlefieldSide().getCreatures(ObjectStatus.ALIVE);
+            int heal = cook.getCurrentSpellPower() + cook.getLevel();
+            int damageBuff = (int) (cook.getMaxHp() / 100.0) + cook.getLevel();
+            for (BattlefieldCreature creature : creatureList) {
+                message += resolve(ActionFactory.healingAction(cook, creature, heal));
+            }
+            message += buff(cook, Stat.ATTACK, damageBuff);
+            return message;
+        };
+    }
+
+
+    private static String dealMagicDamage(BattlefieldCreature dealer, BattlefieldCreature target, int amount) {
         String message;
         message = resolve(dealer, ResolveTime.BEFORE_DEALING_DAMAGE);
         message += resolve(dealer, ResolveTime.BEFORE_DEALING_MAGIC_DAMAGE);
         message += resolve(target, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.BEFORE_TAKING_MAGIC_DAMAGE);
-        int damage = target.takeMagicDamage(amount, dealer.getCreature().getName());
-        message += target.getBattleName() + " takes " + damage + " damage!\n";
+        message += target.takeMagicDamage(amount, dealer.getCreature().getName());
         message += resolve(dealer, ResolveTime.ON_DEALING_DAMAGE);
         message += resolve(dealer, ResolveTime.ON_DEALING_MAGIC_DAMAGE);
         message += resolve(target, ResolveTime.ON_TAKING_DAMAGE, ResolveTime.ON_TAKING_MAGIC_DAMAGE);
@@ -390,13 +429,12 @@ public class CreatureSkillFactory {
         return message;
     }
 
-    public static String dealPhysicalDamage(BattlefieldCreature dealer, BattlefieldCreature target, int amount) {
+    private static String dealPhysicalDamage(BattlefieldCreature dealer, BattlefieldCreature target, int amount) {
         String message;
         message = resolve(dealer, ResolveTime.BEFORE_DEALING_DAMAGE);
         message += resolve(dealer, ResolveTime.BEFORE_DEALING_PHYSICAL_DAMAGE);
         message += resolve(target, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.BEFORE_TAKING_PHYSICAL_DAMAGE);
-        int damage = target.takePhysicalDamage(amount, dealer.getCreature().getName());
-        message += target.getBattleName() + " takes " + damage + " damage!\n";
+        message += target.takePhysicalDamage(amount, dealer.getCreature().getName());
         message += resolve(dealer, ResolveTime.ON_DEALING_DAMAGE);
         message += resolve(dealer, ResolveTime.ON_DEALING_PHYSICAL_DAMAGE);
         message += resolve(target, ResolveTime.ON_TAKING_DAMAGE, ResolveTime.ON_TAKING_PHYSICAL_DAMAGE);
@@ -442,5 +480,30 @@ public class CreatureSkillFactory {
         int currentBurn = target.getActionByTags(ActionTag.APPLY_BURN_DAMAGE).getActionInfo().getTagValue(ActionTag.APPLY_BURN_DAMAGE);
 
         return target.getBattleName() + " takes " + amount + " burn stacks! (" + currentBurn + " total)\n";
+    }
+
+    public static String addBarrier(BattlefieldCreature target, int amount, CreatureTag barrierType) {
+        if (barrierType == CreatureTag.MAGIC_BARRIER) {
+            target.applyCreatureTagChange(CreatureTag.MAGIC_BARRIER, StatChangeSource.UNTIL_BATTLE_END, amount);
+            if (Constants.COLLECT_STATISTIC.value != 0) {
+                StatisticCollector.updateCreatureMetric(target.getCreature().getName(), Metric.MAGIC_BARRIER_GAINED, amount);
+            }
+            return target.getBattleName() + " gets " + amount + " Magic barrier! [" + target.getTagValue(CreatureTag.MAGIC_BARRIER) + " total]\n";
+        }
+        if (barrierType == CreatureTag.PHYSICAL_BARRIER) {
+            target.applyCreatureTagChange(CreatureTag.PHYSICAL_BARRIER, StatChangeSource.UNTIL_BATTLE_END, amount);
+            if (Constants.COLLECT_STATISTIC.value != 0) {
+                StatisticCollector.updateCreatureMetric(target.getCreature().getName(), Metric.PHYSICAL_BARRIER_GAINED, amount);
+            }
+            return target.getBattleName() + " gets " + amount + " Physical barrier! [" + target.getTagValue(CreatureTag.PHYSICAL_BARRIER) + " total]\n";
+        }
+        if (barrierType == CreatureTag.BARRIER) {
+            target.applyCreatureTagChange(CreatureTag.BARRIER, StatChangeSource.UNTIL_BATTLE_END, amount);
+            if (Constants.COLLECT_STATISTIC.value != 0) {
+                StatisticCollector.updateCreatureMetric(target.getCreature().getName(), Metric.BARRIER_GAINED, amount);
+            }
+            return target.getBattleName() + " gets " + amount + " Barrier! [" + target.getTagValue(CreatureTag.BARRIER) + " total]\n";
+        }
+        return "";
     }
 }
