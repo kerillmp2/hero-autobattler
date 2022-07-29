@@ -235,6 +235,10 @@ public class Creature extends TagContainer<CreatureTag> implements HasShopView, 
         return this.items;
     }
 
+    public boolean hasTrait(Trait trait) {
+        return traitContainer.hasTag(trait);
+    }
+
     @Override
     public String toString() {
         return this.name;

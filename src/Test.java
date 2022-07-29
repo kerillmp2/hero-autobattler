@@ -2,6 +2,7 @@ import core.controllers.utils.MessageController;
 import core.creature.Creature;
 import core.creature.CreatureFactory;
 import core.item.ItemFactory;
+import core.traits.Trait;
 import core.viewers.StatisticViewer;
 import statistics.Metric;
 import statistics.StatisticCollector;
@@ -13,10 +14,10 @@ public class Test {
 
         Constants.PRINT_MESSAGES_IN_CONTROLLER.value = 1;
         StatisticCollector.init();
-        Creature creature1 = CreatureFactory.ignar();
-        ItemFactory.mythrilFork().equipOn(creature1);
+        Creature creature1 = CreatureFactory.creatureByTrait(Trait.SPIRIT);
+        ItemFactory.redSoul().equipOn(creature1);
         BattleTester.testBattleWithCreatures(creature1, CreatureFactory.dummy());
-        //BattleTester.testCreaturesWithCost(2);
+        //BattleTester.testCreaturesWithCost(1, 1);
         //BattleTester.testPairsWithCost(2, 2, 2);
         //BattleTester.testPair(CreatureFactory.heshi(), 2, 2);
 

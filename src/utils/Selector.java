@@ -10,13 +10,14 @@ import core.shop.HasShopView;
 public class Selector {
 
     public static int creatureSellingSelect(List<? extends HasName> boardCreatures) {
-        return creatureSellingSelect(boardCreatures, new ArrayList<>());
+        return creatureSellingSelect(boardCreatures, new ArrayList<>(), true);
     }
 
-    public static int creatureSellingSelect(List<? extends HasName> boardCreatures, List<? extends HasName> benchCreatures) {
+    public static int creatureSellingSelect(List<? extends HasName> boardCreatures, List<? extends HasName> benchCreatures, boolean hasBackOption) {
         int selectedNumber = -1;
+        int from = hasBackOption ? 0 : 1;
         while (selectedNumber == -1) {
-            int counter = 0;
+            int counter = from;
             counter++;
             for (HasName ignored : boardCreatures) {
                 counter += 1;
@@ -25,12 +26,9 @@ public class Selector {
                 counter += 1;
             }
             if (counter >= 1) {
-                selectedNumber = readCommandNumber(0, counter - 1);
+                selectedNumber = readCommandNumber(from, counter - 1);
                 if (selectedNumber == -1) {
-                    MessageController.print(
-                            "Введите число от 0 до " + (counter - 1),
-                            "Input number from 0 to " + (counter - 1)
-                    );
+                    MessageController.print("Input number from " + from + " to " + (counter - 1));
                 }
             } else {
                 selectedNumber = 0;

@@ -15,7 +15,12 @@ public enum StatChangeSource {
     DEMON_TRAIT(true),
     ALCHEMIST_TRAIT(true),
     DUELISTS_TRAIT(true),
-    FROSTBORN_TRAIT(true);
+    FROSTBORN_TRAIT(true),
+    ARCHER_TRAIT(true),
+    FIREBORN_TRAIT(true),
+    SPIRIT_TRAIT(true),
+    BEASTS_TRAIT(true),
+    SUMMONER_TRAIT(true);
 
     private boolean isTrait = false;
 

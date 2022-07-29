@@ -92,4 +92,19 @@ public class ActionInfo extends TagContainer<ActionTag> {
         }
         return Stat.UNDEFINED;
     }
+
+    public ResolveTime getResolveTime() {
+        return resolveTime;
+    }
+
+    @Override
+    public String toString() {
+        return "ActionInfo{" +
+                "performer=" + performer +
+                ", target=" + target +
+                ", resolveTime=" + resolveTime +
+                ", prefix='" + prefix + '\'' +
+                ", postfix='" + postfix + '\'' +
+                '}';
+    }
 }

@@ -1,6 +1,10 @@
 package core.controllers;
 
+import java.util.Comparator;
+
 import AI.AI;
+import core.action.ResolveTime;
+import core.battlefield.ObjectStatus;
 import core.viewers.BattlefieldViewer;
 import core.battle.BattleStatus;
 import core.battlefield.BattlefieldCreature;
@@ -22,16 +26,19 @@ public class BattleController {
         return new BattleController(battlefield, TurnController.forBattlefield(battlefield));
     }
 
-    public static BattleStatus processBattleForPlayers(Player firstPlayer, Player secondPLayer) {
+    public static BattleStatus processBattleForPlayers(PlayerController firstPlayerController, PlayerController secondPlayerController) {
+        Player firstPlayer = firstPlayerController.getPlayer();
+        Player secondPLayer = secondPlayerController.getPlayer();
         Battlefield battlefield = Battlefield.fromTwoBoards(firstPlayer.getBoard(), secondPLayer.getBoard());
         BattleController battleController = BattleController.forBattlefield(battlefield);
         battlefield.setBattleController(battleController);
         BattleStatus battleStatus = battleController.battle();
-        battleController.onBattleEnd();
+        battleController.onBattleEnd(firstPlayerController, secondPlayerController);
         return battleStatus;
     }
 
     public BattleStatus battle() {
+        onBattleStart();
         while (turnController.getTurnCounter() < Constants.BATTLE_TURN_LIMIT.value) {
             MessageController.print(BattlefieldViewer.getBattleFieldView(battlefield));
             boolean firstSideHasAlive = this.battlefield.getFirstSide().hasAliveCreature();
@@ -51,7 +58,17 @@ public class BattleController {
         return BattleStatus.TURN_LIMIT_REACHED;
     }
 
-    private void onBattleEnd() {
+    public void onBattleStart() {
+        StringBuilder message = new StringBuilder();
+        battlefield.getAllCreatures().stream().filter(c -> c.hasStatuses(ObjectStatus.ALIVE))
+                .sorted(Comparator.comparingInt(BattlefieldCreature::getCurrentSpeed))
+                .forEach(c -> message.append(ActionController.resolve(c, ResolveTime.ON_BATTLE_START)));
+        MessageController.print(message.toString());
+    }
+
+    private void onBattleEnd(PlayerController firstPlayerController, PlayerController secondPlayerController) {
+        firstPlayerController.onBattleEnd();
+        secondPlayerController.onBattleEnd();
         battlefield.getAllCreatures().forEach(BattlefieldCreature::onBattleEnd);
     }
 

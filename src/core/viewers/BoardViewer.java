@@ -126,12 +126,14 @@ public class BoardViewer extends Viewer {
         return traitsView;
     }
 
-    public static String benchBoardSimpleView(List<Creature> boardCreatures, List<Creature> benchCreatures) {
+    public static String benchBoardSimpleView(List<Creature> boardCreatures, List<Creature> benchCreatures, boolean withBackOption) {
         Window window = new Window();
         window.lineWithAngles();
         window.emptyLine();
-        window.line("0. Back");
-        window.emptyLine();
+        if (withBackOption) {
+            window.line("0. Back");
+            window.emptyLine();
+        }
         window.line("Creatures on board:");
         window.emptyLine();
         window.list(boardCreatures.stream().map(c -> c.getShopView(true, true, true, true)).collect(Collectors.toList()), true, 1, true, false);

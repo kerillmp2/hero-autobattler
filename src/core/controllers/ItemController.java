@@ -1,17 +1,22 @@
 package core.controllers;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
+import core.controllers.utils.MessageController;
 import core.controllers.utils.RandomController;
 import core.creature.Creature;
 import core.item.Item;
 import core.item.ItemPool;
 import core.item.Rarity;
 import core.traits.Trait;
+import core.viewers.ItemChoiceViewer;
+import utils.Selector;
 
 import static core.item.ItemFactory.*;
 
@@ -38,7 +43,37 @@ public class ItemController {
         return items;
     }
 
-    public static void addBasicItems(ItemPool pool) {
+    public static List<Item> getPirateItems(Rarity rarity, int amount) {
+        ItemPool itemPool = ItemPool.empty();
+        addPirateItems(itemPool);
+        List<Item> items = new ArrayList<>();
+        for (int i = 0; i < amount; i++) {
+            Item item = itemPool.pullItemForRarity(rarity);
+            if (item != null) {
+                items.add(item);
+            }
+        }
+        return items;
+    }
+
+    private static void addPirateItems(ItemPool pool) {
+        pool.add(seaweed());
+        pool.add(turtleShell());
+        pool.add(emptyBottle());
+        pool.add(bluntKnife());
+        pool.add(saltyWater());
+        pool.add(rustyCoin());
+        pool.add(rubyAmulet());
+        pool.add(rubyAmulet());
+        pool.add(backpack());
+        pool.add(backpack());
+        pool.add(rageModule());
+        pool.add(rageModule());
+        pool.add(dragonRay());
+        pool.add(dragonRay());
+    }
+
+    private static void addBasicItems(ItemPool pool) {
         pool.add(snowball());
         pool.add(leatherCloak());
         pool.add(leatherBoots());
@@ -71,7 +106,7 @@ public class ItemController {
                 break;
             }
             case ASSASSIN: {
-                pool.add(throwingDagger());
+                pool.add(throwingDaggers());
                 break;
             }
 
@@ -123,6 +158,68 @@ public class ItemController {
             case STUDENT: {
                 break;
             }
+            case ARCHER: {
+                pool.add(poisonArrows());
+                pool.add(fireArrows());
+                break;
+            }
+            case CULTIST: {
+                break;
+            }
+            case UNDEAD: {
+                break;
+            }
+            case BEAST: {
+                break;
+            }
+            case PIRATE: {
+                break;
+            }
+            case SPIRIT: {
+                pool.add(lostSoul());
+                pool.add(redSoul());
+                pool.add(greenSoul());
+                pool.add(yellowSoul());
+                pool.add(blueSoul());
+                break;
+            }
+            case DUELIST: {
+                break;
+            }
+            case SUPPORT: {
+                break;
+            }
+            case SUMMONER: {
+                break;
+            }
+        }
+    }
+
+    public static Item selectItemFromList(List<Item> items, String header) {
+        int selectedNumber = -1;
+        while (selectedNumber == -1) {
+            MessageController.print(ItemChoiceViewer.getItemChoiceView(items, header));
+            selectedNumber = Selector.select(items, 1);
+        }
+        return items.get(selectedNumber - 1);
+    }
+
+    public static void selectItem(Creature creature) {
+        int selectedNumber = -1;
+        List<Item> items = ItemController.getItemsFor(creature, 5);
+        while (selectedNumber == -1) {
+            MessageController.print(ItemChoiceViewer.getItemChoiceView(items, creature));
+            selectedNumber = Selector.select(items, 1);
+        }
+        Item selectedItem = items.get(selectedNumber - 1);
+        selectedItem.equipOn(creature);
+    }
+
+    public static void selectItemForAI(Creature creature) {
+        List<Item> items = ItemController.getItemsFor(creature, 5).stream().filter(Item::inAIPool).sorted(Comparator.comparingInt(Item::getValue)).collect(Collectors.toList());
+        if (items.size() > 0) {
+            Item selectedItem = items.get(items.size() - 1);
+            selectedItem.equipOn(creature);
         }
     }
 

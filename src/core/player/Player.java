@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import core.controllers.BoardController;
+import core.item.Rarity;
 import utils.Constants;
 import utils.HasName;
 import utils.Option;
@@ -25,7 +26,7 @@ public class Player implements HasName {
 
     public static Player newPlayerWithName(String name) {
         int money = Constants.PLAYER_MONEY.value;
-        return new Player(name, PlayerState.NOT_READY_FOR_BATTLE, money, Constants.PLAYER_HP.value, BoardController.empty(1, Constants.BENCH_SIZE.value));
+        return new Player(name, PlayerState.NOT_READY_FOR_BATTLE, 1000, Constants.PLAYER_HP.value, BoardController.empty(1, Constants.BENCH_SIZE.value));
     }
 
     public List<Option<TurnOption>> getTurnOptions() {
@@ -93,6 +94,9 @@ public class Player implements HasName {
 
     public int getShopLevel() {
         return this.boardController.getBoard().getMaxSize();
+    }
+
+    public void onBattleEnd() {
     }
 
     @Override

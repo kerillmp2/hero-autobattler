@@ -24,9 +24,9 @@ public class LevelController {
                 }
             }
             if (forAI) {
-                selectItemForAI(creature);
+                ItemController.selectItemForAI(creature);
             } else {
-                selectItem(creature);
+                ItemController.selectItem(creature);
             }
         }
         if (level == 6) {
@@ -38,9 +38,9 @@ public class LevelController {
                 }
             }
             if (forAI) {
-                selectItemForAI(creature);
+                ItemController.selectItemForAI(creature);
             } else {
-                selectItem(creature);
+                ItemController.selectItem(creature);
             }
         }
         if (level == 9) {
@@ -52,30 +52,10 @@ public class LevelController {
                 }
             }
             if (forAI) {
-                selectItemForAI(creature);
+                ItemController.selectItemForAI(creature);
             } else {
-                selectItem(creature);
+                ItemController.selectItem(creature);
             }
-        }
-    }
-
-    public static void selectItem(Creature creature) {
-        int selectedNumber = -1;
-        List<Item> items = ItemController.getItemsFor(creature, 5);
-        while (selectedNumber == -1) {
-            MessageController.print(ItemChoiceViewer.getItemChoiceView(items, creature));
-            selectedNumber = Selector.select(items, 1);
-        }
-        Item selectedItem = items.get(selectedNumber - 1);
-        selectedItem.equipOn(creature);
-    }
-
-    public static void selectItemForAI(Creature creature) {
-        List<Item> items = ItemController.getItemsFor(creature, 5);
-        items.sort(Comparator.comparingInt(Item::getValue));
-        if (items.size() > 0) {
-            Item selectedItem = items.get(items.size() - 1);
-            selectedItem.equipOn(creature);
         }
     }
 }

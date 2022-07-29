@@ -76,6 +76,10 @@ public class Board {
         return traits;
     }
 
+    public TraitsController getTraitsController() {
+        return traitsController;
+    }
+
     public int getMaxSize() {
         return maxSize;
     }

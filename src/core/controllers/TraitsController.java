@@ -1,17 +1,26 @@
 package core.controllers;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import core.battlefield.BattlefieldCreature;
+import core.battlefield.BattlefieldSide;
+import core.controllers.utils.MessageController;
 import core.creature.Creature;
+import core.creature.CreaturePool;
 import core.creature.CreatureTag;
 import core.creature.stat.Stat;
 import core.creature.stat.StatChangeSource;
+import core.item.Item;
+import core.item.Rarity;
 import core.traits.Trait;
 import core.traits.TraitContainer;
+import utils.Constants;
 
 public class TraitsController {
     private final TraitContainer traitContainer;
+    private Rarity piratesTreasure = Rarity.UNDEFINED;
 
     private TraitsController(TraitContainer traitContainer) {
         this.traitContainer = traitContainer;
@@ -23,6 +32,7 @@ public class TraitsController {
 
     public void updateTraitBuffs(List<Creature> allCreatures) {
         allCreatures.forEach(Creature::clearAllChangesFromTraits);
+        setPiratesTreasure(Rarity.UNDEFINED);
         updateKnightBuff(allCreatures);
         updateWarriorBuff(allCreatures);
         updatePoisonousBuff(allCreatures);
@@ -35,75 +45,81 @@ public class TraitsController {
         updateDefenderBuff(allCreatures);
         updateDemonBuff(allCreatures);
         updateAlchemistsBuff(allCreatures);
-        updateDuelistsBuff(allCreatures );
+        updateDuelistsBuff(allCreatures);
+        updateArchersBuff(allCreatures);
+        updateFirebornBuff(allCreatures);
+        updateSpiritBuff(allCreatures);
+        updateBeastsBuff(allCreatures);
+        updateSummonersBuff(allCreatures);
+        updatePiratesBuff();
     }
 
     public void updateDefenderBuff(List<Creature> allCreatures) {
-        //Defender: All creatures gains [+2 / +4 / +8] physical and magic armor
+        //"All creatures gain [+15% / +30% / +50] physical and magic armor"
         int defendersNum = getTraitValue(Trait.DEFENDER);
         if (defendersNum >= Trait.DEFENDER.getLevels().get(0) && defendersNum < Trait.DEFENDER.getLevels().get(1)) {
-            allCreatures.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.DEFENDER_TRAIT, 2));
-            allCreatures.forEach(c -> c.applyBuff(Stat.MAGIC_ARMOR, StatChangeSource.DEFENDER_TRAIT, 2));
+            allCreatures.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.DEFENDER_TRAIT, 15, true));
+            allCreatures.forEach(c -> c.applyBuff(Stat.MAGIC_ARMOR, StatChangeSource.DEFENDER_TRAIT, 15, true));
         }
         if (defendersNum >= Trait.DEFENDER.getLevels().get(1) && defendersNum < Trait.DEFENDER.getLevels().get(2)) {
-            allCreatures.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.DEFENDER_TRAIT, 4));
-            allCreatures.forEach(c -> c.applyBuff(Stat.MAGIC_ARMOR, StatChangeSource.DEFENDER_TRAIT, 4));
+            allCreatures.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.DEFENDER_TRAIT, 30, true));
+            allCreatures.forEach(c -> c.applyBuff(Stat.MAGIC_ARMOR, StatChangeSource.DEFENDER_TRAIT, 30, true));
         }
         if (defendersNum >= Trait.DEFENDER.getLevels().get(2)) {
-            allCreatures.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.DEFENDER_TRAIT, 8));
-            allCreatures.forEach(c -> c.applyBuff(Stat.MAGIC_ARMOR, StatChangeSource.DEFENDER_TRAIT, 8));
+            allCreatures.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.DEFENDER_TRAIT, 50, true));
+            allCreatures.forEach(c -> c.applyBuff(Stat.MAGIC_ARMOR, StatChangeSource.DEFENDER_TRAIT, 50, true));
         }
     }
 
     private void updateKnightBuff(List<Creature> allCreatures) {
-        //KING_GUARD: <+2 Attack, +3 Attack, +5 Attack> to all Creatures.
+        // After using skill knight gains barrier equals [10% / 22% / 35%] of max health
         int knight = getTraitValue(Trait.KNIGHT);
         if (knight >= Trait.KNIGHT.getLevels().get(0) && knight < Trait.KNIGHT.getLevels().get(1)) {
-            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KNIGHT_TRAIT, 2));
+            allCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.BARRIER_AFTER_SKILL, StatChangeSource.KNIGHT_TRAIT, 10));
         }
         if (knight >= Trait.KNIGHT.getLevels().get(1) && knight < Trait.KNIGHT.getLevels().get(2)) {
-            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KNIGHT_TRAIT, 3));
+            allCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.BARRIER_AFTER_SKILL, StatChangeSource.KNIGHT_TRAIT, 22));
         }
         if (knight >= Trait.KNIGHT.getLevels().get(2)) {
-            allCreatures.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.KNIGHT_TRAIT, 5));
+            allCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.BARRIER_AFTER_SKILL, StatChangeSource.KNIGHT_TRAIT, 35));
         }
     }
 
     private void updateWarriorBuff(List<Creature> allCreatures) {
-        // Warriors gains [+15% / +20% / +30%] attack and [+2 / +3 / +5] physical armor
+        // At the end of the turn warrior gains [+5% / +10% / +15%] attack and [+1 / +3 / +6] physical armor
         int warriorsNum = getTraitValue(Trait.WARRIOR);
         List<Creature> warriors = getCreaturesByTrait(allCreatures, Trait.WARRIOR);
         if (warriorsNum >= Trait.WARRIOR.getLevels().get(0) && warriorsNum < Trait.WARRIOR.getLevels().get(1)) {
-            warriors.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.WARRIOR_TRAIT, 15, true));
-            warriors.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.WARRIOR_TRAIT, 2));
+            warriors.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERCENTAGE_ATTACK_AFTER_TURN, StatChangeSource.WARRIOR_TRAIT, 5));
+            warriors.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_ARMOR_AFTER_TURN, StatChangeSource.WARRIOR_TRAIT, 1));
         }
         if (warriorsNum >= Trait.WARRIOR.getLevels().get(1) && warriorsNum < Trait.WARRIOR.getLevels().get(2)) {
-            warriors.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.WARRIOR_TRAIT, 20, true));
-            warriors.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.WARRIOR_TRAIT, 3));
+            warriors.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERCENTAGE_ATTACK_AFTER_TURN, StatChangeSource.WARRIOR_TRAIT, 10));
+            warriors.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_ARMOR_AFTER_TURN, StatChangeSource.WARRIOR_TRAIT, 3));
         }
         if (warriorsNum >= Trait.WARRIOR.getLevels().get(2)) {
-            warriors.forEach(c -> c.applyBuff(Stat.ATTACK, StatChangeSource.WARRIOR_TRAIT, 30, true));
-            warriors.forEach(c -> c.applyBuff(Stat.PHYSICAL_ARMOR, StatChangeSource.WARRIOR_TRAIT, 4));
+            warriors.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERCENTAGE_ATTACK_AFTER_TURN, StatChangeSource.WARRIOR_TRAIT, 15));
+            warriors.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_ARMOR_AFTER_TURN, StatChangeSource.WARRIOR_TRAIT, 6));
         }
     }
 
     private void updatePoisonousBuff(List<Creature> allCreatures) {
-        //POISONOUS: Ядовитые получают [+1 / +2 / +3] яда
+        // Poisonous gains [+3 / +6 / +10] poison
         int poisonousNum = getTraitValue(Trait.POISONOUS);
         List<Creature> poisonousCreatures = getCreaturesByTrait(allCreatures, Trait.POISONOUS);
         if (poisonousNum >= Trait.POISONOUS.getLevels().get(0) && poisonousNum < Trait.POISONOUS.getLevels().get(0)) {
-            poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 1));
+            poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 3));
         }
         if (poisonousNum >= Trait.POISONOUS.getLevels().get(1) && poisonousNum < Trait.POISONOUS.getLevels().get(2)) {
-            poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 2));
+            poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 6));
         }
         if (poisonousNum >= Trait.POISONOUS.getLevels().get(2)) {
-            poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 5));
+            poisonousCreatures.forEach(c -> c.applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.POISONOUS_TRAIT, 10));
         }
     }
 
     private void updateDemonBuff(List<Creature> allCreatures) {
-        // "After attacking demons burn [12% / 25% / 40%] or target's max mana"
+        // After attacking demons burn [12% / 25% / 40%] or target's max mana
         int deomnsNum = getTraitValue(Trait.DEMON);
         List<Creature> demonCreatures = getCreaturesByTrait(allCreatures, Trait.DEMON);
         if (deomnsNum >= Trait.DEMON.getLevels().get(0) && deomnsNum < Trait.DEMON.getLevels().get(1)) {
@@ -134,7 +150,7 @@ public class TraitsController {
 
     private void updateRobotBuffs(List<Creature> allCreatures) {
         //ROBOT: На время боя роботы получают случайные усиления [1 / 3 / 7] раз из следующих:
-        //+7% здоровья, +9% атаки, +1 физической и магической зашиты
+        //+7% здоровья, +5% атаки, +2 физической и магической зашиты
         int robotsNum = getTraitValue(Trait.ROBOT);
         List<Creature> robots = getCreaturesByTrait(allCreatures, Trait.ROBOT);
         int numberOfRobotBuffs = 0;
@@ -154,61 +170,61 @@ public class TraitsController {
                     robot.applyCreatureTagChange(CreatureTag.ADD_TEMP_PERCENTAGE_HP_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 7);
                 }
                 if (stat == Stat.ATTACK) {
-                    robot.applyCreatureTagChange(CreatureTag.ADD_TEMP_PERCENTAGE_ATTACK_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 9);
+                    robot.applyCreatureTagChange(CreatureTag.ADD_TEMP_PERCENTAGE_ATTACK_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 5);
                 }
                 if (stat == Stat.PHYSICAL_ARMOR) {
-                    robot.applyCreatureTagChange(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 1);
-                    robot.applyCreatureTagChange(CreatureTag.ADD_TEMP_MARM_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 1);
+                    robot.applyCreatureTagChange(CreatureTag.ADD_TEMP_PARM_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 2);
+                    robot.applyCreatureTagChange(CreatureTag.ADD_TEMP_MARM_BEFORE_BATTLE, StatChangeSource.ROBOT_TRAIT, 2);
                 }
             }
         }
     }
 
     private void updateMagesBuff(List<Creature> allCreatures) {
-        //MAGE: Mages gains [+2 / +4 / +7] and [+20% / +45% / +8%] spell power
+        // Mages gain [+5 / +10 / +20] and [+15% / +30% / +60%] spell power
         int magesNum = getTraitValue(Trait.MAGE);
         List<Creature> mages = getCreaturesByTrait(allCreatures, Trait.MAGE);
         if (magesNum >= Trait.MAGE.getLevels().get(0) && magesNum < Trait.MAGE.getLevels().get(1)) {
-            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 2));
-            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 20, true));
+            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 5));
+            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 15, true));
         }
         if (magesNum >= Trait.MAGE.getLevels().get(1) && magesNum < Trait.MAGE.getLevels().get(2)) {
-            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 4));
-            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 45, true));
+            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 10));
+            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 30, true));
         }
         if (magesNum >= Trait.MAGE.getLevels().get(2)) {
-            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 7));
-            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 75, true));
+            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 20));
+            mages.forEach(c -> c.applyBuff(Stat.SPELL_POWER, StatChangeSource.MAGE_TRAIT, 60, true));
         }
     }
 
     private void updateFrostBornBuff(List<Creature> allCreatures) {
         int frostbornsNum = getTraitValue(Trait.FROSTBORN);
-        //Frostborn creatures deals [50% / 80% / 120%] magic damage on attack, based on their Spell power.
-        //Attacks also applies [5% / 10% / 15%] on targets
+        // Frostborn creatures deals [30% / 55% / 80%] magic damage on attack, based on their Spell power.
+        // Attacks also slows target by [5% / 10% / 15%]
         List<Creature> frostborns = getCreaturesByTrait(allCreatures, Trait.FROSTBORN);
-        if (frostbornsNum >= Trait.FIREBORN.getLevels().get(0) && frostbornsNum < Trait.FIREBORN.getLevels().get(1)) {
+        if (frostbornsNum >= Trait.FROSTBORN.getLevels().get(0) && frostbornsNum < Trait.FROSTBORN.getLevels().get(1)) {
             frostborns.forEach(c -> {
-                c.applyCreatureTagChange(CreatureTag.ADDITIONAL_MAGIC_DAMAGE_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 50);
+                c.applyCreatureTagChange(CreatureTag.ADDITIONAL_MAGIC_DAMAGE_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 30);
                 c.applyCreatureTagChange(CreatureTag.PERCENTAGE_SLOW_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 5);
             });
         }
-        if (frostbornsNum >= Trait.FIREBORN.getLevels().get(1) && frostbornsNum < Trait.FIREBORN.getLevels().get(2)) {
+        if (frostbornsNum >= Trait.FROSTBORN.getLevels().get(1) && frostbornsNum < Trait.FROSTBORN.getLevels().get(2)) {
             frostborns.forEach(c -> {
-                c.applyCreatureTagChange(CreatureTag.ADDITIONAL_MAGIC_DAMAGE_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 80);
+                c.applyCreatureTagChange(CreatureTag.ADDITIONAL_MAGIC_DAMAGE_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 55);
                 c.applyCreatureTagChange(CreatureTag.PERCENTAGE_SLOW_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 10);
             });
         }
-        if (frostbornsNum >= Trait.FIREBORN.getLevels().get(2)) {
+        if (frostbornsNum >= Trait.FROSTBORN.getLevels().get(2)) {
             frostborns.forEach(c -> {
-                c.applyCreatureTagChange(CreatureTag.ADDITIONAL_MAGIC_DAMAGE_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 120);
+                c.applyCreatureTagChange(CreatureTag.ADDITIONAL_MAGIC_DAMAGE_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 80);
                 c.applyCreatureTagChange(CreatureTag.PERCENTAGE_SLOW_ON_ATTACK, StatChangeSource.FROSTBORN_TRAIT, 15);
             });
         }
     }
 
     private void updateAssassinBuff(List<Creature> allCreatures) {
-        // Assassins gains [+20% / +30% / +40%] attack and [+15% / +25% / +50%] speed
+        // Assassins gain [+20% / +30% / +40%] attack and [+15% / +25% / +50%] speed
         int assassinsNum = getTraitValue(Trait.ASSASSIN);
         List<Creature> assassins = getCreaturesByTrait(allCreatures, Trait.ASSASSIN);
         if (assassinsNum >= Trait.ASSASSIN.getLevels().get(0) && assassinsNum < Trait.ASSASSIN.getLevels().get(1)) {
@@ -271,6 +287,123 @@ public class TraitsController {
         }
     }
 
+    private void updateArchersBuff(List<Creature> allCreatures) {
+        // Archers have [15% / 30% / 50%] to attack additional time
+        int archersNum = getTraitValue(Trait.ARCHER);
+        List<Creature> archers = getCreaturesByTrait(allCreatures, Trait.ARCHER);
+        if (archersNum >= Trait.ARCHER.getLevels().get(0) && archersNum < Trait.ARCHER.getLevels().get(1)) {
+            archers.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADDITIONAL_ATTACK_CHANCE, StatChangeSource.ARCHER_TRAIT, 15));
+        }
+        if (archersNum >= Trait.ARCHER.getLevels().get(1) && archersNum < Trait.ARCHER.getLevels().get(2)) {
+            archers.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADDITIONAL_ATTACK_CHANCE, StatChangeSource.ARCHER_TRAIT, 30));
+        }
+        if (archersNum >= Trait.ARCHER.getLevels().get(2)) {
+            archers.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADDITIONAL_ATTACK_CHANCE, StatChangeSource.ARCHER_TRAIT, 50));
+        }
+    }
+
+    private void updateFirebornBuff(List<Creature> allCreatures) {
+        // Fireborns applies [15% / 35% / 60%] more burn
+        int firbornsNum = getTraitValue(Trait.FIREBORN);
+        List<Creature> fireborns = getCreaturesByTrait(allCreatures, Trait.FIREBORN);
+        if (firbornsNum >= Trait.FIREBORN.getLevels().get(0) && firbornsNum < Trait.FIREBORN.getLevels().get(1)) {
+            fireborns.forEach(c -> c.applyCreatureTagChange(CreatureTag.PERCENTAGE_BURN_BUFF, StatChangeSource.FIREBORN_TRAIT, 15));
+        }
+        if (firbornsNum >= Trait.FIREBORN.getLevels().get(1) && firbornsNum < Trait.FIREBORN.getLevels().get(2)) {
+            fireborns.forEach(c -> c.applyCreatureTagChange(CreatureTag.PERCENTAGE_BURN_BUFF, StatChangeSource.FIREBORN_TRAIT, 35));
+        }
+        if (firbornsNum >= Trait.FIREBORN.getLevels().get(2)) {
+            fireborns.forEach(c -> c.applyCreatureTagChange(CreatureTag.PERCENTAGE_BURN_BUFF, StatChangeSource.FIREBORN_TRAIT, 60));
+        }
+    }
+
+    private void updateSpiritBuff(List<Creature> allCreatures) {
+        //Spirits have chance to doge attack equals [3% / 6% / 12%] of their speed
+        //Spirits convert [50% / 100% / 150%] of their spell power to speed
+        int spiritsNum = getTraitValue(Trait.SPIRIT);
+        List<Creature> spirits = getCreaturesByTrait(allCreatures, Trait.SPIRIT);
+        if (spiritsNum >= Trait.SPIRIT.getLevels().get(0) && spiritsNum < Trait.SPIRIT.getLevels().get(1)) {
+            spirits.forEach(c -> c.applyCreatureTagChange(CreatureTag.SPELL_POWER_TO_SPEED, StatChangeSource.SPIRIT_TRAIT, 50));
+            spirits.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERCENTAGE_SPEED_TO_DODGE, StatChangeSource.SPIRIT_TRAIT, 3));
+        }
+        if (spiritsNum >= Trait.SPIRIT.getLevels().get(1) && spiritsNum < Trait.SPIRIT.getLevels().get(2)) {
+            spirits.forEach(c -> c.applyCreatureTagChange(CreatureTag.SPELL_POWER_TO_SPEED, StatChangeSource.SPIRIT_TRAIT, 100));
+            spirits.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERCENTAGE_SPEED_TO_DODGE, StatChangeSource.SPIRIT_TRAIT, 6));
+        }
+        if (spiritsNum >= Trait.SPIRIT.getLevels().get(2)) {
+            spirits.forEach(c -> c.applyCreatureTagChange(CreatureTag.SPELL_POWER_TO_SPEED, StatChangeSource.SPIRIT_TRAIT, 150));
+            spirits.forEach(c -> c.applyCreatureTagChange(CreatureTag.ADD_PERCENTAGE_SPEED_TO_DODGE, StatChangeSource.SPIRIT_TRAIT, 12));
+        }
+    }
+
+    private void updateBeastsBuff(List<Creature> allCreatures) {
+        // Beasts deal [1% / 2% / 4%] more damage for each 100 health they have
+        int beastsNum = getTraitValue(Trait.BEAST);
+        List<Creature> beasts = getCreaturesByTrait(allCreatures, Trait.BEAST);
+        if (beastsNum >= Trait.BEAST.getLevels().get(0) && beastsNum < Trait.BEAST.getLevels().get(1)) {
+            beasts.forEach(c -> c.applyCreatureTagChange(CreatureTag.PERCENTAGE_OF_ADDITIONAL_DAMAGE_BY_HP, StatChangeSource.BEASTS_TRAIT, 1));
+        }
+        if (beastsNum >= Trait.BEAST.getLevels().get(1) && beastsNum < Trait.BEAST.getLevels().get(2)) {
+            beasts.forEach(c -> c.applyCreatureTagChange(CreatureTag.PERCENTAGE_OF_ADDITIONAL_DAMAGE_BY_HP, StatChangeSource.BEASTS_TRAIT, 2));
+        }
+        if (beastsNum >= Trait.BEAST.getLevels().get(2)) {
+            beasts.forEach(c -> c.applyCreatureTagChange(CreatureTag.PERCENTAGE_OF_ADDITIONAL_DAMAGE_BY_HP, StatChangeSource.BEASTS_TRAIT, 4));
+        }
+    }
+
+    private void updateSummonersBuff(List<Creature> allCreatures) {
+        // At the start of the battle summon [Common / Rare / Epic / Legendary] creature on your side
+        int summonersNum = getTraitValue(Trait.SUMMONER);
+        List<Creature> summoners = getCreaturesByTrait(allCreatures, Trait.SUMMONER);
+        if (summonersNum >= Trait.SUMMONER.getLevels().get(0) && summonersNum < Trait.SUMMONER.getLevels().get(1)) {
+            Creature summoner = summoners.get(0);
+            summoner.applyCreatureTagChange(CreatureTag.SUMMON_CREATURE_WITH_VALUE, StatChangeSource.SUMMONER_TRAIT, Rarity.COMMON.getValue());
+        }
+        if (summonersNum >= Trait.SUMMONER.getLevels().get(1) && summonersNum < Trait.SUMMONER.getLevels().get(2)) {
+            Creature summoner = summoners.get(0);
+            summoner.applyCreatureTagChange(CreatureTag.SUMMON_CREATURE_WITH_VALUE, StatChangeSource.SUMMONER_TRAIT, Rarity.RARE.getValue());
+        }
+        if (summonersNum >= Trait.SUMMONER.getLevels().get(2) && summonersNum < Trait.SUMMONER.getLevels().get(3)) {
+            Creature summoner = summoners.get(0);
+            summoner.applyCreatureTagChange(CreatureTag.SUMMON_CREATURE_WITH_VALUE, StatChangeSource.SUMMONER_TRAIT, Rarity.EPIC.getValue());
+        }
+        if (summonersNum >= Trait.SUMMONER.getLevels().get(3)) {
+            Creature summoner = summoners.get(0);
+            summoner.applyCreatureTagChange(CreatureTag.SUMMON_CREATURE_WITH_VALUE, StatChangeSource.SUMMONER_TRAIT, Rarity.LEGENDARY.getValue());
+        }
+    }
+
+    private void updatePiratesBuff() {
+        // When battle ends pirates discover unique [Common / Uncommon / Rare / Epic / Legendary] item
+        int piratesNum = getTraitValue(Trait.PIRATE);
+        if (piratesNum >= Trait.PIRATE.getLevels().get(0) && piratesNum < Trait.PIRATE.getLevels().get(1)) {
+            setPiratesTreasure(Rarity.COMMON);
+        }
+        if (piratesNum >= Trait.PIRATE.getLevels().get(1) && piratesNum < Trait.PIRATE.getLevels().get(2)) {
+            setPiratesTreasure(Rarity.UNCOMMON);
+        }
+        if (piratesNum >= Trait.PIRATE.getLevels().get(2) && piratesNum < Trait.PIRATE.getLevels().get(3)) {
+            setPiratesTreasure(Rarity.RARE);
+        }
+        if (piratesNum >= Trait.PIRATE.getLevels().get(3) && piratesNum < Trait.PIRATE.getLevels().get(4)) {
+            setPiratesTreasure(Rarity.EPIC);
+        }
+        if (piratesNum >= Trait.PIRATE.getLevels().get(4)) {
+            setPiratesTreasure(Rarity.LEGENDARY);
+        }
+    }
+
+    public void processPiratesBuff(PlayerController playerController) {
+        Rarity rarity = getPiratesTreasure();
+        if (rarity != Rarity.UNDEFINED) {
+            Item selectedItem = ItemController.selectItemFromList(
+                    ItemController.getPirateItems(rarity, Constants.PIRATES_TREASURES.value),
+                    "Pirates discovered " + rarity.getName() + " treasure! Choose item and creature to equip it!");
+            Creature selectedCreature = playerController.selectCreature(false);
+            selectedItem.equipOn(selectedCreature);
+        }
+    }
+
     public List<Creature> getCreaturesByTrait(List<Creature> allCreatures, Trait trait) {
         return allCreatures.stream().filter(creature -> creature.getTraitContainer().hasTag(trait)).collect(Collectors.toList());
     }
@@ -285,5 +418,13 @@ public class TraitsController {
 
     public int getTraitValue(Trait trait) {
         return traitContainer.getTagValue(trait);
+    }
+
+    public Rarity getPiratesTreasure() {
+        return piratesTreasure;
+    }
+
+    public void setPiratesTreasure(Rarity piratesTreasure) {
+        this.piratesTreasure = piratesTreasure;
     }
 }

@@ -21,4 +21,11 @@ public class Action {
     public void addTag(ActionTag actionTag) {
         actionInfo.addTag(actionTag);
     }
+
+    @Override
+    public String toString() {
+        return "Action{" +
+                "actionInfo=" + actionInfo +
+                '}';
+    }
 }

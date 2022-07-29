@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import core.item.Rarity;
 import core.shop.ShopItem;
 
 public class CreaturePool {
@@ -17,6 +18,10 @@ public class CreaturePool {
 
     public static CreaturePool forPlayer() {
         return new CreaturePool(initForPlayer());
+    }
+
+    public static CreaturePool empty() {
+        return new CreaturePool(new ArrayList<>());
     }
 
     public void removeCreature(Creature creature) {
@@ -54,24 +59,30 @@ public class CreaturePool {
         return creatures;
     }
 
+    public static List<Creature> getAllCreaturesForSummoners() {
+        List<Creature> creatures = new ArrayList<>();
+        creatures.add(CreatureFactory.impy());
+        return creatures;
+    }
+
     public static List<Creature> getPlayerCreaturesWithCost(int cost) {
         List<Creature> creatures = new ArrayList<>();
         if (cost == 1) {
-            //creatures.add(CreatureFactory.dunkan());
-            //creatures.add(CreatureFactory.salvira());
+            creatures.add(CreatureFactory.dunkan());
+            creatures.add(CreatureFactory.salvira());
             creatures.add(CreatureFactory.ignar());
-            /*creatures.add(CreatureFactory.warbot());
+            creatures.add(CreatureFactory.warbot());
             creatures.add(CreatureFactory.kodji());
             creatures.add(CreatureFactory.obby());
             creatures.add(CreatureFactory.leto());
             creatures.add(CreatureFactory.annie());
             creatures.add(CreatureFactory.bolver());
             creatures.add(CreatureFactory.shaya());
-            creatures.add(CreatureFactory.mira());*/
-            //creatures.add(CreatureFactory.dummy());
+            creatures.add(CreatureFactory.mira());
+            creatures.add(CreatureFactory.dummy());
         }
         if (cost == 2) {
-            /*creatures.add(CreatureFactory.rover());
+            creatures.add(CreatureFactory.rover());
             creatures.add(CreatureFactory.cathyra());
             creatures.add(CreatureFactory.coldy());
             creatures.add(CreatureFactory.jack());
@@ -79,7 +90,7 @@ public class CreaturePool {
             creatures.add(CreatureFactory.weiss());
             creatures.add(CreatureFactory.aramis());
             creatures.add(CreatureFactory.heshi());
-            creatures.add(CreatureFactory.cook());*/
+            creatures.add(CreatureFactory.cook());
         }
         return creatures;
     }

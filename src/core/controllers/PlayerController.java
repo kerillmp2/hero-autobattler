@@ -31,6 +31,10 @@ public class PlayerController {
         return new PlayerController(player, new ShopController<>(CreatureShop.defaultCreatureShop(player, creaturePool), player, creaturePool));
     }
 
+    public static PlayerController defaultController(Player player) {
+        return defaultController(player, CreaturePool.empty());
+    }
+
     public void processTurnPhase() {
         int currentOptionNum = -1;
         TurnOption currentOption = TurnOption.DEFAULT;
@@ -100,7 +104,7 @@ public class PlayerController {
         }
     }
 
-    protected Creature selectCreature() {
+    public Creature selectCreature(boolean withBackOption) {
         int selectedNumber = -1;
         Creature selectedCreature = null;
         while (selectedNumber != 0) {
@@ -108,8 +112,8 @@ public class PlayerController {
             List<Creature> allBenchCreatures = player.getBench().getCreaturesWithDummys();
             List<HasNameImpl> boardCreatures = allBoardCreatures.stream().map(creature -> new HasNameImpl(creature.getShopView(true, true, true, true))).collect(Collectors.toList());
             List<HasNameImpl> benchCreatures = allBenchCreatures.stream().map(creature -> new HasNameImpl(creature.getShopView(true, true, true, true))).collect(Collectors.toList());
-            MessageController.print(BoardViewer.benchBoardSimpleView(allBoardCreatures, allBenchCreatures));
-            selectedNumber = Selector.creatureSellingSelect(boardCreatures, benchCreatures);
+            MessageController.print(BoardViewer.benchBoardSimpleView(allBoardCreatures, allBenchCreatures, withBackOption));
+            selectedNumber = Selector.creatureSellingSelect(boardCreatures, benchCreatures, withBackOption);
             if (selectedNumber != 0) {
                 selectedNumber--;
                 if (selectedNumber < allBoardCreatures.size()) {
@@ -189,7 +193,7 @@ public class PlayerController {
     }
 
     protected void processSelling() {
-        Creature creature = selectCreature();
+        Creature creature = selectCreature(true);
         if (creature != null) {
             if (creatureShopController.sellCreature(creature)) {
                 MessageController.print(creature.getNameLevel() + " sold for " + creature.getSellingCost() + " gold");
@@ -199,5 +203,10 @@ public class PlayerController {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public void onBattleEnd() {
+        getPlayer().getBoardController().getBoard().getTraitsController().processPiratesBuff(this);
+        player.onBattleEnd();
     }
 }

@@ -1,5 +1,8 @@
 package core.creature;
 
+import java.util.List;
+
+import core.controllers.LevelController;
 import core.creature.skills.CreatureSkillFactory;
 import core.traits.Trait;
 
@@ -15,42 +18,42 @@ public class CreatureFactory {
      */
 
     public static Creature dunkan() {
-        return Creature.withStats("Dunkan", 79, 12, 3, 0, 5, 100, 100, 1)
+        return Creature.withStats("Dunkan", 500, 39, 16, 10, 8, 100, 100, 1)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapTrait(Trait.DEFENDER)
                 .wrapSkill(CreatureSkillFactory.dunkanSkill());
     }
 
     public static Creature salvira() {
-        return Creature.withStats("Salvira", 72, 13, 1, 0, 5, 120, 80, 1)
+        return Creature.withStats("Salvira", 380, 45, 10, 10, 8, 120, 80, 1)
                 .wrapTrait(Trait.ASSASSIN)
                 .wrapTrait(Trait.POISONOUS)
                 .wrapSkill(CreatureSkillFactory.salviraSkill());
     }
 
     public static Creature ignar() {
-        return Creature.withStats("Ignar", 96, 12, 1, 3, 6, 80, 100, 1)
+        return Creature.withStats("Ignar", 560, 38, 16, 14, 15, 80, 100, 1)
                 .wrapTrait(Trait.DEMON)
                 .wrapTrait(Trait.EATER)
                 .wrapSkill(CreatureSkillFactory.ignarSkill());
     }
 
     public static Creature warbot() {
-        return Creature.withStats("Warbot", 81, 12, 2, 0, 2, 90, 100, 1)
+        return Creature.withStats("Warbot", 500, 34, 16, 8, 10, 90, 100, 1)
                 .wrapTrait(Trait.ROBOT)
                 .wrapTrait(Trait.WARRIOR)
                 .wrapSkill(CreatureSkillFactory.warbotSkill());
     }
 
     public static Creature kodji() {
-        return Creature.withStats("Kodji", 78, 11, 1, 3, 7, 105, 40, 1)
+        return Creature.withStats("Kodji", 360, 32, 14, 20, 20, 105, 40, 1)
                 .wrapTrait(Trait.FROSTBORN)
                 .wrapTrait(Trait.MAGE)
                 .wrapSkill(CreatureSkillFactory.kodjiSkill());
     }
 
     public static Creature mira() {
-        return Creature.withStats("Mira", 79, 12, 1, 4, 6, 108, 90, 1)
+        return Creature.withStats("Mira", 390, 37, 15, 20, 20, 108, 90, 1)
                 .wrapTrait(Trait.ALCHEMIST)
                 .wrapTrait(Trait.STUDENT)
                 .wrapTrait(Trait.SUPPORT)
@@ -59,42 +62,42 @@ public class CreatureFactory {
     }
 
     public static Creature obby() {
-        return Creature.withStats("Obby", 78, 13, 3, 0, 3, 110, 100, 1)
+        return Creature.withStats("Obby", 440, 36, 18, 15, 16, 110, 100, 1)
                 .wrapTrait(Trait.FIREBORN)
                 .wrapTrait(Trait.BEAST)
                 .wrapSkill(CreatureSkillFactory.obbySkill());
     }
 
     public static Creature leto() {
-        return Creature.withStats("Leto", 69, 15, 0, 2, 2,125, 100, 1)
+        return Creature.withStats("Leto", 360, 52, 15, 20, 14,125, 100, 1)
                 .wrapTrait(Trait.SPIRIT)
                 .wrapTrait(Trait.ARCHER)
                 .wrapSkill(CreatureSkillFactory.letoSkill());
     }
 
     public static Creature annie() {
-        return Creature.withStats("Annie", 75, 14, 2, 0, 1, 115, 100, 1)
+        return Creature.withStats("Annie", 390, 42, 15, 12, 10, 115, 100, 1)
                 .wrapTrait(Trait.PIRATE)
                 .wrapTrait(Trait.DUELIST)
                 .wrapSkill(CreatureSkillFactory.annieSkill());
     }
 
     public static Creature bolver() {
-        return Creature.withStats("Bolver", 101, 12, 2, 3, 2, 85, 100, 1)
+        return Creature.withStats("Bolver", 560, 30, 13, 10, 14, 85, 100, 1)
                 .wrapTrait(Trait.CULTIST)
                 .wrapTrait(Trait.EATER)
                 .wrapSkill(CreatureSkillFactory.bolverSkill());
     }
 
     public static Creature shaya() {
-        return Creature.withStats("Shaya", 82, 11, 0, 3, 6, 105, 100, 1)
+        return Creature.withStats("Shaya", 330, 30, 14, 18, 20, 105, 100, 1)
                 .wrapTrait(Trait.STUDENT)
                 .wrapTrait(Trait.SUMMONER)
                 .wrapSkill(CreatureSkillFactory.shayaSkill());
     }
 
     public static Creature rover() {
-        return Creature.withStats("Rover", 134, 14, 4, 4, 5, 100, 100, 2)
+        return Creature.withStats("Rover", 700, 52, 20, 15, 10, 100, 100, 2)
                 .wrapTrait(Trait.ROBOT)
                 .wrapTrait(Trait.DEFENDER)
                 .wrapTrait(Trait.SUPPORT)
@@ -102,14 +105,14 @@ public class CreatureFactory {
     }
 
     public static Creature cathyra() {
-        return Creature.withStats("Cathyra", 104, 15, 2, 1, 3, 130, 100, 2)
+        return Creature.withStats("Cathyra", 420, 57, 16, 14, 14, 130, 100, 2)
                 .wrapTrait(Trait.FIREBORN)
                 .wrapTrait(Trait.ASSASSIN)
                 .wrapSkill(CreatureSkillFactory.cathyraSkill());
     }
 
     public static Creature coldy() {
-        return Creature.withStats("Coldy", 133, 14, 4, 2, 5, 95, 100, 2)
+        return Creature.withStats("Coldy", 650, 55, 18, 15, 10, 95, 100, 2)
                 .wrapTrait(Trait.FROSTBORN)
                 .wrapTrait(Trait.UNDEAD)
                 .wrapTrait(Trait.WARRIOR)
@@ -117,21 +120,21 @@ public class CreatureFactory {
     }
 
     public static Creature jack() {
-        return Creature.withStats("Jack", 100, 14, 3, 2, 7, 115, 100, 2)
+        return Creature.withStats("Jack", 440, 42, 17, 17, 18, 115, 100, 2)
                 .wrapTrait(Trait.PIRATE)
                 .wrapTrait(Trait.SUMMONER)
                 .wrapSkill(CreatureSkillFactory.jackSkill());
     }
 
     public static Creature aralis() {
-        return Creature.withStats("Aralis", 98, 17, 1, 3, 6, 120, 100, 2)
+        return Creature.withStats("Aralis", 460, 58, 14, 17, 15, 120, 100, 2)
                 .wrapTrait(Trait.DEMON)
                 .wrapTrait(Trait.ARCHER)
                 .wrapSkill(CreatureSkillFactory.aralisSkill());
     }
 
     public static Creature weiss() {
-        return Creature.withStats("Weiss", 113, 15, 2, 5, 10, 110, 90, 2)
+        return Creature.withStats("Weiss", 520, 45, 14, 22, 24, 110, 90, 2)
                 .wrapTrait(Trait.CULTIST)
                 .wrapTrait(Trait.ALCHEMIST)
                 .wrapSkill(CreatureSkillFactory.weissSkill())
@@ -139,21 +142,21 @@ public class CreatureFactory {
     }
 
     public static Creature aramis() {
-        return Creature.withStats("Aramis", 115, 17, 2, 3, 5, 117, 100, 2)
+        return Creature.withStats("Aramis", 570, 54, 17, 12, 10, 117, 100, 2)
                 .wrapTrait(Trait.KNIGHT)
                 .wrapTrait(Trait.DUELIST)
                 .wrapSkill(CreatureSkillFactory.aramisSkill());
     }
 
     public static Creature heshi() {
-        return Creature.withStats("Heshi", 120, 14, 4, 1, 6, 95, 120, 2)
+        return Creature.withStats("Heshi", 600, 38, 20, 14, 10, 95, 120, 2)
                 .wrapTrait(Trait.FROSTBORN)
                 .wrapTrait(Trait.BEAST)
                 .wrapSkill(CreatureSkillFactory.heshiSkill());
     }
 
     public static Creature cook() {
-        return Creature.withStats("Cook", 142, 13, 3, 3, 6, 97, 100, 2)
+        return Creature.withStats("Cook", 660, 48, 17, 19, 16, 97, 100, 2)
                 .wrapTrait(Trait.PIRATE)
                 .wrapTrait(Trait.EATER)
                 .wrapTrait(Trait.SUPPORT)
@@ -161,8 +164,25 @@ public class CreatureFactory {
     }
 
     public static Creature dummy() {
-        return Creature.withStats("Dummy", 200, 5, 0, 0, 0, 100, 100, 1)
-                .wrapSkill(CreatureSkillFactory.dunkanSkill());
+        return Creature.withStats("Dummy", 1000, 5, 50, 0, 0, 0, 100, 1)
+                .wrapTrait(Trait.SPIRIT)
+                .wrapSkill(CreatureSkillFactory.miraSkill());
+    }
+
+    // Summoners trait Creature
+    public static Creature impy() {
+        return Creature.withStats("Impy", 120, 25, 7, 10, 15, 90, 80, 1)
+                .wrapSkill(CreatureSkillFactory.impySkill());
+    }
+
+    public static Creature creatureByName(String name, int level) {
+        Creature initCreature = creatureByName(name);
+        while (initCreature.getLevel() < level) {
+            int currentLevel = initCreature.getLevel();
+            initCreature.setLevel(currentLevel + 1);
+            LevelController.levelUpCreature(initCreature, initCreature.getLevel(), true);
+        }
+        return initCreature;
     }
 
     public static Creature creatureByName(String name) {
@@ -229,6 +249,20 @@ public class CreatureFactory {
             }
             case "Dummy": {
                 return dummy();
+            }
+        }
+        return Creature.shopDummy();
+    }
+
+    public static Creature creatureByTrait(Trait trait) {
+        List<Creature> creatures = CreaturePool.getPlayerCreaturesWithCost(1);
+        creatures.addAll(CreaturePool.getPlayerCreaturesWithCost(2));
+        creatures.addAll(CreaturePool.getPlayerCreaturesWithCost(3));
+        creatures.addAll(CreaturePool.getPlayerCreaturesWithCost(4));
+        creatures.addAll(CreaturePool.getPlayerCreaturesWithCost(5));
+        for (Creature creature : creatures) {
+            if (creature.hasTrait(trait)) {
+                return creature;
             }
         }
         return Creature.shopDummy();

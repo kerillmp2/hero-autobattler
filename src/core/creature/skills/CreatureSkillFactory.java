@@ -28,7 +28,7 @@ public class CreatureSkillFactory {
 
     public static CreatureSkill dunkanSkill() {
         return (battleController, dunkan) -> {
-            int armorGain = dunkan.getCurrentSpellPower() / 5 + dunkan.getLevel() / 2;
+            int armorGain = dunkan.getCurrentSpellPower() / 10 + dunkan.getLevel();
             BattlefieldCreature target = dunkan.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message;
             message = dunkan.getBattleName() + " casts \"Shield slam\" on " + target.getBattleName() + "!\n";
@@ -42,7 +42,7 @@ public class CreatureSkillFactory {
     public static CreatureSkill salviraSkill() {
         return (battleController, salvira) -> {
             String message;
-            int amount = salvira.getCurrentSpellPower() / 5 + salvira.getCreature().getLevel();
+            int amount = salvira.getCurrentSpellPower() / 5 + salvira.getCreature().getLevel() + 1;
             message = salvira.getBattleName() + " casts \"Poison daggers\" and gains +" + amount + " poison!\n";
             salvira.getCreature().applyCreatureTagChange(CreatureTag.POISONOUS, StatChangeSource.UNTIL_BATTLE_END, amount);
             message += resolve(ActionFactory.attackAction(salvira));
@@ -55,8 +55,8 @@ public class CreatureSkillFactory {
         return (battleController, ignar) -> {
             BattlefieldCreature target = ignar.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message = ignar.getBattleName() + " casts \"Mana leak\" on " + target.getBattleName() + "!\n";
-            int damage = ignar.getCurrentAttack() + ignar.getCurrentSpellPower() / 2;
-            int manaLeak = ignar.getCurrentSpellPower() * 2;
+            int damage = ignar.getCurrentAttack() + ignar.getCurrentSpellPower() / 3;
+            int manaLeak = ignar.getCurrentSpellPower();
             message += dealMagicDamage(ignar, target, damage);
             message += resolve(ActionFactory.ActionBuilder.empty().from(ignar).to(target).wrapTag(ActionTag.MANA, manaLeak).wrapTag(ActionTag.REDUCE_FLOAT_STAT).build());
             message += resolve(ActionFactory.ActionBuilder.empty().from(ignar).to(ignar).wrapTag(ActionTag.MANA, manaLeak).wrapTag(ActionTag.ADD_FLOAT_STAT).build());
@@ -67,7 +67,7 @@ public class CreatureSkillFactory {
     public static CreatureSkill warbotSkill() {
         return (battleController, warbot) -> {
           String message;
-          int buffAmount = warbot.getCurrentSpellPower() / 2 + warbot.getCreature().getLevel();
+          int buffAmount = warbot.getCurrentSpellPower() / 4 + warbot.getCreature().getLevel();
           message = warbot.getBattleName() + " casts \"Attack command\"!\n";
           message += buff(warbot, Stat.ATTACK, buffAmount);
           message += resolve(ActionFactory.attackAction(warbot));
@@ -80,8 +80,8 @@ public class CreatureSkillFactory {
             BattlefieldCreature target = kodji.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message;
 
-            int damage = (int) (kodji.getCurrentSpellPower() * 2.5 + kodji.getCreature().getLevel() * 3);
-            int slow = kodji.getCurrentSpellPower() + kodji.getCreature().getLevel() * 2;
+            int damage = (kodji.getCurrentSpellPower() * 2 + kodji.getCreature().getLevel() * 15) + 15;
+            int slow = kodji.getCurrentSpellPower() / 2 + kodji.getCreature().getLevel() * 2;
             message = kodji.getBattleName() + " casts \"Frost bolt\" on " + target.getBattleName() + "\n";
             message += dealMagicDamage(kodji, target, damage);
             message += debuff(target, Stat.SPEED, slow);
@@ -98,7 +98,7 @@ public class CreatureSkillFactory {
                 return firstMissing - secondMissing;
             });
             String message;
-            int healingAmount = (target.getMaxHp() / 100 * 10) + mira.getCurrentSpellPower() + 10 + mira.getLevel() * 7;
+            int healingAmount = (target.getMaxHp() / 100 * 4) + mira.getCurrentSpellPower() + mira.getLevel() * 7 + 5;
             message = mira.getBattleName() + " casts \"Healing potion\" on " + target.getBattleName() + "\n";
             message += resolve(ActionFactory.healingAction(mira, target, healingAmount));
 
@@ -114,7 +114,7 @@ public class CreatureSkillFactory {
                 return firstMissing - secondMissing;
             });
             String message;
-            int healingAmount = ((target.getMaxHp() / 100 * 10) + mira.getCurrentSpellPower() + 10 + mira.getLevel() * 7) / 2;
+            int healingAmount = ((target.getMaxHp() / 100 * 4) + mira.getCurrentSpellPower() + mira.getLevel() * 7 + 5) / 2;
             message = mira.getBattleName() + " \"Healing potion\" bounces on " + target.getBattleName() + "!\n";
             message += resolve(ActionFactory.healingAction(mira, target, healingAmount));
 
@@ -127,12 +127,12 @@ public class CreatureSkillFactory {
             String message;
             BattlefieldCreature target = obby.getBattlefieldSide().getRandomOppositeSideAliveCreature();
 
-            int damage = obby.getCurrentSpellPower() + obby.getCurrentAttack() / 2;
-            int burn = obby.getCurrentSpellPower() * 2 + obby.getCreature().getLevel() * 2;
+            int damage = obby.getCurrentSpellPower() + obby.getCurrentAttack() / 2 + obby.getLevel() * 4 + 15;
+            int burn = obby.getCurrentSpellPower() + obby.getCreature().getLevel() * 10 + 20;
 
             message = obby.getBattleName() + " casts \"Fire spit\" on " + target.getBattleName() + "\n";
             message += dealMagicDamage(obby, target, damage);
-            message += applyBurn(target, burn);
+            message += applyBurn(obby, target, burn);
 
             return message;
         };
@@ -141,8 +141,8 @@ public class CreatureSkillFactory {
     public static CreatureSkill letoSkill() {
         return (battleController, leto) -> {
             int level = leto.getCreature().getLevel();
-            double coeff = level >= 9 ? 1.0 : level >= 6 ? 0.8 : level >= 3 ? 0.6 : 0.4;
-            int damage = (int) (leto.getCurrentAttack() * coeff) + leto.getCurrentSpellPower() * 2 + level * 2;
+            double coeff = level >= 9 ? 0.8 : level >= 6 ? 0.65 : level >= 3 ? 0.45 : 0.3;
+            int damage = (int) (leto.getCurrentAttack() * coeff) + leto.getCurrentSpellPower() / 4 + level * 5;
             BattlefieldCreature firstTarget = leto.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             BattlefieldCreature secondTarget = leto.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message;
@@ -162,9 +162,9 @@ public class CreatureSkillFactory {
 
     public static CreatureSkill annieSkill() {
         return (battleController, annie) -> {
-            int coeff = annie.getCurrentSpeed() / 100;
-            int damage = (annie.getCurrentAttack()) * coeff + annie.getCreature().getLevel() + annie.getCurrentSpellPower();
-            int speedBoost = annie.getCreature().getLevel() * 2 + annie.getCurrentSpellPower() * 4;
+            int coeff = annie.getCurrentSpeed() / 80;
+            int damage = (annie.getCurrentAttack()) * coeff + annie.getCurrentSpellPower() + annie.getLevel() * 10;
+            int speedBoost = annie.getCreature().getLevel() * 5 + annie.getCurrentSpellPower() + 10;
             BattlefieldCreature target = annie.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             String message;
             message = annie.getBattleName() + " casts \"Blade swing\" on " + target.getBattleName() + "!\n";
@@ -181,8 +181,8 @@ public class CreatureSkillFactory {
             String message;
             BattlefieldCreature target = bolver.getBattlefieldSide().getRandomOppositeSideAliveCreature();
             int level = bolver.getCreature().getLevel();
-            double coeff = level >= 9 ? 0.23 : level >= 6 ? 0.16 : level >= 3 ? 0.12 : 0.09;
-            coeff += bolver.getCurrentSpellPower() / 110.0;
+            double coeff = level >= 9 ? 0.18 : level >= 6 ? 0.12 : level >= 3 ? 0.9 : 0.07;
+            coeff += bolver.getCurrentSpellPower() / 200.0;
             int damage = (int) (coeff * bolver.getMaxHp());
             message = bolver.getBattleName() + " casts \"Body slam\" on " + target.getBattleName() + "!\n";
             message += dealPhysicalDamage(bolver, target, damage);
@@ -195,13 +195,13 @@ public class CreatureSkillFactory {
             String message = shaya.getBattleName() + " casts \"Frog summon\"!\n";;
             int sp = shaya.getCurrentSpellPower();
             int level = shaya.getCreature().getLevel();
-            int frogHP = (int) (2.4 * sp);
+            int frogHP = (int) (4 * sp);
             int frogAttack = level + sp;
-            int frogPhysArmor = sp / 6 + 1;
-            int frogMagArmor = sp / 3 + 1;
-            int frogSP = level + sp;
-            int frogSpeed = 80 + sp * (3 + level);
-            Creature frog = Creature.withStats("Frog", frogHP, frogAttack, frogPhysArmor, frogMagArmor, frogSP, frogSpeed, 40, 1)
+            int frogPhysArmor = sp / 5 + level;
+            int frogMagArmor = sp / 3 + level;
+            int frogSP = level * 2 + sp;
+            int frogSpeed = 60 + sp * level;
+            Creature frog = Creature.withStats("Frog", frogHP, frogAttack, frogPhysArmor, frogMagArmor, frogSP, frogSpeed, 50, 1)
                     .wrapSkill(frogSkill());
             frog.setLevel(level);
             BattlefieldCreature battleFrog = BattlefieldCreature.fromCreature(frog);
@@ -217,7 +217,7 @@ public class CreatureSkillFactory {
         return (battleController, frog) -> {
             BattlefieldCreature target = frog.getBattlefieldSide().getOppositeSide().getCreatureWithLowest(Stat.HP);
             String message = frog.getBattleName() + " casts \"Tongue hit\" on " + target.getBattleName() + "!\n";
-            int damage = frog.getCurrentAttack() + frog.getCurrentSpellPower() + 1;
+            int damage = frog.getCurrentAttack() + frog.getCurrentSpellPower() + 10;
             int armorLoss = frog.getLevel();
             message += dealPhysicalDamage(frog, target, damage);
             message += debuff(target, Stat.PHYSICAL_ARMOR, armorLoss);
@@ -255,10 +255,10 @@ public class CreatureSkillFactory {
             }
 
             message += dealPhysicalDamage(cathyra, first_target, damage);
-            message += applyBurn(first_target, burn);
+            message += applyBurn(cathyra, first_target, burn);
             if (second_target.hasStatuses(ObjectStatus.ALIVE)) {
                 message += dealPhysicalDamage(cathyra, second_target, damage);
-                message += applyBurn(second_target, burn);
+                message += applyBurn(cathyra, second_target, burn);
             }
 
             return message;
@@ -413,13 +413,26 @@ public class CreatureSkillFactory {
         };
     }
 
+    // Summoner creatures skills
+    public static CreatureSkill impySkill() {
+        return (battleController, impy) -> {
+            BattlefieldCreature target = impy.getBattlefieldSide().getRandomOppositeSideCreature(ObjectStatus.ALIVE);
+            String message = impy.getBattleName() + " casts \"Fire bolt\"!\n";
+            int damage = impy.getCurrentSpellPower() + impy.getCurrentAttack();
+            int burn = impy.getCurrentSpellPower();
+            message += dealMagicDamage(impy, target, damage);
+            message += applyBurn(impy, target, burn);
+            return message;
+        };
+    }
+
 
     private static String dealMagicDamage(BattlefieldCreature dealer, BattlefieldCreature target, int amount) {
         String message;
         message = resolve(dealer, ResolveTime.BEFORE_DEALING_DAMAGE);
         message += resolve(dealer, ResolveTime.BEFORE_DEALING_MAGIC_DAMAGE);
         message += resolve(target, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.BEFORE_TAKING_MAGIC_DAMAGE);
-        message += target.takeMagicDamage(amount, dealer.getCreature().getName());
+        message += target.takeMagicDamage(amount, dealer);
         message += resolve(dealer, ResolveTime.ON_DEALING_DAMAGE);
         message += resolve(dealer, ResolveTime.ON_DEALING_MAGIC_DAMAGE);
         message += resolve(target, ResolveTime.ON_TAKING_DAMAGE, ResolveTime.ON_TAKING_MAGIC_DAMAGE);
@@ -434,7 +447,7 @@ public class CreatureSkillFactory {
         message = resolve(dealer, ResolveTime.BEFORE_DEALING_DAMAGE);
         message += resolve(dealer, ResolveTime.BEFORE_DEALING_PHYSICAL_DAMAGE);
         message += resolve(target, ResolveTime.BEFORE_TAKING_DAMAGE, ResolveTime.BEFORE_TAKING_PHYSICAL_DAMAGE);
-        message += target.takePhysicalDamage(amount, dealer.getCreature().getName());
+        message += target.takePhysicalDamage(amount, dealer);
         message += resolve(dealer, ResolveTime.ON_DEALING_DAMAGE);
         message += resolve(dealer, ResolveTime.ON_DEALING_PHYSICAL_DAMAGE);
         message += resolve(target, ResolveTime.ON_TAKING_DAMAGE, ResolveTime.ON_TAKING_PHYSICAL_DAMAGE);
@@ -469,7 +482,8 @@ public class CreatureSkillFactory {
         };
     }
 
-    public static String applyBurn(BattlefieldCreature target, int amount) {
+    public static String applyBurn(BattlefieldCreature source, BattlefieldCreature target, int defaultAmount) {
+        int amount = (int) ((defaultAmount + source.getTagValue(CreatureTag.BURN_BUFF)) / 100.0 * (100.0 + source.getTagValue(CreatureTag.PERCENTAGE_BURN_BUFF)));
         if (!target.hasActionWithTags(ActionTag.APPLY_BURN_DAMAGE)) {
             target.addAction(ActionFactory.ActionBuilder.empty().to(target).from(target).wrapTag(ActionTag.APPLY_BURN_DAMAGE, amount).wrapTag(ActionTag.DELETE_AFTER_RESOLVE).withTime(ResolveTime.ON_START_TURN).build());
         } else {

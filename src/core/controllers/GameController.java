@@ -79,53 +79,57 @@ public class GameController {
             }
         }
 
-        List<Pair<Player, Player>> battlePairs = generateBattlePairs();
-        for (Pair<Player, Player> battlePair : battlePairs) {
+        List<Pair<PlayerController, PlayerController>> battlePairs = generateBattlePairs();
+        for (Pair<PlayerController, PlayerController> battlePair : battlePairs) {
             if (Constants.EACH_BATTLE_STATISTIC.value > 0) {
                 StatisticCollector.init();
             }
             BattleStatus battleStatus = processBattleForPlayers(battlePair.first, battlePair.second);
+            Player firstPlayer = battlePair.first.getPlayer();
+            Player secondPlayer = battlePair.second.getPlayer();
             switch (battleStatus) {
                 case FIRST_PLAYER_WIN:
-                    MessageController.print(battlePair.first.getName() + " won versus " + battlePair.second.getName());
-                    dealDamageToPlayer(battlePair.second, 2);
+                    MessageController.print(firstPlayer.getName() + " won versus " + secondPlayer.getName());
+                    dealDamageToPlayer(secondPlayer, 2);
                     break;
                 case SECOND_PLAYER_WIN:
-                    MessageController.print(battlePair.second.getName() + " won versus " + battlePair.first.getName());
-                    dealDamageToPlayer(battlePair.first, 2);
+                    MessageController.print(secondPlayer.getName() + " won versus " + firstPlayer.getName());
+                    dealDamageToPlayer(firstPlayer, 2);
                     break;
                 case TURN_LIMIT_REACHED:
                     MessageController.print("Turns limit reached!");
                 case DRAW:
-                    MessageController.print("Draw in battle between " + battlePair.second.getName() + " and " + battlePair.first.getName());
+                    MessageController.print("Draw in battle between " + firstPlayer.getName() + " and " + secondPlayer.getName());
             }
             if (Constants.EACH_BATTLE_STATISTIC.value > 0) {
                 MessageController.forcedPrint(StatisticViewer.getStatisticView(Metric.values()));
             }
-            addMoneyToPlayer(battlePair.first, 1 + battlePair.first.getMoney() / 10);
-            addMoneyToPlayer(battlePair.second, 1 + battlePair.second.getMoney() / 10);
+            addMoneyToPlayer(firstPlayer, 1 + firstPlayer.getMoney() / 10);
+            addMoneyToPlayer(secondPlayer, 1 + secondPlayer.getMoney() / 10);
         }
 
         MessageController.print("Turn " + currentTurn + " is over!");
         currentTurn++;
     }
 
-    private BattleStatus processBattleForPlayers(Player firstPlayer, Player secondPlayer) {
+    private BattleStatus processBattleForPlayers(PlayerController firstPlayerController, PlayerController secondPlayerController) {
+        Player firstPlayer = firstPlayerController.getPlayer();
+        Player secondPlayer = secondPlayerController.getPlayer();
         MessageController.print("Battle between " + firstPlayer.getName() + " и " + secondPlayer.getName() + " begins!");
-        BattleStatus battleStatus = BattleController.processBattleForPlayers(firstPlayer, secondPlayer);
+        BattleStatus battleStatus = BattleController.processBattleForPlayers(firstPlayerController, secondPlayerController);
         firstPlayer.setState(PlayerState.NOT_READY_FOR_BATTLE);
         secondPlayer.setState(PlayerState.NOT_READY_FOR_BATTLE);
         return battleStatus;
     }
 
-    private List<Pair<Player, Player>> generateBattlePairs() {
-        List<Player> readyForBattlePlayers = getPlayersWithState(PlayerState.READY_FOR_BATTLE);
-        List<Pair<Player, Player>> battlePairs = new ArrayList<>();
+    private List<Pair<PlayerController, PlayerController>> generateBattlePairs() {
+        List<PlayerController> readyForBattlePlayers = getPlayersWithState(PlayerState.READY_FOR_BATTLE);
+        List<Pair<PlayerController, PlayerController>> battlePairs = new ArrayList<>();
 
         while (readyForBattlePlayers.size() >= 2) {
             Collections.shuffle(readyForBattlePlayers);
-            Player firstPlayer = readyForBattlePlayers.get(0);
-            Player secondPlayer = readyForBattlePlayers.get(1);
+            PlayerController firstPlayer = readyForBattlePlayers.get(0);
+            PlayerController secondPlayer = readyForBattlePlayers.get(1);
             battlePairs.add(new Pair<>(firstPlayer, secondPlayer));
             readyForBattlePlayers.remove(firstPlayer);
             readyForBattlePlayers.remove(secondPlayer);
@@ -138,8 +142,8 @@ public class GameController {
         return playerControllers.stream().map(PlayerController::getPlayer).filter(player -> player.getState() != PlayerState.DEAD).collect(Collectors.toList());
     }
 
-    private List<Player> getPlayersWithState(PlayerState state) {
-        return playerControllers.stream().map(PlayerController::getPlayer).filter(player -> player.getState() == state).collect(Collectors.toList());
+    private List<PlayerController> getPlayersWithState(PlayerState state) {
+        return playerControllers.stream().filter(playerController -> playerController.getPlayer().getState() == state).collect(Collectors.toList());
     }
 
     private void dealDamageToPlayer(Player player, int amount) {

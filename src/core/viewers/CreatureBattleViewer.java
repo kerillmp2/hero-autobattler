@@ -64,7 +64,7 @@ public class CreatureBattleViewer extends Viewer {
         view.append("+").append("-".repeat(rowSize)).append("+\n");
 
         for (Item item : items) {
-            if (!item.getName().equals("Bottomless Bag")) {
+            if (item.hasView()) {
                 StringBuilder itemRow = new StringBuilder();
                 itemRow.append("|").append(" ".repeat(offset)).append(item.getName());
                 itemRow.append(" ".repeat(rowSize - itemRow.length() + 1)).append("|\n");

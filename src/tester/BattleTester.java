@@ -6,6 +6,7 @@ import java.util.List;
 import AI.AI;
 import core.battle.BattleStatus;
 import core.controllers.BattleController;
+import core.controllers.PlayerController;
 import core.controllers.utils.MessageController;
 import core.creature.Creature;
 import core.creature.CreatureFactory;
@@ -28,8 +29,16 @@ public class BattleTester {
             //p3.incrementShopLevel();
             //p3.getBoardController().addCreature(creature);
         }
-        return BattleController.processBattleForPlayers(p1, p2);
+        return BattleController.processBattleForPlayers(PlayerController.defaultController(p1), PlayerController.defaultController(p2));
         //return BattleController.processBattleForPlayers(p1, p3);
+    }
+
+    public static BattleStatus testBattleWithCreatures(Creature creature, Creature opponent, int creatureLevel, int opponentLevel) {
+        List<Creature> creatures = new ArrayList<>();
+        creatures.add(CreatureFactory.creatureByName(creature.getName(), creatureLevel));
+        List<Creature> opponents = new ArrayList<>();
+        opponents.add(CreatureFactory.creatureByName(opponent.getName(), opponentLevel));
+        return testBattleWithCreatures(creatures, opponents);
     }
 
     public static BattleStatus testBattleWithCreatures(Creature creature, Creature opponent) {
@@ -40,28 +49,29 @@ public class BattleTester {
         return testBattleWithCreatures(creatures, opponents);
     }
 
-    public static void testCreatureSolo(Creature creature) {
+    public static void testCreatureSolo(Creature creature, int level) {
         int wins = 0;
         int loses = 0;
         int draws = 0;
         int turn_limits = 0;
         List<Creature> opponents = CreaturePool.getPlayerCreaturesWithCost(creature.getCost());
-        for (Creature opponent : opponents) {
-            creature = CreatureFactory.creatureByName(creature.getName());
-            BattleStatus battleStatus = testBattleWithCreatures(creature, opponent);
-            switch (battleStatus) {
-                case DRAW:
-                    draws++;
-                    break;
-                case FIRST_PLAYER_WIN:
-                    wins++;
-                    break;
-                case SECOND_PLAYER_WIN:
-                    loses++;
-                    break;
-                case TURN_LIMIT_REACHED:
-                    turn_limits++;
-                    break;
+        for (int i = 0; i < 5; i++) {
+            for (Creature opponent : opponents) {
+                BattleStatus battleStatus = testBattleWithCreatures(creature, opponent, level, level);
+                switch (battleStatus) {
+                    case DRAW:
+                        draws++;
+                        break;
+                    case FIRST_PLAYER_WIN:
+                        wins++;
+                        break;
+                    case SECOND_PLAYER_WIN:
+                        loses++;
+                        break;
+                    case TURN_LIMIT_REACHED:
+                        turn_limits++;
+                        break;
+                }
             }
         }
         MessageController.forcedPrint("Результаты тестирования " + creature.getName() + ":");
@@ -71,10 +81,10 @@ public class BattleTester {
         MessageController.forcedPrint("Лимиты ходов: " + turn_limits + "\n");
     }
 
-    public static void testCreaturesWithCost(int cost) {
+    public static void testCreaturesWithCost(int cost, int level) {
         List<Creature> creatures = CreaturePool.getPlayerCreaturesWithCost(cost);
         for (Creature creature : creatures) {
-            testCreatureSolo(creature);
+            testCreatureSolo(creature, level);
         }
     }
 
@@ -151,9 +161,9 @@ public class BattleTester {
         }
     }
 
-    public static void testCreature(Creature creature) {
+    public static void testCreature(Creature creature, int level) {
         List<Creature> firstCostCreatures = new ArrayList<>();
-        testCreatureSolo(creature);
+        testCreatureSolo(creature, level);
         firstCostCreatures.add(creature);
         List<Creature> secondCostCreatures = CreaturePool.getPlayerCreaturesWithCost(creature.getCost());
         for (Creature firstCreature : firstCostCreatures) {
